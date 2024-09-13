@@ -5,21 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="shortcut icon" href="img/iconmurka.png" type="image/x-icon" />
-    <script src="./js/script.js" defer></script>
     <title> Diana </title>
   </head>
   <body>
-    <video autoplay muted loop draggable="false" class="videoContainer">
+    <script type="module" src="./js/script.js" defer></script>
+    <script src="dist/bundle.js"></script>
+        <video autoplay muted loop draggable="false" class="videoContainer">
       <source src="video/earth.mp4" type="video/mp4" />
     </video>
     <div class="container">
       <div class="ship">
-        <img
-          src="img/murka3.png"
-          alt="fighter"
-          class="fighter"
-          draggable="false"
-        />
+        <img src="img/murka3.png" alt="fighter" class="fighter" draggable="false" />
         <div class="flameContainer">
           <div class="fighterFlame">
             <div class="red flame"></div>
@@ -67,20 +63,21 @@
         <span class="muteSpeaker"></span>
       </div>
       <div class="backgroundContainer">
-        <img
-          src="img/planet-earth.svg"
-          alt="planet-earth"
-          class="planet earthImg"
-        />
-        <img
-          src="img/planet-mars.svg"
-          alt="planet-mars"
-          class="planet marsImg"
-        />
+        <img src="img/planet-earth.svg" alt="planet-earth" class="planet earthImg" />
+        <img src="img/planet-mars.svg" alt="planet-mars" class="planet marsImg" />
         <img src="img/milky-way.svg" alt="milky-way" class="planet spaceImg" />
       </div>
       <div class="lives"></div>
     </div>
+
+    <!-- Добавляем интерфейс для чата -->
+    <div id="chatContainer">
+      <h1>Trystero Chat</h1>
+      <input type="text" id="message" placeholder="Введите сообщение" />
+      <button id="send">Отправить</button>
+      <ul id="messages"></ul>
+    </div>
+
     <audio class="audio" loop>
       <source src="music/space.mp3" type="audio/mpeg"/>
     </audio>
