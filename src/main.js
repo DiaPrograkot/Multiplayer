@@ -6,29 +6,25 @@ const config = {
   // Другие конфигурационные параметры, если они требуются
 };
 
-// Инициализация и присоединение к комнате
-const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
+const channel = makeChannel(config);
 
-// Пример использования функции joinRoom
-room.onPeerJoin(peerId => console.log(`${peerId} joined`));
-room.onPeerLeave(peerId => console.log(`${peerId} left`));
-room.onPeerStream((stream, peerId) => {
-  const video = document.createElement('video');
-  video.srcObject = stream;
-  video.autoplay = true;
-  document.body.appendChild(video);
+let playerName;
+
+// Получаем имя игрока при подключении
+document.getElementById('playerPlay').addEventListener('click', () => {
+  playerName = document.getElementById('playerNameInput').value || 'Player';
+
+  // Отправляем информацию о подключении другим игрокам
+  channel.send({ type: 'join', name: playerName });
+
+  console.log(`${playerName} joined the game`);
+
+  // Запуск игры или выполнение других действий
 });
 
-// Пример использования пользовательских действий
-const [sendMessage, getMessage] = room.makeAction('message');
-
-// Отправка сообщения
-sendMessage('Hello, world!');
-
-// Получение сообщения
-getMessage((message, peerId) => {
-  console.log(`Received message from ${peerId}: ${message}`);
+// Получение сообщений от других игроков
+channel.on('data', (data) => {
+  if (data.type === 'join') {
+    console.log(`${data.name} joined the game`);
+  }
 });
-
-// Пример использования selfId
-console.log(`My peer ID is ${selfId}`);

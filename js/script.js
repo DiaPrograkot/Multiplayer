@@ -74,6 +74,7 @@ let laserSound = async () => {
   }
 };
 
+
 // Удаление лазера
 let removeLaser = (laser) => {
   if (laser && laser.parentNode === container) {
