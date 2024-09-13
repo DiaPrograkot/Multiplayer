@@ -20,5 +20,12 @@
   "bugs": {
     "url": "https://github.com/alexejklass/igs-commander/issues"
   },
-  "homepage": "https://github.com/alexejklass/igs-commander#readme"
+  "homepage": "https://github.com/alexejklass/igs-commander#readme",
+  "dependencies": {
+    "trystero": "^0.20.0"
+  },
+  "devDependencies": {
+    "webpack": "^5.94.0",
+    "webpack-cli": "^5.1.4"
+  }
 }
