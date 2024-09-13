@@ -1,37 +1,45 @@
-let container = document.querySelector('.container')
-let playerNameContainer = document.querySelector('.playerNameContainer')
-let playerInput = document.querySelector('.playerInput')
-let playerName = ''
-let playerPlay = document.querySelector('.playerPlay')
+// Определение переменных
+let container = document.querySelector(".container");
+let playerNameContainer = document.querySelector(".playerNameContainer");
+let playerInput = document.querySelector(".playerInput");
+let playerName = "";
+let playerPlay = document.querySelector(".playerPlay");
+let playerLabel = document.querySelector(".playerLabel");
+let ship = document.querySelector(".ship");
+let gameover = document.querySelector(".gameover");
+let startgame = document.querySelector(".startgame");
+let audio = document.querySelector(".audio");
+let lasersound = document.querySelector(".lasersound");
+let crash = document.querySelector(".crash");
+let counter = document.querySelector(".counter");
+let toggleMusic = document.querySelector(".toggleMusic");
+let muteSpeaker = toggleMusic.querySelector(".muteSpeaker");
+let musicButton = toggleMusic.querySelector(".musicButton");
+let play = document.querySelector(".play");
+let startplay = document.querySelector(".startplay");
+let earth = document.querySelector(".earthImg");
+let mars = document.querySelector(".marsImg");
+let space = document.querySelector(".spaceImg");
+let lives = document.querySelector(".lives");
+let videoContainer = document.querySelector(".videoContainer");
+let videoSource = videoContainer.querySelector("source");
+let star;
 
-let playerLabel = document.querySelector('.playerLabel')
-let ship = document.querySelector('.ship')
-let gameover = document.querySelector('.gameover')
-let audio = document.querySelector('.audio')
-let lasersound = document.querySelector('.lasersound')
-let crash = document.querySelector('.crash')
-let counter = document.querySelector('.counter')
-let toggleMusic = document.querySelector('.toggleMusic')
-let muteSpeaker = toggleMusic.querySelector('.muteSpeaker')
-let musicButton = toggleMusic.querySelector('.musicButton')
-let play = document.querySelector('.play')
-let earth = document.querySelector('.earthImg')
-let mars = document.querySelector('.marsImg')
-let space = document.querySelector('.spaceImg')
-let lives = document.querySelector('.lives')
-let videoContainer = document.querySelector('.videoContainer')
-let videoSource = videoContainer.querySelector('source')
-let star
+let isPaused = false;
 
-let asteroidElement
-let asteroidShapeNumber
-let asteroidShapeSize
-let asteroidShape
-let asteroidX
-let asteroidY
-let stars = 3
+let loss = false;
+// Переменные состояния
+let moveLeft = false;
+let moveRight = false;
+let isSpacePressed = false;
+let canShoot = true;
+let isLaserPlaying = false;
+let stars = 3;
 
-//Display stars
+let difficulty = "medium"; // Значение по умолчанию
+let asteroidSpeed = 4; // Инициализация скорости астероида
+
+// Функция для отображения звезд
 let showStars = () => {
   lives.innerHTML = "";
   for (let i = 0; i < stars; i++) {
@@ -118,7 +126,6 @@ let laserMovement = (laser) => {
     });
   }, 50);
 };
-
 
 // Создание лазера
 let createLaser = (asteroidId) => {
@@ -461,58 +468,44 @@ if (nameStorage) {
 
   // Добавляем обработчик нажатия на кнопку "Play"
   playerPlay.addEventListener('click', () => {
-    playerName = playerInput.value
+    let playerName = playerInput.value;
+
     if (playerName) {
-      localStorage.setItem('name', playerName)
-      playerLabel.textContent = playerName
-      playerNameContainer.style.display = 'none'
-      asteroidFunction()
-      //Mouse laser shot event listener
-      document.addEventListener('click', () => {
-        laserShot()
-      })
+      localStorage.setItem('name', playerName);
+      playerLabel.textContent = playerName;
+      playerNameContainer.style.display = 'none';
+      startgameFunc();
     }
-  })
+  });
 }
 
-//Music playback start after 3 seconds
-let musicPlay = setTimeout(() => {
-  audio.play()
-  audio.volume = 0.1
-}, 4000)
 
-//Toggle music
-toggleMusic.addEventListener('click', () => {
+document.addEventListener('keydown', handleKeyDown);
+
+// Управление музыкой
+let musicPlay = () => {
+  document.addEventListener(
+    "click",
+    () => {
+      audio.play();
+    },
+    { once: true }
+  );
+};
+setTimeout(musicPlay, 3000);
+
+toggleMusic.addEventListener("click", (event) => {
+  event.stopPropagation();
   if (audio.paused) {
-    muteSpeaker.style.opacity = '0'
-    return audio.play()
-  }
-  audio.pause()
-  audio.currentTime = 0
-  muteSpeaker.style.opacity = '1'
-})
-
-//Keyboard ship movement
-document.addEventListener('keydown', event => {
-  if (event.key === 'ArrowLeft') {
-    ship.style.left = ship.offsetLeft - 40 + 'px'
-  }
-  if (event.key === 'ArrowRight') {
-    ship.style.left = ship.offsetLeft + 40 + 'px'
-  }
-  if (event.key === ' ') {
-    console.log('Space')
-  }
-})
-
-//Mouse ship movement
-document.addEventListener('mousemove', event => {
-  ship.style.left = event.clientX - 60 + 'px'
-})
-
-//Touch ship movement
-ship.addEventListener('touchmove', event => {
-  if (Math.floor(event.touches[0].clientX) > window.innerWidth * 0.7) {
+    muteSpeaker.style.opacity = "0";
+    audio
+      .play()
+      .then(() => {
+        audio.volume = 0.1;
+      })
+      .catch((error) => {
+        console.error("Ошибка воспроизведения музыки:", error);
+      });
   } else {
     audio.pause();
     muteSpeaker.style.opacity = "1";
@@ -532,3 +525,4 @@ document.addEventListener("keydown", (event) => {
     pauseButton.textContent = isPaused ? "▶" : "||";
   }
 });
+
