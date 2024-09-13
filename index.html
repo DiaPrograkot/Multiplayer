@@ -9,17 +9,14 @@
     <title> Murka Sensei Commander </title>
   </head>
   <body>
-    <video autoplay muted loop draggable="false" class="videoContainer">
+    <script type="module" src="./js/script.js" defer></script>
+    <script src="dist/bundle.js"></script>
+        <video autoplay muted loop draggable="false" class="videoContainer">
       <source src="video/earth.mp4" type="video/mp4" />
     </video>
     <div class="container">
       <div class="ship">
-        <img
-          src="img/murka3.png"
-          alt="fighter"
-          class="fighter"
-          draggable="false"
-        />
+        <img src="img/murka3.png" alt="fighter" class="fighter" draggable="false" />
         <div class="flameContainer">
           <div class="fighterFlame">
             <div class="red flame"></div>
@@ -37,11 +34,13 @@
       <div class="startgame">
         <div class="title">MURKA SENSEI Commander</div>
         <div class="highscoreContainer">
-          <div class="highscore">Highscore: <span id="highscore">0</span></div>
+          <div class="highscore">High score: <span id="highscore">0</span></div>
         </div>
-        <button class="levelButtonEasy">Easy</button>
-        <button class="levelButtonMedium" >Medium</button>
-        <button class="levelButtonHard" >Hard</button>
+        <div class="difficulty">
+          <button class="easy">Easy</button>
+          <button class="medium">Medium</button>
+          <button class="hard">Hard</button>
+        </div>
         <div class="startplay">▶</div>
       </div>
       <button id="pauseButton" class="pauseButton">▶</button>
@@ -51,9 +50,11 @@
           <div>Your Score: <span id="yourscore"></span></div>
           <div>High Score: <span id="highscore-display"></span></div>
       </div>
-      <button class="levelButtonEasyG">Easy</button>
-      <button class="levelButtonMediumG" >Medium</button>
-      <button class="levelButtonHardG" >Hard</button>
+      <div class="difficulty-buttons">
+        <button class="easy">Easy</button>
+        <button class="medium">Medium</button>
+        <button class="hard">Hard</button>
+      </div>
         <div class="play">▶</div>
       </div>
       <div class="counter">0</div>
@@ -63,22 +64,23 @@
         <span class="muteSpeaker"></span>
       </div>
       <div class="backgroundContainer">
-        <img
-          src="img/planet-earth.svg"
-          alt="planet-earth"
-          class="planet earthImg"
-        />
-        <img
-          src="img/planet-mars.svg"
-          alt="planet-mars"
-          class="planet marsImg"
-        />
+        <img src="img/planet-earth.svg" alt="planet-earth" class="planet earthImg" />
+        <img src="img/planet-mars.svg" alt="planet-mars" class="planet marsImg" />
         <img src="img/milky-way.svg" alt="milky-way" class="planet spaceImg" />
       </div>
       <div class="lives"></div>
     </div>
-    <audio class="audio">
-      <source src="music/space.mp3" type="audio/mpeg" />
+
+    <!-- Добавляем интерфейс для чата -->
+    <div id="chatContainer">
+      <h1>Trystero Chat</h1>
+      <input type="text" id="message" placeholder="Введите сообщение" />
+      <button id="send">Отправить</button>
+      <ul id="messages"></ul>
+    </div>
+
+    <audio class="audio" loop>
+      <source src="music/space.mp3" type="audio/mpeg"/>
     </audio>
     <audio class="lasersound">
       <source src="music/laser.mp3" type="audio/mpeg" />

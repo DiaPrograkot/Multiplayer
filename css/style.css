@@ -552,69 +552,51 @@ body {
     width: 90%;
   }
 }
-.levelButtonEasy {
-  position: absolute;
-  top: 230px;
-  left: 150px;
-  padding: 15px 45px;
-  background-color: #ffdd1a;
-  color: #fff;
-  border: none;
-  border-radius: 100px;
-  cursor: pointer;
+
+
+.difficulty, .difficulty-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
 }
-.levelButtonMedium {
-  position: absolute;
-  top: 230px;
-  right: 313.5px;
-  padding: 15px 40px;
-  background-color: #ffdd1a;
-  color: #fff;
-  border: none;
-  border-radius: 100px;
+
+.difficulty button {
+  padding: 1.5rem 3rem; /* Увеличенные отступы */
+  font-size: 1.5rem; /* Увеличенный размер шрифта */
   cursor: pointer;
+  border: none;
+  border-radius: 10px; /* Более округлённые углы */
+  transition: background-color 0.3s;
+  min-width: 200px; /* Минимальная ширина кнопки */
+  min-height: 60px; /* Минимальная высота кнопки */
 }
-.levelButtonHard {
-  position: absolute;
-  top: 230px;
-  right: 150px;
-  padding: 15px 45px;
-  background-color: #ffdd1a;
-  color: #fff;
-  border: none;
-  border-radius: 100px;
+
+.difficulty-buttons button {
+  padding: 1.5rem 3rem; /* Увеличенные отступы */
+  font-size: 1.5rem; /* Увеличенный размер шрифта */
   cursor: pointer;
+  border: none;
+  border-radius: 10px; /* Более округлённые углы */
+  transition: background-color 0.3s;
+  min-width: 200px; /* Минимальная ширина кнопки */
+  min-height: 60px; /* Минимальная высота кнопки */
 }
-.levelButtonEasyG {
-  position: absolute;
-  top: 230px;
-  left: 150px;
-  padding: 15px 45px;
-  background-color: #ffdd1a;
-  color: #fff;
-  border: none;
-  border-radius: 100px;
-  cursor: pointer;
+
+.difficulty .easy { background-color: #4CAF50; color: white; }
+.difficulty .medium { background-color: #FF9800; color: white; }
+.difficulty .hard { background-color: #F44336; color: white; }
+
+.difficulty-buttons .easy { background-color: #4CAF50; color: white; }
+.difficulty-buttons .medium { background-color: #FF9800; color: white; }
+.difficulty-buttons .hard { background-color: #F44336; color: white; }
+
+.difficulty button:hover {
+  background-color: #333;
+  color: white;
 }
-.levelButtonMediumG {
-  position: absolute;
-  top: 230px;
-  right: 313.5px;
-  padding: 15px 40px;
-  background-color: #ffdd1a;
-  color: #fff;
-  border: none;
-  border-radius: 100px;
-  cursor: pointer;
-}
-.levelButtonHardG {
-  position: absolute;
-  top: 230px;
-  right: 150px;
-  padding: 15px 45px;
-  background-color: #ffdd1a;
-  color: #fff;
-  border: none;
-  border-radius: 100px;
-  cursor: pointer;
+
+.difficulty-buttons button:hover {
+  background-color: #333;
+  color: white;
 }
