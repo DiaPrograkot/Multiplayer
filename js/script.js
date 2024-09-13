@@ -157,7 +157,6 @@ let laserShot = () => {
   }
 };
 
-let asteroidSpeed = 3; // По умолчанию средняя скорость
 
 let moveAsteroid = (asteroid) => {
   const animate = () => {
