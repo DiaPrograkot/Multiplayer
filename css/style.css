@@ -553,43 +553,50 @@ body {
   }
 }
 
-.difficulty {
-  padding: 1.2rem 2.4rem;
-  font-size: 2rem;
-  font-weight: bold;
-  color: white;
-  border: none;
-  border-radius: 5px;
+
+.difficulty, .difficulty-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.difficulty button {
+  padding: 1.5rem 3rem; /* Увеличенные отступы */
+  font-size: 1.5rem; /* Увеличенный размер шрифта */
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  margin-top: 20px; 
+  border: none;
+  border-radius: 10px; /* Более округлённые углы */
+  transition: background-color 0.3s;
+  min-width: 200px; /* Минимальная ширина кнопки */
+  min-height: 60px; /* Минимальная высота кнопки */
 }
 
-.easy {
-  background-color: #1a75ff; 
+.difficulty-buttons button {
+  padding: 1.5rem 3rem; /* Увеличенные отступы */
+  font-size: 1.5rem; /* Увеличенный размер шрифта */
+  cursor: pointer;
+  border: none;
+  border-radius: 10px; /* Более округлённые углы */
+  transition: background-color 0.3s;
+  min-width: 200px; /* Минимальная ширина кнопки */
+  min-height: 60px; /* Минимальная высота кнопки */
 }
 
-.medium {
-  background-color: #ffa500;
+.difficulty .easy { background-color: #4CAF50; color: white; }
+.difficulty .medium { background-color: #FF9800; color: white; }
+.difficulty .hard { background-color: #F44336; color: white; }
+
+.difficulty-buttons .easy { background-color: #4CAF50; color: white; }
+.difficulty-buttons .medium { background-color: #FF9800; color: white; }
+.difficulty-buttons .hard { background-color: #F44336; color: white; }
+
+.difficulty button:hover {
+  background-color: #333;
+  color: white;
 }
 
-.hard {
-  background-color: #f52a2a; 
-}
-
-.difficulty:hover {
-  transform: scale(1.1); 
-}
-
-.easy:hover {
-  background-color: #005ce6; 
-}
-
-.medium:hover {
-  background-color: #e69500; 
-}
-
-.hard:hover {
-  background-color: #bf1a1a;
+.difficulty-buttons button:hover {
+  background-color: #333;
+  color: white;
 }

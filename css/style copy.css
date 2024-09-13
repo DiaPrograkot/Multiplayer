@@ -473,3 +473,50 @@ body {
   }
 }
 /*# sourceMappingURL=style.css.map */
+
+.difficulty, .difficulty-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.difficulty button {
+  padding: 1.5rem 3rem; /* Увеличенные отступы */
+  font-size: 1.5rem; /* Увеличенный размер шрифта */
+  cursor: pointer;
+  border: none;
+  border-radius: 10px; /* Более округлённые углы */
+  transition: background-color 0.3s;
+  min-width: 200px; /* Минимальная ширина кнопки */
+  min-height: 60px; /* Минимальная высота кнопки */
+}
+
+.difficulty-buttons button {
+  padding: 1.5rem 3rem; /* Увеличенные отступы */
+  font-size: 1.5rem; /* Увеличенный размер шрифта */
+  cursor: pointer;
+  border: none;
+  border-radius: 10px; /* Более округлённые углы */
+  transition: background-color 0.3s;
+  min-width: 200px; /* Минимальная ширина кнопки */
+  min-height: 60px; /* Минимальная высота кнопки */
+}
+
+.difficulty .easy { background-color: #4CAF50; color: white; }
+.difficulty .medium { background-color: #FF9800; color: white; }
+.difficulty .hard { background-color: #F44336; color: white; }
+
+.difficulty-buttons .easy { background-color: #4CAF50; color: white; }
+.difficulty-buttons .medium { background-color: #FF9800; color: white; }
+.difficulty-buttons .hard { background-color: #F44336; color: white; }
+
+.difficulty button:hover {
+  background-color: #333;
+  color: white;
+}
+
+.difficulty-buttons button:hover {
+  background-color: #333;
+  color: white;
+}
