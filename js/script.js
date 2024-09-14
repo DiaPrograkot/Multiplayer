@@ -455,15 +455,8 @@ let startgameFunc = () => {
   });
 };
 
-const handleKeyDown = (event) => {
-  if (event.target.matches('input')) {
-    return;
-  }
-  
-};
-
+// Проверка имени игрока и запуск игры
 showStars();
-
 let nameStorage = localStorage.getItem('name');
 console.log(nameStorage);
 
@@ -472,23 +465,22 @@ if (nameStorage) {
   startgameFunc();
 } else {
   playerNameContainer.style.display = 'flex';
-  
+
   // Добавляем обработчик нажатия на кнопку "Play"
   playerPlay.addEventListener('click', () => {
-    let playerName = playerInput.value;  
+    let playerName = playerInput.value;
 
     if (playerName) {
-      localStorage.setItem('name', playerName);  
-      playerLabel.textContent = playerName;      
-      playerNameContainer.style.display = 'none';  
-      startgameFunc();  
+      localStorage.setItem('name', playerName);
+      playerLabel.textContent = playerName;
+      playerNameContainer.style.display = 'none';
+      startgameFunc();
     }
   });
 }
 
 
 document.addEventListener('keydown', handleKeyDown);
-
 
 // Управление музыкой
 let musicPlay = () => {
