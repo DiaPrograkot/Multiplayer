@@ -1,5 +1,6 @@
 import { joinRoom, selfId } from 'trystero';
-
+import { murFunction } from '../js/script';
+murFunction()
 // Конфигурация для инициализации библиотеки
 const config = {
   appId: 'your-app-id',
