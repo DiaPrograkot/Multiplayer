@@ -33,3 +33,19 @@ getName((name, peerId) => {
 
 // Пример использования selfId
 console.log(`My peer ID is ${selfId}, my name is ${playerName}`);
+
+room.onPeerJoin(peerId => {
+  if (nameStorage) {
+    console.log(`${nameStorage} joined`);
+  } else {
+    console.log(`${peerId} joined`);
+  }
+});
+
+room.onPeerLeave(peerId => {
+  if (nameStorage) {
+    console.log(`${nameStorage} left`);
+  } else {
+    console.log(`${peerId} left`);
+  }
+});
