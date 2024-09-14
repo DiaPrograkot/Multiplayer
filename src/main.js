@@ -21,8 +21,8 @@ if (!playerName) {
 const [sendName, getName] = room.makeAction('playerName');
 
 // Отправляем имя при подключении
-room.onPeerJoin(peerId => {
-  console.log(`${peerId} joined`);
+room.onPeerJoin(playerName => {
+  console.log(`${playerName} joined`);
   sendName(playerName); // Отправляем свое имя
 });
 
@@ -32,4 +32,4 @@ getName((name, peerId) => {
 });
 
 // Пример использования selfId
-console.log(`My peer ID is ${selfId}, my name is ${playerName}`);
+console.log(`My peer ID is ${selfId}, ${playerName}`);
