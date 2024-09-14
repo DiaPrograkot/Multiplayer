@@ -27,12 +27,12 @@ room.onPeerJoin(peerId => {
 });
 
 // Получение имени других игроков
-getName((name, peerId) => {
-  console.log(`${name} joined the game (ID: ${peerId})`);
+getName((nameStorage, peerId) => {
+  console.log(`${nameStorage} joined the game (ID: ${peerId})`);
 });
 
 // Пример использования selfId
-console.log(`My peer ID is ${selfId}, my name is ${playerName}`);
+console.log(`My peer ID is ${selfId}, my name is ${nameStorage}`);
 
 room.onPeerJoin(peerId => {
   if (nameStorage) {
