@@ -3,28 +3,33 @@ import { joinRoom, selfId } from 'trystero';
 // Конфигурация для инициализации библиотеки
 const config = {
   appId: 'your-app-id', // Замените 'your-app-id' на ваш реальный appId
-  // Другие конфигурационные параметры, если они требуются
 };
 
-const channel = makeChannel(config);
+// Инициализация и присоединение к комнате
+const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
 
-let playerName;
+// Получаем имя игрока из localStorage
+let playerName = localStorage.getItem('name');
 
-// Получаем имя игрока при подключении
-document.getElementById('playerPlay').addEventListener('click', () => {
-  playerName = document.getElementById('playerNameInput').value || 'Player';
+// Если имени нет, используем selfId как fallback
+if (!playerName) {
+  playerName = `Player ${selfId.substring(0, 4)}`;
+  localStorage.setItem('name', playerName);
+}
 
-  // Отправляем информацию о подключении другим игрокам
-  channel.send({ type: 'join', name: playerName });
+// Отправка имени другим игрокам
+const [sendName, getName] = room.makeAction('playerName');
 
-  console.log(`${playerName} joined the game`);
-
-  // Запуск игры или выполнение других действий
+// Отправляем имя при подключении
+room.onPeerJoin(peerId => {
+  console.log(`${peerId} joined`);
+  sendName(playerName); // Отправляем свое имя
 });
 
-// Получение сообщений от других игроков
-channel.on('data', (data) => {
-  if (data.type === 'join') {
-    console.log(`${data.name} joined the game`);
-  }
+// Получение имени других игроков
+getName((name, peerId) => {
+  console.log(`${name} joined the game (ID: ${peerId})`);
 });
+
+// Пример использования selfId
+console.log(`My peer ID is ${selfId}, my name is ${playerName}`);
