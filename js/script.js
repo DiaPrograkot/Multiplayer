@@ -452,7 +452,6 @@ let startgameFunc = () => {
 // Проверка имени игрока и запуск игры
 showStars();
 let nameStorage = localStorage.getItem('name');
-console.log(nameStorage);
 
 if (nameStorage) {
   playerLabel.textContent = nameStorage;
