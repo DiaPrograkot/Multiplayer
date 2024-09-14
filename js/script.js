@@ -221,7 +221,7 @@ const handleLaserShotKey = () => {
 document.addEventListener("keydown", (event) => {
   if (event.target.matches('input')) {
     return;
-  } 
+  }
   event.preventDefault(); // Это предотвращает стандартное поведение клавиши пробела
   if (event.code === "ArrowLeft" || event.code === "KeyA") {
     moveLeft = true;
@@ -234,7 +234,7 @@ document.addEventListener("keydown", (event) => {
 document.addEventListener("keyup", (event) => {
   if (event.target.matches('input')) {
     return;
-  } 
+  }
   if (event.code === "ArrowLeft" || event.code === "KeyA") {
     moveLeft = false;
   }
@@ -242,12 +242,6 @@ document.addEventListener("keyup", (event) => {
     moveRight = false;
   }
 });
-
-const handleKeyDown = (event) => {
-  if (event.target.matches('input')) {
-    return;
-  }
-}
 
 // Анимация
 function animate() {
@@ -478,9 +472,6 @@ if (nameStorage) {
     }
   });
 }
-
-
-document.addEventListener('keydown', handleKeyDown);
 
 // Управление музыкой
 let musicPlay = () => {
