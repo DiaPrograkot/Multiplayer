@@ -9,21 +9,27 @@ const config = {
 const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
 
 // Получаем имя игрока из localStorage
-let playerName = localStorage.getItem('name') || `Player ${selfId.substring(0, 4)}`;
+let playerName = localStorage.getItem('name');
 
-// Отправляем имя другим игрокам
+// Если имени нет, используем selfId как fallback
+if (!playerName) {
+  playerName = `Player ${selfId.substring(0, 4)}`;
+  localStorage.setItem('name', playerName);
+}
+
+// Отправка имени другим игрокам
 const [sendName, getName] = room.makeAction('playerName');
 
-// Отправляем имя сразу после присоединения
+// Отправляем имя при подключении
 room.onPeerJoin(peerId => {
-  console.log(`${peerId} joined`); // временно оставим для проверки
-  sendName(playerName); // отправляем свое имя при подключении
+  console.log(`${peerId} joined`);
+  sendName(playerName); // Отправляем свое имя
 });
 
-// Получаем имена других игроков при их присоединении
+// Получение имени других игроков
 getName((name, peerId) => {
   console.log(`${name} joined the game (ID: ${peerId})`);
 });
 
-// Выводим свое имя в консоль
+// Пример использования selfId
 console.log(`My peer ID is ${selfId}, my name is ${playerName}`);
