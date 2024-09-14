@@ -21,8 +21,8 @@ if (!playerName) {
 const [sendName, getName] = room.makeAction('playerName');
 
 // Отправляем имя при подключении
-room.onPeerJoin(playerName => {
-  console.log(`${playerName} joined`);
+room.onPeerJoin(peerId,playerName => {
+  console.log(`${peerId},${playerName} joined`);
   sendName(playerName); // Отправляем свое имя
 });
 
