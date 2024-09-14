@@ -1,44 +1,35 @@
 import { joinRoom, selfId } from 'trystero';
-import { murFunction } from '../js/script';
-murFunction()
+
 // Конфигурация для инициализации библиотеки
 const config = {
-  appId: 'your-app-id',
+  appId: 'your-app-id', // Замените 'your-app-id' на ваш реальный appId
 };
 
 // Инициализация и присоединение к комнате
-const room = joinRoom(config, 'room-id');
+const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
 
-// Получаем имя игрока из localStorage или создаем временное
-let playerName = localStorage.getItem('name') || `Player ${selfId.substring(0, 4)}`;
-console.log(`My name is: ${playerName}`);
+// Получаем имя игрока из localStorage
+let playerName = localStorage.getItem('name');
 
-// Отправляем имя другим игрокам
+// Если имени нет, используем selfId как fallback
+if (!playerName) {
+  playerName = `Player ${selfId.substring(0, 4)}`;
+  localStorage.setItem('name', playerName);
+}
+
+// Отправка имени другим игрокам
 const [sendName, getName] = room.makeAction('playerName');
 
-// Хранилище имен игроков
-let playerNames = {};
-
-// Когда игрок присоединяется
+// Отправляем имя при подключении
 room.onPeerJoin(peerId => {
-  console.log(`Peer ID ${peerId} joined`);
-  
-  // Отправляем своё имя сразу после присоединения
-  sendName(playerName);
+  console.log(`${peerId} joined`);
+  sendName(playerName); // Отправляем свое имя
 });
 
-// Получаем имена других игроков
+// Получение имени других игроков
 getName((name, peerId) => {
-  console.log(`Received name "${name}" from peer ID: ${peerId}`);
-  playerNames[peerId] = name;
+  console.log(`${name} joined the game (ID: ${peerId})`);
 });
 
-// Когда игрок выходит
-room.onPeerLeave(peerId => {
-  const name = playerNames[peerId] || peerId;
-  console.log(`${name} left the game`);
-  delete playerNames[peerId];
-});
-
-// Выводим своё имя и ID в консоль
+// Пример использования selfId
 console.log(`My peer ID is ${selfId}, my name is ${playerName}`);
