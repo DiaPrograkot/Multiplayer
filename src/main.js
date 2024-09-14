@@ -2,40 +2,42 @@ import { joinRoom, selfId } from 'trystero';
 
 // Конфигурация для инициализации библиотеки
 const config = {
-  appId: 'your-app-id', // Замените 'your-app-id' на ваш реальный appId
+  appId: 'your-app-id',
 };
 
 // Инициализация и присоединение к комнате
-const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
+const room = joinRoom(config, 'room-id');
 
 // Получаем имя игрока из localStorage или создаем временное
 let playerName = localStorage.getItem('name') || `Player ${selfId.substring(0, 4)}`;
-console.log(`My name is: ${playerName}`);  // Проверяем, что имя получено корректно
+console.log(`My name is: ${playerName}`);
 
 // Отправляем имя другим игрокам
 const [sendName, getName] = room.makeAction('playerName');
 
-// Объект для хранения имен всех игроков
+// Хранилище имен игроков
 let playerNames = {};
 
-// Отправляем свое имя после присоединения к комнате
+// Когда игрок присоединяется
 room.onPeerJoin(peerId => {
-  console.log(`Peer ID ${peerId} joined`);  // Временная отладка
-  sendName(playerName);  // Отправляем свое имя новым игрокам
+  console.log(`Peer ID ${peerId} joined`);
+  
+  // Отправляем своё имя сразу после присоединения
+  sendName(playerName);
 });
 
 // Получаем имена других игроков
 getName((name, peerId) => {
+  console.log(`Received name "${name}" from peer ID: ${peerId}`);
   playerNames[peerId] = name;
-  console.log(`Received name: ${name} from peer ID: ${peerId}`);  // Проверка получения имени
 });
 
-// Обработка выхода игрока
+// Когда игрок выходит
 room.onPeerLeave(peerId => {
-  const name = playerNames[peerId] || peerId;  // Если имя известно, выводим его, иначе ID
-  console.log(`${name} left the game (ID: ${peerId})`);
-  delete playerNames[peerId];  // Удаляем игрока из списка
+  const name = playerNames[peerId] || peerId;
+  console.log(`${name} left the game`);
+  delete playerNames[peerId];
 });
 
-// Проверка отправки имени самого игрока
+// Выводим своё имя и ID в консоль
 console.log(`My peer ID is ${selfId}, my name is ${playerName}`);
