@@ -12,21 +12,11 @@ const room = joinRoom(config, 'room-id'); // Замените 'room-id' на в�
 // Извлечение имени игрока из localStorage
 const nameStorage = localStorage.getItem("name");
 
-// Пример использования функции joinRoom
-room.onPeerJoin(peerId => {
-  if (nameStorage) {
-    console.log(`${nameStorage} joined`);
-  } else {
-    console.log(`${peerId} joined`);
-  }
-});
+// Объект для хранения имен игроков
+const peerNames = {};
 
 room.onPeerLeave(peerId => {
-  if (nameStorage) {
-    console.log(`${nameStorage} left`);
-  } else {
-    console.log(`${peerId} left`);
-  }
+  console.log(`${peerNames[peerId]} left`);
 });
 
 room.onPeerStream((stream, peerId) => {
@@ -38,13 +28,25 @@ room.onPeerStream((stream, peerId) => {
 
 // Пример использования пользовательских действий
 const [sendMessage, getMessage] = room.makeAction('message');
+const [sendName, getName] = room.makeAction('name');
+
+// Отправка имени при подключении
+if (nameStorage) {
+  sendName(nameStorage);
+}
+
+// Получение имени
+getName((name, peerId) => {
+  peerNames[peerId] = name;
+  console.log(`${name} joined`);
+});
 
 // Отправка сообщения
 sendMessage('Hello, world!');
 
 // Получение сообщения
 getMessage((message, peerId) => {
-  console.log(`Received message from ${peerId}: ${message}`);
+  console.log(`Received message from ${peerNames[peerId]}: ${message}`);
 });
 
 // Пример использования selfId
