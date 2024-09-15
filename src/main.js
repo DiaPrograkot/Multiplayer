@@ -15,10 +15,17 @@ const nameStorage = localStorage.getItem("name");
 // Объект для хранения имен игроков
 const peerNames = {};
 
-room.onPeerLeave(peerId => {
-  console.log(`${peerNames[peerId]} left`);
+// Обработчик для события присоединения нового пира
+room.onPeerJoin(peerId => {
+  console.log(`${peerId} joined`);
 });
 
+// Обработчик для события ухода пира
+room.onPeerLeave(peerId => {
+  console.log(`${peerNames[peerId] || peerId} left`);
+});
+
+// Обработчик для события получения потока от пира
 room.onPeerStream((stream, peerId) => {
   const video = document.createElement('video');
   video.srcObject = stream;
@@ -33,11 +40,15 @@ const [sendName, getName] = room.makeAction('name');
 // Отправка имени при подключении
 if (nameStorage) {
   sendName(nameStorage);
+  console.log(`Sent name: ${nameStorage}`);
+} else {
+  console.error('Name not found in localStorage');
 }
 
 // Получение имени
 getName((name, peerId) => {
   peerNames[peerId] = name;
+  console.log(`Received name: ${name} from ${peerId}`);
   console.log(`${name} joined`);
 });
 
@@ -46,7 +57,7 @@ sendMessage('Hello, world!');
 
 // Получение сообщения
 getMessage((message, peerId) => {
-  console.log(`Received message from ${peerNames[peerId]}: ${message}`);
+  console.log(`Received message from ${peerNames[peerId] || peerId}: ${message}`);
 });
 
 // Пример использования selfId
