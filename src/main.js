@@ -1,5 +1,6 @@
 import { joinRoom, selfId } from 'trystero';
 
+
 // Конфигурация для инициализации библиотеки
 const config = {
   appId: 'your-app-id', // Замените 'your-app-id' на ваш реальный appId
