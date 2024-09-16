@@ -5,36 +5,14 @@ const config = {
 };
 // Инициализация и присоединение к комнате
 const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
-
-
 // Получаем имя игрока из localStorage
 let playerName = localStorage.getItem('name');
 
-function getPlayerName(selfId) {
-  return new Promise((resolve) => {
-    let storedName = localStorage.getItem('name');
-
-    if (storedName) {
-      resolve(storedName);
-    } else {
-      let playerName = prompt("Введите ваше имя:");
-      
-      if (!playerName) {
-        playerName = `Player ${selfId.substring(0, 4)}`;
-      }
-
-      localStorage.setItem('name', playerName);
-      resolve(playerName);
-    }
-  });
+// Если имени нет, используем selfId как fallback
+if (!playerName) {
+  playerName = `Player ${selfId.substring(0, 4)}`;
+  localStorage.setItem('name', playerName);
 }
- // Использование
-const selfId = "abcd1234"; // Пример selfId
-
-getPlayerName(selfId).then((playerName) => {
-  console.log(`Игрок присоединился: ${playerName}`);
-});
-
 // Отправка имени другим игрокам
 const [sendName, getName] = room.makeAction('playerName');
 // Отправляем имя при подключении
