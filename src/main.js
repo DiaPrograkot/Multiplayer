@@ -19,16 +19,16 @@ const [sendName, getName] = room.makeAction('playerName');
 let playerNames = {};
 
 // Когда игрок присоединяется
-room.onPeerJoin(name, peerId => {
-  console.log(`Received name "${name}" from peer ID: ${peerId}`);
-
+room.onPeerJoin(peerId => {
+  console.log(`Peer ID ${peerId} joined`);
+  
   // Отправляем своё имя сразу после присоединения
   sendName(playerName);
 });
 
 // Получаем имена других игроков
 getName((name, peerId) => {
-  console.log(`Received name "${name}" from peer ID: ${peerId}`);
+  console.log(`Joined the game "${name}" (ID: ${peerId})`);
   playerNames[peerId] = name;
 });
 
@@ -42,3 +42,4 @@ room.onPeerLeave(peerId => {
 // Выводим своё имя и ID в консоль
 console.log(`My peer ID is ${selfId}, my name is ${playerName}`);
 
+n
