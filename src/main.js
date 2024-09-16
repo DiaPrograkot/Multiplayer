@@ -26,10 +26,7 @@ room.onPeerJoin(peerId => {
   sendName(playerName); // Отправляем свое имя
 });
 
-room.onPeerLeave(peerId => {
-const name = playerNames[peerId] || `Player ${peerId}`;
-  console.log(`${name} (ID: ${peerId}) left the game`);
-})
+room.onPeerLeave(peerId => console.log(`${peerId} left`));
 
 // Получение имени других игроков
 getName((name, peerId) => {
