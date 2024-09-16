@@ -3,62 +3,42 @@ import { joinRoom, selfId } from 'trystero';
 // Конфигурация для инициализации библиотеки
 const config = {
   appId: 'your-app-id', // Замените 'your-app-id' на ваш реальный appId
-  // Другие конфигурационные параметры, если они требуются
 };
 
-// Инициализация и присоединение к комнате
 const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
 
-// Извлечение имени игрока из localStorage
-const nameStorage = localStorage.getItem("name");
+// Получаем имя игрока из localStorage
+let playerName = localStorage.getItem('name')?.trim()
+
+// Сохраняем имя, если оно отсутствовало в localStorage
+if (!localStorage.getItem('name')) {
+  localStorage.setItem('name', playerName);
+}
 
 // Объект для хранения имен игроков
 const peerNames = {};
+const [sendName, getName] = room.makeAction('playerName');
 
-// Обработчик для события присоединения нового пира
-room.onPeerJoin(peerId => {
-  console.log(`${peerId} joined`);
+// Функция логирования
+const logMessage = (message) => console.log(message);
+
+// Отправка имени при подключении
+room.onPeerJoin(() => {
+  sendName(playerName); // Уже обработали trim выше
 });
 
 // Обработчик для события ухода пира
 room.onPeerLeave(peerId => {
-  console.log(`${peerNames[peerId] || peerId} left`);
+  const name = peerNames[peerId];
+  if (name) {
+    logMessage(`${name} left`);
+    delete peerNames[peerId]; // Очищаем запись, если пир ушел
+  }
 });
 
-// Обработчик для события получения потока от пира
-room.onPeerStream((stream, peerId) => {
-  const video = document.createElement('video');
-  video.srcObject = stream;
-  video.autoplay = true;
-  document.body.appendChild(video);
-});
-
-// Пример использования пользовательских действий
-const [sendMessage, getMessage] = room.makeAction('message');
-const [sendName, getName] = room.makeAction('name');
-
-// Отправка имени при подключении
-if (nameStorage) {
-  sendName(nameStorage);
-  console.log(`Sent name: ${nameStorage}`);
-} else {
-  console.error('Name not found in localStorage');
-}
-
-// Получение имени
+// Получение имени других игроков
 getName((name, peerId) => {
-  peerNames[peerId] = name;
-  console.log(`Received name: ${name} from ${peerId}`);
-  console.log(`${name} joined`);
+  const trimmedName = name.trim(); // Обрезаем лишние пробелы
+  peerNames[peerId] = trimmedName;
+  logMessage(`${trimmedName} joined`);
 });
-
-// Отправка сообщения
-sendMessage('Hello, world!');
-
-// Получение сообщения
-getMessage((message, peerId) => {
-  console.log(`Received message from ${peerNames[peerId] || peerId}: ${message}`);
-});
-
-// Пример использования selfId
-console.log(`My peer ID is ${selfId}`);
