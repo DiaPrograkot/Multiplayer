@@ -14,7 +14,7 @@ if (!playerName) {
   localStorage.setItem('name', playerName);
 }
 // Отправка имени другим игрокам
-const [sendName, getName] = room.makeAction('playerName');
+const [sendName, getName] = room.makeAction('playerName');  
 // Отправляем имя при подключении
 room.onPeerJoin(peerId => {
   console.log(`${peerId} joined`);
