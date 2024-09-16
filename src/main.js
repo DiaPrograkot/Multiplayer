@@ -26,7 +26,7 @@ room.onPeerLeave(peerId => console.log(`${peerId} left`));
 
 // Получение имени других игроков
 getName((name, peerId) => {
-  console.log(`${name} joined the game (ID: ${peerId})`);
+  console.log(`${name} joined the game (ID: ${peerId})`); 
 });
 
 
