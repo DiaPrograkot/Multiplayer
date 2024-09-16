@@ -1,6 +1,5 @@
 import { joinRoom, selfId } from 'trystero';
 
-
 // Конфигурация для инициализации библиотеки
 const config = {
   appId: 'your-app-id', // Замените 'your-app-id' на ваш реальный appId
@@ -15,7 +14,7 @@ let playerName = localStorage.getItem('name');
 // Если имени нет, используем selfId как fallback
 if (!playerName) {
   playerName = `Player ${selfId.substring(0, 4)}`;
-  localStorage.setItem('name', playerName);
+  localStorage.setItem ('name', playerName);
 }
 
 // Отправка имени другим игрокам
@@ -28,25 +27,9 @@ room.onPeerJoin(peerId => {
 });
 
 // Получение имени других игроков
-getName((nameStorage, peerId) => {
-  console.log(`${nameStorage} joined the game (ID: ${peerId})`);
+getName((name, peerId) => {
+  console.log(`${name} joined the game (ID: ${peerId})`);
 });
 
 // Пример использования selfId
-console.log(`My peer ID is ${selfId}, my name is ${nameStorage}`);
-
-room.onPeerJoin(peerId => {
-  if (nameStorage) {
-    console.log(`${nameStorage} joined`);
-  } else {
-    console.log(`${peerId} joined`);
-  }
-});
-
-room.onPeerLeave(peerId => {
-  if (nameStorage) {
-    console.log(`${nameStorage} left`);
-  } else {
-    console.log(`${peerId} left`);
-  }
-});
+console.log(`My peer ID is ${selfId}, my name is ${playerName}`);
