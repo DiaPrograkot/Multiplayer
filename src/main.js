@@ -33,12 +33,7 @@ getName((name, peerId) => {
   console.log(`${name} joined the game (ID: ${peerId})`);
 });
 
-// Обработка выхода игрока
-room.onPeerLeave(peerId => {
-  const name = playerNames[peerId] || peerId; // Если имя известно, выводим его, иначе показываем peerId
-  console.log(`${name} left the game (ID: ${peerId})`);
-  delete playerNames[peerId]; // Удаляем игрока из списка
-});
+
 
 // Пример использования selfId
 console.log(`My peer ID is ${selfId}, my name is ${playerName}`);
