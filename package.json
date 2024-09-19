@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/alexejklass/igs-commander#readme",
   "dependencies": {
+    "simple-peer": "^9.11.1",
     "trystero": "^0.20.0"
   },
   "devDependencies": {
