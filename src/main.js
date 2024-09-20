@@ -5,21 +5,18 @@ const config = {
   appId: 'your-app-id', // Замените 'your-app-id' на ваш реальный appId
 };
 
-// Функция для отображения сообщений на экране
+// Функция для отображения сообщений на экране и их удаления через 5 секунд
 function addMessage(message) {
-  const messageBox = document.querySelector('.messages'); // Предположим, что у вас есть элемент с id "messages"
+  const messageBox = document.querySelector('.messages'); // Элемент с классом "messages"
   const newMessage = document.createElement('div');
   newMessage.textContent = message;
   messageBox.appendChild(newMessage);
 
-   // Удаляем сообщение через 5 секунд
- setTimeout(() => {
-  messageBox.removeChild(newMessage);
-}, 5000); // 5000 миллисекунд = 5 секунд
+  // Удаляем сообщение через 5 секунд
+  setTimeout(() => {
+    messageBox.removeChild(newMessage);
+  }, 5000); // 5000 миллисекунд = 5 секунд
 }
-
-
-
 
 // Проверяем наличие имени в localStorage и запрашиваем, если его нет
 let playerName = localStorage.getItem('name');
@@ -58,6 +55,3 @@ getName((name, peerId) => {
 
 // Пример использования selfId
 console.log(`My peer ID is ${selfId}, my name is ${playerName}`);
-
-
-
