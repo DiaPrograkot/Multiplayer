@@ -539,3 +539,26 @@ const displayMessage = (message) => {
     messageElement.remove();
   }, 5000); // Удаление через 5 секунд
 };
+// Отправка имени другим игрокам
+const [sendName, getName] = room.makeAction('playerName');  
+// Отправляем имя при подключении
+room.onPeerJoin(peerId => {
+  console.log(`${peerId} joined`);
+  sendName(playerName); // Отправляем свое имя
+  displayMessage(message);
+});
+
+
+room.onPeerLeave(peerId => {
+  console.log(`${peerId} left`)
+ displayMessage(message);
+});
+
+// Получение имени других игроков
+getName((name, peerId) => {
+  console.log(`${name} joined the game (ID: ${peerId})`);
+  displayMessage(message);
+});
+// Пример использования selfId
+console.log(`My peer ID is ${selfId}, my name is ${playerName}`);
+
