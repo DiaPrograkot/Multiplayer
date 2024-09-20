@@ -603,13 +603,10 @@ body {
 
 
 .messages {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%); /* Центрирование по горизонтали */
-  padding-top: 3rem; /* Отступ сверху */
-  color: yellow; /* Цвет текста */
-  font-size: 6rem; /* Размер шрифта */
-  text-decoration: underline; /* Подчеркивание текста */
-  text-align: center; /* Выравнивание текста по центру */
+  padding: 1.5rem 3rem; /* Увеличенные отступы */
+  font-size: 1.5rem; /* Увеличенный размер шрифта */
+  display: inline-block;
+  color: yellow;
+top: 0;
+ 
 }
