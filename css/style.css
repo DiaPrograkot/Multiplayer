@@ -603,10 +603,8 @@ body {
 
 
 .messages {
-  padding: 1.5rem 3rem; /* Увеличенные отступы */
-  font-size: 1.5rem; /* Увеличенный размер шрифта */
+  font-size: 0.5rem; /* Увеличенный размер шрифта */
   display: inline-block;
   color: yellow;
-top: 0;
- 
-}
+  top: 0;
+ }

@@ -11,7 +11,15 @@ function addMessage(message) {
   const newMessage = document.createElement('div');
   newMessage.textContent = message;
   messageBox.appendChild(newMessage);
+
+   // Удаляем сообщение через 5 секунд
+ setTimeout(() => {
+  messageBox.removeChild(newMessage);
+}, 5000); // 5000 миллисекунд = 5 секунд
 }
+
+
+
 
 // Проверяем наличие имени в localStorage и запрашиваем, если его нет
 let playerName = localStorage.getItem('name');
