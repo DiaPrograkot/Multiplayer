@@ -528,7 +528,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 // Функция для отображения сообщений на экране
-const displayMessage = (message) => {
+function addMessage(message) {
   const messageContainer = document.querySelector('.messageContainer');
   const messageElement = document.createElement('p');
   messageElement.textContent = message;
@@ -540,24 +540,3 @@ const displayMessage = (message) => {
   }, 5000); // Удаление через 5 секунд
 };
  
-// Отправляем имя при подключении
-room.onPeerJoin(peerId => {
-  console.log(`${peerId} joined`);
-  sendName(playerName); // Отправляем свое имя
-  displayMessage(message);
-});
-
-
-room.onPeerLeave(peerId => {
-  console.log(`${peerId} left`)
- displayMessage(message);
-});
-
-// Получение имени других игроков
-getName((name, peerId) => {
-  console.log(`${name} joined the game (ID: ${peerId})`);
-  displayMessage(message);
-});
-// Пример использования selfId
-console.log(`My peer ID is ${selfId}, my name is ${playerName}`);
-
