@@ -11,7 +11,7 @@ function addMessage(message) {
   const newMessage = document.createElement('div');
   newMessage.textContent = message;
   messageBox.appendChild(newMessage);
-}npx
+}
 
  // Удаляем сообщение через 5 секунд
  setTimeout(() => {
