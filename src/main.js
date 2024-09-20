@@ -35,3 +35,4 @@ getName((name, peerId) => {
 // Пример использования selfId
 console.log(`My peer ID is ${selfId}, my name is ${playerName}`);
 
+ 

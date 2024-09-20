@@ -539,8 +539,7 @@ const displayMessage = (message) => {
     messageElement.remove();
   }, 5000); // Удаление через 5 секунд
 };
-// Отправка имени другим игрокам
-const [sendName, getName] = room.makeAction('playerName');  
+ 
 // Отправляем имя при подключении
 room.onPeerJoin(peerId => {
   console.log(`${peerId} joined`);
