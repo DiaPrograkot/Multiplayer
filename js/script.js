@@ -527,16 +527,3 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-// Функция для отображения сообщений на экране
-function addMessage(message) {
-  const messageContainer = document.querySelector('.messageContainer');
-  const messageElement = document.createElement('p');
-  messageElement.textContent = message;
-  messageContainer.appendChild(messageElement);
-
-  // Опционально: через время удалять сообщения, чтобы не перегружать экран
-  setTimeout(() => {
-    messageElement.remove();
-  }, 5000); // Удаление через 5 секунд
-};
- 
