@@ -602,13 +602,15 @@ body {
 }
 
 
-.messages {
-  padding-top: 3rem;
-  color: yellow;
-  font-size: 6rem;
-  text-decoration: underline;
-}
-
-.messages p {
-  margin: 5px 0;
+#messages {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%); /* Центрирование по горизонтали */
+  padding-top: 3rem; /* Отступ сверху */
+  color: yellow; /* Цвет текста */
+  font-size: 6rem; /* Размер шрифта */
+  text-decoration: underline; /* Подчеркивание текста */
+  text-align: center; /* Выравнивание текста по центру */
+  width: 100%; /* Сообщения будут занимать всю ширину экрана */
 }
