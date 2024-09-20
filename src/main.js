@@ -7,7 +7,8 @@ const config = {
 
 // Функция для отображения сообщений на экране
 function addMessage(message) {
-  const messageBox = document.getElementById('messages'); // Предположим, что у вас есть элемент с id "messages"
+  const messageBox = document.querySelector('.messages'); // Предположим, что у вас есть элемент с id "messages"
+  const newMessage = document.createElement('div');
   newMessage.textContent = message;
   messageBox.appendChild(newMessage);
 }
