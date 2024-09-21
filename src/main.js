@@ -15,18 +15,14 @@ function addMessage(message) {
    // Удаляем сообщение через 5 секунд
  setTimeout(() => {
   messageBox.removeChild(newMessage);
-}, 5000); // 5000 миллисекунд = 5 секун
-}
-
+}, 5000);
+} 
 
 
 // Проверяем наличие имени в localStorage и запрашиваем, если его нет
 let playerName = localStorage.getItem('name');
 if (!playerName) {
-  playerName = prompt("Введите ваше имя:"); // Запрашиваем имя у игрока
-  while (!playerName) { // Убедимся, что имя введено
-    playerName = prompt("Имя не может быть пустым. Введите ваше имя:");
-  }
+  playerNameContainer.style.display = 'flex';
   localStorage.setItem('name', playerName); // Сохраняем имя в localStorage
 }
 
@@ -56,4 +52,4 @@ getName((name, peerId) => {
 });
 
 // Пример использования selfId
-console.log(`My peer ID is ${selfId}, my name is ${playerName}`);
+console.log(`My peer ID is ${selfId}, my name is ${playerName}`); 
