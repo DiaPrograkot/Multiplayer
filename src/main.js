@@ -23,9 +23,13 @@ function addMessage(message) {
 let playerName = localStorage.getItem('name');
 if (!playerName) {
   playerNameContainer.style.display = 'flex';
+// Обрабатываем ввод имени
+  playerInput.addEventListener('change', (event) => {
+    playerName = event.target.value;
+    localStorage.setItem('name', playerName); // Сохраняем имя в localStorage
   localStorage.setItem('name', playerName); // Сохраняем имя в localStorage
+  })
 }
-
 // Инициализация и присоединение к комнате
 const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
 
