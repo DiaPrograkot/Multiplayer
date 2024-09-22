@@ -486,7 +486,6 @@ playerPlay.addEventListener('click', () => {
 // Добавляем возможность изменить имя
 const changeNameButton = document.querySelector('.changeName'); // кнопка для изменения имени
 changeNameButton.addEventListener('click', () => {
-  playerNameContainer.style.display = 'flex';
   startgame.style.display = "none";
   gameover.style.display = "none";
   playerInput.value = ''; // Очищаем поле ввода для нового имени
