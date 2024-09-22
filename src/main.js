@@ -58,13 +58,19 @@ const showNotification = (message) => {
 
 // Отправка имени при подключении
 room.onPeerJoin((peerId) => {
-  console.log('Игрок присоединился:', playerName);
+  console.log('Игрок присоединился:', peerId);
   
   // Проверяем, что это не ты сам
   if (peerId !== myId) {
+    // Отправляем своё имя только новому игроку
+    if (playerName) {
+      sendName(playerName); 
+    }
+    showNotification(`Новый игрок присоединился.`);
+  } else {
+    // Отправляем своё имя при первом подключении
     if (playerName) {
       sendName(playerName);
-      showNotification(`${playerName} joined`);
     }
   }
 });
@@ -76,7 +82,7 @@ room.onPeerLeave((peerId) => {
   // Проверяем, что это не ты сам
   if (peerId !== myId) {
     if (name) {
-      showNotification(`${name} left`);
+      showNotification(`${name} вышел.`);
       delete peerNames[peerId];
     }
   }
@@ -97,6 +103,6 @@ getName((name, peerId) => {
   
   // Показываем уведомление только если игрок не ты сам
   if (peerId !== myId) {
-    showNotification(`${peerNames[peerId]} joined`);
+    showNotification(`${peerNames[peerId]} присоединился.`);
   }
 });
