@@ -12,7 +12,7 @@ function addMessage(message) {
   newMessage.textContent = message;
   messageBox.appendChild(newMessage);
 
-   // Удаляем сообщение через 5 секунд
+  // Удаляем сообщение через 5 секунд
   setTimeout(() => {
     messageBox.removeChild(newMessage);
   }, 5000);
@@ -35,18 +35,25 @@ const room = joinRoom(config, 'room-id'); // Замените 'room-id' на в�
 // Отправка имени другим игрокам
 const [sendName, getName] = room.makeAction('playerName');
 
+// Список подключенных игроков
+const connectedPlayers = new Set();
+
 // Отправляем имя при подключении
 room.onPeerJoin(peerId => {
-  if (peerId !== selfId) { // Проверка, что это не сам игрок
-    console.log(`${peerId} joined`);
-    sendName(playerName); // Отправляем свое имя
-    addMessage(`${playerName} has joined the game`);
+  if (!connectedPlayers.has(peerId)) { // Проверяем, что игрок еще не в списке
+    connectedPlayers.add(peerId); // Добавляем нового игрока в список
+    if (peerId !== selfId) { // Проверка, что это не сам игрок
+      console.log(`${peerId} joined`);
+      sendName(playerName); // Отправляем свое имя
+      addMessage(`${playerName} has joined the game`);
+    }
   }
 });
 
 // Обработка выхода других игроков
 room.onPeerLeave(peerId => {
-  if (peerId !== selfId) { // Проверка, что это не сам игрок
+  if (connectedPlayers.has(peerId)) { // Проверяем, что игрок есть в списке
+    connectedPlayers.delete(peerId); // Удаляем игрока из списка
     console.log(`${peerId} left`);
     addMessage(`Player ${peerId} has left the game`);
   }
@@ -54,9 +61,12 @@ room.onPeerLeave(peerId => {
 
 // Получение имени других игроков
 getName((name, peerId) => {
-  if (peerId !== selfId) { // Проверка, что это не имя самого игрока
-    console.log(`${name} joined the game (ID: ${peerId})`);
-    addMessage(`${name} joined the game`);
+  if (!connectedPlayers.has(peerId)) { // Проверяем, что игрок еще не в списке
+    connectedPlayers.add(peerId); // Добавляем нового игрока в список
+    if (peerId !== selfId) { // Проверка, что это не сам игрок
+      console.log(`${name} joined the game (ID: ${peerId})`);
+      addMessage(`${name} joined the game`);
+    }
   }
 });
 
