@@ -44,13 +44,12 @@ room.onPeerJoin(peerId => {
 // Обработка выхода других игроков
 room.onPeerLeave(peerId => {
   console.log(`${peerId} left`);
-  addMessage(`${playerName} left the game`);
 });
 
 // Получение имени других игроков
 getName((name, peerId) => {
   console.log(`${name} joined the game (ID: ${peerId})`);
-  addMessage(`${name} joined the game)`);
+  addMessage(`${name} joined the game)`)|| addMessage(`${playerName} left the game`);
 });
 
 // Пример использования selfId
