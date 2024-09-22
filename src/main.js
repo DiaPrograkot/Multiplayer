@@ -62,7 +62,6 @@ const showNotification = (message) => {
 // Отправка имени при подключении
 room.onPeerJoin((peerId) => {
   console.log('Игрок присоединился:', peerId);
-
   // Отправляем своё имя при первом подключении, если это не ты сам
   if (peerId !== myId && playerName) {
     sendName(playerName);
@@ -89,13 +88,6 @@ room.onPeerLeave((peerId) => {
   if (peerId !== myId && name) {
     showNotification(`${name} left`);
     delete peerNames[peerId]; // Удаляем из списка
-  }
-});
-
-// Запрос имени у нового игрока
-room.onPeerJoin((peerId) => {
-  if (peerId !== myId) {
-    sendName(playerName);
   }
 });
 
