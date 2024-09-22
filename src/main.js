@@ -91,3 +91,10 @@ room.onPeerLeave((peerId) => {
   }
 });
 
+// Запрос имени у нового игрока
+room.onPeerJoin((peerId) => {
+  if (peerId !== myId) {
+    sendName(playerName);
+  }
+});
+
