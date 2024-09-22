@@ -66,7 +66,6 @@ room.onPeerJoin((peerId) => {
     if (playerName) {
       sendName(playerName); 
     }
-
     // Если у нас уже есть имя этого пира, не отправляем повторное уведомление
     if (!peerNames[peerId]) {
       peerNames[peerId] = 'Unnamed Player'; // Устанавливаем значение по умолчанию
@@ -106,9 +105,4 @@ getName((name, peerId) => {
   } else {
     peerNames[peerId] = trimmedName;
   }
-  
-  // Показываем уведомление только если игрок не ты сам
-  if (peerId !== myId) {
-    showNotification(`${peerNames[peerId]} joined`);
-  }
-});
+ });
