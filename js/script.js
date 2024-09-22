@@ -479,21 +479,16 @@ playerPlay.addEventListener('click', () => {
     startgameFunc();
   }
 
-  // Скрываем экраны начальной заставки или проигрыша, если они открыты
-  if (startgame.style.display === 'flex') {
-    startgame.style.display = 'none'; // Закрываем экран заставки
-    startNewGame();
-  }
-  if (gameover.style.display === 'flex') {
-    gameover.style.display = 'none'; // Закрываем экран проигрыша
-    startNewGame();
-  }
+  
+ 
 });
 
 // Добавляем возможность изменить имя
 const changeNameButton = document.querySelector('.changeName'); // кнопка для изменения имени
 changeNameButton.addEventListener('click', () => {
   playerNameContainer.style.display = 'flex';
+  startgame.style.display = "none";
+  gameover.style.display = "none";
   playerInput.value = ''; // Очищаем поле ввода для нового имени
   localStorage.removeItem('name'); // Удаляем сохраненное имя
 });
