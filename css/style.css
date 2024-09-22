@@ -618,7 +618,7 @@ body {
  }
  .changeName {
   padding: 1.5rem 3rem; /* Увеличенные отступы */
-  font-size: 1.5rem; /* Увеличенный размер шрифта */
+  font-size: 2rem; /* Увеличенный размер шрифта */
   cursor: pointer;
   border: none;
   border-radius: 10px; /* Более округлённые углы */

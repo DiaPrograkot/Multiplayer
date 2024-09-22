@@ -478,6 +478,16 @@ playerPlay.addEventListener('click', () => {
     playerNameContainer.style.display = 'none';
     startgameFunc();
   }
+
+  // Скрываем экраны начальной заставки или проигрыша, если они открыты
+  if (startgame.style.display === 'flex') {
+    startgame.style.display = 'none'; // Закрываем экран заставки
+    startNewGame();
+  }
+  if (gameover.style.display === 'flex') {
+    gameover.style.display = 'none'; // Закрываем экран проигрыша
+    startNewGame();
+  }
 });
 
 // Добавляем возможность изменить имя
