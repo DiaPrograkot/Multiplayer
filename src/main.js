@@ -66,6 +66,12 @@ room.onPeerJoin((peerId) => {
     if (playerName) {
       sendName(playerName); 
     }
+
+    // Если у нас уже есть имя этого пира, не отправляем повторное уведомление
+    if (!peerNames[peerId]) {
+      peerNames[peerId] = 'Unnamed Player'; // Устанавливаем значение по умолчанию
+      showNotification(`${peerNames[peerId]} joined`); // Показываем уведомление о новом игроке
+    }
   } else {
     // Отправляем своё имя при первом подключении
     if (playerName) {
@@ -73,6 +79,7 @@ room.onPeerJoin((peerId) => {
     }
   }
 });
+
 
 // Обработчик для события ухода пира
 room.onPeerLeave((peerId) => {
