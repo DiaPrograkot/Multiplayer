@@ -1,4 +1,4 @@
-import { joinRoom, selfId } from 'trystero';
+import { joinRoom } from 'trystero';
 
 // Конфигурация для инициализации библиотеки
 const config = {
@@ -8,6 +8,10 @@ const config = {
 console.log('Инициализация комнаты...');
 const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
 console.log('Комната инициализирована:', room);
+
+// Получаем ID текущего игрока (заменяем selfId)
+const myId = room.selfId;
+console.log('Текущий игрок имеет ID:', myId);
 
 // Получаем имя игрока из localStorage
 let playerName = localStorage.getItem('name')?.trim();
@@ -33,10 +37,6 @@ if (!playerName) {
 // Объект для хранения имен игроков
 const peerNames = {};
 const [sendName, getName] = room.makeAction('playerName');
-
-// Получаем ID текущего игрока
-const myId = selfId();
-console.log('Текущий игрок имеет ID:', myId);
 
 // Функция для отображения уведомления
 const showNotification = (message) => {
@@ -66,7 +66,6 @@ room.onPeerJoin((peerId) => {
     if (playerName) {
       sendName(playerName); 
     }
-    showNotification(`Новый игрок присоединился.`);
   } else {
     // Отправляем своё имя при первом подключении
     if (playerName) {
@@ -82,7 +81,7 @@ room.onPeerLeave((peerId) => {
   // Проверяем, что это не ты сам
   if (peerId !== myId) {
     if (name) {
-      showNotification(`${name} вышел.`);
+      showNotification(`${name} left`);
       delete peerNames[peerId];
     }
   }
@@ -103,6 +102,6 @@ getName((name, peerId) => {
   
   // Показываем уведомление только если игрок не ты сам
   if (peerId !== myId) {
-    showNotification(`${peerNames[peerId]} присоединился.`);
+    showNotification(`${peerNames[peerId]} joined`);
   }
 });
