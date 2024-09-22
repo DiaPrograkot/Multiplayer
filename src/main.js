@@ -29,44 +29,38 @@ if (!playerName) {
   });
 }
 
-// Инициализация и присоединение к комнате
+// Обработка присоединения к комнате и синхронизации с игроками
 const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
 
 // Отправка имени другим игрокам
 const [sendName, getName] = room.makeAction('playerName');
 
-// Список подключенных игроков
-const connectedPlayers = new Set();
+// Список уже полученных игроков
+const receivedPlayers = new Set();
 
-// Отправляем имя при подключении
+// Отправляем имя новым игрокам при их подключении
 room.onPeerJoin(peerId => {
-  if (!connectedPlayers.has(peerId)) { // Проверяем, что игрок еще не в списке
-    connectedPlayers.add(peerId); // Добавляем нового игрока в список
-    if (peerId !== selfId) { // Проверка, что это не сам игрок
-      console.log(`${peerId} joined`);
-      sendName(playerName); // Отправляем свое имя
-      addMessage(`${playerName} has joined the game`);
-    }
+  if (peerId !== selfId) {
+    sendName(playerName); // Отправляем свое имя новому игроку
+    console.log(`${peerId} joined`);
+    addMessage(`A new player has joined the game.`);
   }
 });
 
-// Обработка выхода других игроков
+// Обрабатываем выход игроков
 room.onPeerLeave(peerId => {
-  if (connectedPlayers.has(peerId)) { // Проверяем, что игрок есть в списке
-    connectedPlayers.delete(peerId); // Удаляем игрока из списка
-    console.log(`${peerId} left`);
+  if (receivedPlayers.has(peerId)) {
+    receivedPlayers.delete(peerId); // Удаляем игрока из списка
     addMessage(`Player ${peerId} has left the game`);
   }
 });
 
-// Получение имени других игроков
+// Получение имени от других игроков
 getName((name, peerId) => {
-  if (!connectedPlayers.has(peerId)) { // Проверяем, что игрок еще не в списке
-    connectedPlayers.add(peerId); // Добавляем нового игрока в список
-    if (peerId !== selfId) { // Проверка, что это не сам игрок
-      console.log(`${name} joined the game (ID: ${peerId})`);
-      addMessage(`${name} joined the game`);
-    }
+  if (!receivedPlayers.has(peerId) && peerId !== selfId) { // Проверяем, что это новый игрок
+    receivedPlayers.add(peerId); // Добавляем игрока в список
+    console.log(`${name} joined the game (ID: ${peerId})`);
+    addMessage(`${name} joined the game`);
   }
 });
 
