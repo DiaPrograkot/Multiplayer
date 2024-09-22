@@ -9,7 +9,7 @@ console.log('Инициализация комнаты...');
 const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
 console.log('Комната инициализирована:', room);
 
-// Получаем ID текущего игрока (заменяем selfId)
+// Получаем ID текущего игрока
 const myId = room.selfId;
 console.log('Текущий игрок имеет ID:', myId);
 
@@ -28,6 +28,9 @@ if (!playerName) {
     // Сохраняем имя в localStorage
     if (playerName) {
       localStorage.setItem('name', playerName);
+      playerNameContainer.style.display = 'none'; // Скрываем контейнер после ввода имени
+      // Отправляем имя, если оно установлено
+      sendName(playerName);
     } else {
       console.error('Имя игрока не введено.');
     }
@@ -59,50 +62,40 @@ const showNotification = (message) => {
 // Отправка имени при подключении
 room.onPeerJoin((peerId) => {
   console.log('Игрок присоединился:', peerId);
-  
-  // Проверяем, что это не ты сам
-  if (peerId !== myId) {
-    // Отправляем своё имя только новому игроку
-    if (playerName) {
-      sendName(playerName); 
-    }
-    // Если у нас уже есть имя этого пира, не отправляем повторное уведомление
-    if (!peerNames[peerId]) {
-      peerNames[peerId] = 'Unnamed Player'; // Устанавливаем значение по умолчанию
-      showNotification(`${peerNames[peerId]} joined`); // Показываем уведомление о новом игроке
-    }
-  } else {
-    // Отправляем своё имя при первом подключении
-    if (playerName) {
-      sendName(playerName);
-    }
-  }
-});
 
-
-// Обработчик для события ухода пира
-room.onPeerLeave((peerId) => {
-  const name = peerNames[peerId];
-  
-  // Проверяем, что это не ты сам
-  if (peerId !== myId) {
-    if (name) {
-      showNotification(`${name} left`);
-      delete peerNames[peerId];
-    }
+  // Отправляем своё имя при первом подключении, если это не ты сам
+  if (peerId !== myId && playerName) {
+    sendName(playerName);
   }
 });
 
 // Получение имени других игроков
 getName((name, peerId) => {
-  const trimmedName = name ? name.trim() : 'Unnamed Player'; // Значение по умолчанию
+  const trimmedName = name ? name.trim() : ''; // Значение по умолчанию
   console.log('Получено имя игрока:', trimmedName, 'ID:', peerId);
-  
-  // Убедитесь, что имя не пустое
-  if (!trimmedName) {
-    console.warn(`Имя игрока для ID ${peerId} отсутствует. Устанавливаем значение по умолчанию.`);
-    peerNames[peerId] = 'Unnamed Player';
-  } else {
+
+  // Проверяем, изменилось ли имя или оно уже сохранено
+  if (peerNames[peerId] !== trimmedName) {
     peerNames[peerId] = trimmedName;
+    showNotification(`${trimmedName} joined`);
   }
- });
+});
+
+// Обработчик для события ухода пира
+room.onPeerLeave((peerId) => {
+  const name = peerNames[peerId];
+
+  // Проверяем, что это не ты сам
+  if (peerId !== myId && name) {
+    showNotification(`${name} left`);
+    delete peerNames[peerId]; // Удаляем из списка
+  }
+});
+
+// Запрос имени у нового игрока
+room.onPeerJoin((peerId) => {
+  if (peerId !== myId) {
+    sendName(playerName);
+  }
+});
+
