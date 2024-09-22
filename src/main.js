@@ -39,7 +39,7 @@ const [sendName, getName] = room.makeAction('playerName');
 room.onPeerJoin(peerId => {
   console.log(`${peerId} joined`);
   sendName(playerName); // Отправляем свое имя
-  addMessage(`${playerName} has joined the game`);
+  
 });
 
 // Обработка выхода других игроков
