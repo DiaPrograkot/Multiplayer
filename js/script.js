@@ -456,32 +456,41 @@ let startgameFunc = () => {
   });
 };
 
-// Проверка имени игрока и запуск игры
 showStars();
 let nameStorage = localStorage.getItem('name');
 console.log(nameStorage);
 
-if (nameStorage) {
+// Если имя в localStorage 'undefined' или его можно изменить
+if (nameStorage && nameStorage !== 'undefined') {
   playerLabel.textContent = nameStorage;
   startgameFunc();
 } else {
   playerNameContainer.style.display = 'flex';
-
-  // Добавляем обработчик нажатия на кнопку "Play"
-  playerPlay.addEventListener('click', () => {
-    let playerName = playerInput.value;
-
-    if (playerName) {
-      localStorage.setItem('name', playerName);
-      playerLabel.textContent = playerName;
-      playerNameContainer.style.display = 'none';
-      startgameFunc();
-    }
-  });
 }
 
+// Добавляем обработчик нажатия на кнопку "Play"
+playerPlay.addEventListener('click', () => {
+  let playerName = playerInput.value;
 
+  if (playerName) {
+    localStorage.setItem('name', playerName);
+    playerLabel.textContent = playerName;
+    playerNameContainer.style.display = 'none';
+    startgameFunc();
+  }
+});
+
+// Добавляем возможность изменить имя
+const changeNameButton = document.querySelector('.changeName'); // кнопка для изменения имени
+changeNameButton.addEventListener('click', () => {
+  playerNameContainer.style.display = 'flex';
+  playerInput.value = ''; // Очищаем поле ввода для нового имени
+  localStorage.removeItem('name'); // Удаляем сохраненное имя
+});
+
+// Обработка нажатий клавиш
 document.addEventListener('keydown', handleKeyDown);
+
 
 // Управление музыкой
 let musicPlay = () => {

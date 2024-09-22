@@ -614,5 +614,20 @@ body {
   text-align: center; /* Выравнивание текста по центру */
   width: 100%; /* Ширина контейнера, чтобы текст всегда был по центру */
   z-index: 1000; /* Высокий z-index, чтобы сообщения были поверх других элементов */
-  
+
+ }
+ .changeName {
+  padding: 1.5rem 3rem; /* Увеличенные отступы */
+  font-size: 1.5rem; /* Увеличенный размер шрифта */
+  cursor: pointer;
+  border: none;
+  border-radius: 10px; /* Более округлённые углы */
+  transition: background-color 0.3s;
+  min-width: 200px; /* Минимальная ширина кнопки */
+  min-height: 60px; /* Минимальная высота кнопки */
+  position: fixed;
+  display: inline-block;
+ color: red;
+  bottom: 20px;
+  right: 58px;
  }
