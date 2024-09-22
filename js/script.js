@@ -453,7 +453,7 @@ let startgameFunc = () => {
 showStars();
 let nameStorage = localStorage.getItem('name');
 
-if (nameStorage) {
+if (nameStorage && nameStorage !== 'undefined') {
   playerLabel.textContent = nameStorage;
   startgameFunc();
 } else {
@@ -461,7 +461,7 @@ if (nameStorage) {
 
   // Добавляем обработчик нажатия на кнопку "Play"
   playerPlay.addEventListener('click', () => {
-    let playerName = playerInput.value;
+    let playerName = playerInput.value.trim();
 
     if (playerName) {
       localStorage.setItem('name', playerName);

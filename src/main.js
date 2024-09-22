@@ -13,19 +13,18 @@ console.log('Комната инициализирована:', room);
 let playerName = localStorage.getItem('name')?.trim();
 console.log('Имя игрока из localStorage:', playerName);
 
-if (!playerName || playerName === undefined) {
+if (!playerName) {
   // Запрашиваем имя игрока (например, через ввод пользователя)
   const playerNameContainer = document.querySelector(".playerNameContainer");
   const playerInput = document.querySelector(".playerInput");
   const playerPlay = document.querySelector(".playerPlay");
-
   playerNameContainer.style.display = 'flex';
   playerPlay.addEventListener('click', () => {
     playerName = playerInput.value.trim();
     // Сохраняем имя в localStorage
     if (playerName) {
       localStorage.setItem('name', playerName);
-      } else {
+    } else {
       console.error('Имя игрока не введено.');
     }
   });
@@ -35,8 +34,9 @@ if (!playerName || playerName === undefined) {
 const peerNames = {};
 const [sendName, getName] = room.makeAction('playerName');
 
-// Объект для хранения курсоров
-const cursors = {};
+// Получаем ID текущего игрока
+const myId = selfId();
+console.log('Текущий игрок имеет ID:', myId);
 
 // Функция для отображения уведомления
 const showNotification = (message) => {
@@ -57,31 +57,31 @@ const showNotification = (message) => {
 };
 
 // Отправка имени при подключении
-room.onPeerJoin(() => {
+room.onPeerJoin((peerId) => {
   console.log('Игрок присоединился:', playerName);
-  if (playerName) {
-    sendName(playerName);
-    showNotification(`${playerName} joined`);
+  
+  // Проверяем, что это не ты сам
+  if (peerId !== myId) {
+    if (playerName) {
+      sendName(playerName);
+      showNotification(`${playerName} joined`);
+    }
   }
 });
 
 // Обработчик для события ухода пира
-room.onPeerLeave(peerId => {
+room.onPeerLeave((peerId) => {
   const name = peerNames[peerId];
-  if (name) {
-    showNotification(`${name} left`);
-    delete peerNames[peerId];
-  }
-
-  // Удаление курсора при уходе пира
-  const cursor = cursors[peerId];
-  if (cursor) {
-    cursor.remove();
-    delete cursors[peerId];
+  
+  // Проверяем, что это не ты сам
+  if (peerId !== myId) {
+    if (name) {
+      showNotification(`${name} left`);
+      delete peerNames[peerId];
+    }
   }
 });
 
-// Получение имени других игроков
 // Получение имени других игроков
 getName((name, peerId) => {
   const trimmedName = name ? name.trim() : 'Unnamed Player'; // Значение по умолчанию
@@ -95,76 +95,8 @@ getName((name, peerId) => {
     peerNames[peerId] = trimmedName;
   }
   
-  showNotification(`${peerNames[peerId]} joined`);
-});
-
-
-// Объявление переменных mouseX и mouseY
-let mouseX, mouseY;
-
-// Определение функции sendMove
-const [sendMove] = room ? room.makeAction('move') : [() => {}];
-
-// Определение функции sendClick
-const [sendClick] = room ? room.makeAction('click') : [() => {}];
-
-addEventListener('mousemove', ({clientX, clientY}) => {
-  mouseX = clientX / innerWidth;
-  mouseY = clientY / innerHeight;
-  moveCursor([mouseX, mouseY], selfId);
-  if (room) {
-    try {
-      sendMove([mouseX, mouseY]);
-    } catch (error) {
-      console.error('Ошибка при отправке движения:', error);
-    }
+  // Показываем уведомление только если игрок не ты сам
+  if (peerId !== myId) {
+    showNotification(`${peerNames[peerId]} joined`);
   }
 });
-
-addEventListener('touchstart', e => {
-  const x = e.touches[0].clientX / innerWidth;
-  const y = e.touches[0].clientY / innerHeight;
-
-  moveCursor([x, y], selfId);
-
-  if (room) {
-    try {
-      sendMove([x, y]);
-      sendClick({ x, y });
-    } catch (error) {
-      console.error('Ошибка при отправке клика:', error);
-    }
-  }
-});
-
-function moveCursor([x, y], id) {
-  const el = cursors[id];
-  if (el && typeof x === 'number' && typeof y === 'number') {
-    el.style.left = x * innerWidth + 'px';
-    el.style.top = y * innerHeight + 'px';
-    console.log(`Курсор ${id} перемещён на (${x}, ${y})`);
-  }
-}
-
-function addCursor(id, isSelf) {
-  const el = document.createElement('div');
-  const img = document.createElement('img');
-  const txt = document.createElement('p');
-
-  el.className = `cursor${isSelf ? ' self' : ''}`;
-  el.style.left = el.style.top = '-99px';
-  img.src = 'img/hand.png';
-  txt.innerText = isSelf ? 'you' : id.slice(0, 4);
-  el.appendChild(img);
-  el.appendChild(txt);
-  canvas.appendChild(el);
-  cursors[id] = el;
-
-  if (!isSelf) {
-    moveCursor([0.5, 0.5], id);
-    console.log(`Курсор для игрока ${id} добавлен в центр`);
-    updatePeerInfo();
-  }
-
-  return el;
-}
