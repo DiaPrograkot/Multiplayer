@@ -472,6 +472,36 @@ if (nameStorage && nameStorage !== 'undefined') {
   });
 }
 
+// Добавляем обработчик нажатия на playerLabel для изменения имени
+playerLabel.addEventListener('click', () => {
+  playerNameContainer.style.display = 'flex';
+  playerInput.value = playerLabel.textContent;
+  playerLabel.style.display = 'none';
+  startgame.style.display = 'none'; // Скрываем стартовое меню
+  gameover.style.display = 'none'; // Скрываем меню проигрыша
+
+  // Добавляем обработчик нажатия на кнопку "Play" для сохранения нового имени
+  playerPlay.addEventListener('click', () => {
+    let playerName = playerInput.value.trim();
+
+    if (playerName) {
+      localStorage.setItem('name', playerName);
+      playerLabel.textContent = playerName;
+      playerNameContainer.style.display = 'none';
+      playerLabel.style.display = 'block';
+
+      // Восстанавливаем стартовое меню или меню проигрыша
+      if (startgame.style.display === 'none' && gameover.style.display === 'none') {
+        if (loss) {
+          gameover.style.display = 'flex'; // Показываем меню проигрыша
+        } else {
+          startgame.style.display = 'flex'; // Показываем стартовое меню
+        }
+      }
+    }
+  });
+});
+
 // Управление музыкой
 let musicPlay = () => {
   document.addEventListener(
