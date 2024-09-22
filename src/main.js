@@ -44,7 +44,7 @@ room.onPeerJoin(peerId => {
 // Обработка выхода других игроков
 room.onPeerLeave(peerId => {
   console.log(`${peerId} left`);
-  addMessage(`${playerName} left the game`)
+  addMessage(`${playerName} left the game`);
 });
 
 // Получение имени других игроков
