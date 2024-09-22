@@ -39,13 +39,12 @@ const [sendName, getName] = room.makeAction('playerName');
 room.onPeerJoin(peerId => {
   console.log(`${peerId} joined`);
   sendName(playerName); // Отправляем свое имя
-  
-});
+  });
 
 // Обработка выхода других игроков
-room.onPeerLeave(peerId => {
+room.onPeerLeave((name,peerId )=> {
   console.log(`${peerId} left`);
-  addMessage(`Player ${playerName} has left the game`);
+  addMessage(`${name} left the game`)
 });
 
 // Получение имени других игроков
@@ -55,4 +54,4 @@ getName((name, peerId) => {
 });
 
 // Пример использования selfId
-console.log(`My peer ID is ${selfId}, my name is ${playerName}`); 
+console.log(`My information (${playerName},${selfId})`); 
