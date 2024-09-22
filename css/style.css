@@ -621,5 +621,6 @@ body {
   bottom: 20px;
   left: 300px;
   cursor: pointer;
-  color: red
+  color: red;
+  font-size: 2rem;
  }
