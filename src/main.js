@@ -13,23 +13,22 @@ function addMessage(message) {
   messageBox.appendChild(newMessage);
 
    // Удаляем сообщение через 5 секунд
- setTimeout(() => {
-  messageBox.removeChild(newMessage);
-}, 5000);
-} 
-
+  setTimeout(() => {
+    messageBox.removeChild(newMessage);
+  }, 5000);
+}
 
 // Проверяем наличие имени в localStorage и запрашиваем, если его нет
 let playerName = localStorage.getItem('name');
 if (!playerName) {
   playerNameContainer.style.display = 'flex';
-// Обрабатываем ввод имени
+  // Обрабатываем ввод имени
   playerInput.addEventListener('change', (event) => {
     playerName = event.target.value;
     localStorage.setItem('name', playerName); // Сохраняем имя в localStorage
-  localStorage.setItem('name', playerName); // Сохраняем имя в localStorage
-  })
+  });
 }
+
 // Инициализация и присоединение к комнате
 const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
 
@@ -38,22 +37,28 @@ const [sendName, getName] = room.makeAction('playerName');
 
 // Отправляем имя при подключении
 room.onPeerJoin(peerId => {
-  console.log(`${peerId} joined`);
-  sendName(playerName); // Отправляем свое имя
-  addMessage(`${playerName} has joined the game`);
+  if (peerId !== selfId) { // Проверка, что это не сам игрок
+    console.log(`${peerId} joined`);
+    sendName(playerName); // Отправляем свое имя
+    addMessage(`${playerName} has joined the game`);
+  }
 });
 
 // Обработка выхода других игроков
 room.onPeerLeave(peerId => {
-  console.log(`${peerId} left`);
-  addMessage(`Player ${playerName} has left the game`);
+  if (peerId !== selfId) { // Проверка, что это не сам игрок
+    console.log(`${peerId} left`);
+    addMessage(`Player ${peerId} has left the game`);
+  }
 });
 
 // Получение имени других игроков
 getName((name, peerId) => {
-  console.log(`${name} joined the game (ID: ${peerId})`);
-  addMessage(`${name} joined the game)`);
+  if (peerId !== selfId) { // Проверка, что это не имя самого игрока
+    console.log(`${name} joined the game (ID: ${peerId})`);
+    addMessage(`${name} joined the game`);
+  }
 });
 
 // Пример использования selfId
-console.log(`My peer ID is ${selfId}, my name is ${playerName}`); 
+console.log(`My peer ID is ${selfId}, my name is ${playerName}`);
