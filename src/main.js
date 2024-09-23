@@ -45,6 +45,10 @@ const [sendName, getName] = room.makeAction('playerName');
 const showNotification = (message) => {
   console.log('Уведомление:', message);
   const notifications = document.getElementById('notifications');
+  if (!notifications) {
+    console.error('Элемент notifications не найден.');
+    return;
+  }
   const notification = document.createElement('div');
   notification.className = 'notification';
   notification.textContent = message;
@@ -59,7 +63,11 @@ const showNotification = (message) => {
   }, 3000);
 };
 
-// Отправка имени при подключении
+// Добавляем отладочную информацию о пирах при инициализации
+const peers = room.getPeers();
+console.log('Список пиров при инициализации:', peers);
+
+// Подписка на событие присоединения пиров
 room.onPeerJoin((peerId) => {
   console.log('Игрок присоединился:', peerId);
   // Отправляем своё имя при первом подключении, если это не ты сам
@@ -68,30 +76,42 @@ room.onPeerJoin((peerId) => {
   }
 });
 
+// Подписка на событие выхода пиров
+room.onPeerLeave((peerId) => {
+  console.log('Событие выхода пира с ID:', peerId);  // Отладка события выхода
+
+  // Получаем имя игрока, если оно сохранено
+  const name = peerNames[peerId];
+  
+  // Проверим, существует ли такой ID в списке имен
+  console.log('Список peerNames:', peerNames);
+  
+  // Если имя найдено, показываем уведомление и удаляем игрока
+  if (name) {
+    showNotification(`${name} left`);
+    console.log(`Уведомление: ${name} покинул комнату`);  // Проверка, сработало ли уведомление
+    delete peerNames[peerId]; // Удаляем игрока из списка
+    console.log('Обновленный список peerNames:', peerNames);  // Проверка списка после удаления
+  } else {
+    console.log('Игрока с таким ID нет в списке имен:', peerId);  // Отладка: если имени нет
+  }
+  
+  // Удаляем курсор игрока
+  removeCursor(peerId);
+  console.log(`Курсор игрока с ID ${peerId} удален.`);  // Отладка удаления курсора
+});
+
 // Получение имени других игроков
 getName((name, peerId) => {
   const trimmedName = name ? name.trim() : ''; // Значение по умолчанию
   console.log('Получено имя игрока:', trimmedName, 'ID:', peerId);
+  
   // Проверяем, изменилось ли имя или оно уже сохранено
   if (peerNames[peerId] !== trimmedName) {
     peerNames[peerId] = trimmedName;
     showNotification(`${trimmedName} joined`);
-  }
-});
-
-// Обработчик для события ухода пира
-room.onPeerLeave((peerId) => {
-  const name = peerNames[peerId];
-  if (peerId !== myId && name) {
-    showNotification(`${name} left`);
-    delete peerNames[peerId]; // Удаляем из списка
-  }
-});
-
-// Запрос имени у нового игрока
-room.onPeerJoin((peerId) => {
-  if (peerId !== myId) {
-    sendName(playerName);
+  } else {
+    console.log(`Имя уже зарегистрировано: ${trimmedName} ID: ${peerId}`);
   }
 });
 
@@ -181,6 +201,7 @@ function addCursor(id, isSelf) {
 function removeCursor(id) {
   if (cursors[id]) {
     canvas.removeChild(cursors[id]);
+    delete cursors[id]; // Удаляем курсор из объекта cursors
   }
   updatePeerInfo();
 }
@@ -195,3 +216,21 @@ function updatePeerInfo() {
       : noPeersCopy;
   }
 }
+
+// Функция для проверки текущих пиров
+setInterval(() => {
+  const peers = room.getPeers();
+  console.log('Активные пиры:', peers);
+
+  Object.keys(peerNames).forEach(peerId => {
+    if (!peers[peerId]) {
+      console.log(`Пир ${peerId} больше не активен, удаляем...`);
+      const name = peerNames[peerId];
+      if (name) {
+        showNotification(`${name} left`);
+        delete peerNames[peerId];
+        removeCursor(peerId);
+      }
+    }
+  });
+}, 5000);  // Проверка каждые 5 секунд
