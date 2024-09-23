@@ -78,6 +78,7 @@ room.onPeerJoin((peerId) => {
   if (peerId !== myId && playerName) {
     sendName(playerName);
   }
+  showNotification(`${peerId} joined`);
 });
 
 // Получение имени других игроков
@@ -101,6 +102,7 @@ room.onPeerLeave((peerId) => {
     showNotification(`${name} left`);
     delete peerNames[peerId]; // Удаляем из списка
   }
+  showNotification(`${peerId} left`);
 });
 
 // Запрос имени у нового игрока
