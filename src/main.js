@@ -1,4 +1,4 @@
-import { joinRoom } from 'trystero';
+import { joinRoom, selfId } from 'trystero';
 
 // Конфигурация для инициализации библиотеки
 const config = {
@@ -10,8 +10,15 @@ const room = joinRoom(config, 'room-id'); // Замените 'room-id' на в�
 console.log('Комната инициализирована:', room);
 
 // Получаем ID текущего игрока
-const myId = room.selfId;
-console.log('Текущий игрок имеет ID:', myId);
+const myId = selfId;
+
+if (!myId) {
+  console.error('selfId is not defined.');
+  console.log('Room object:', room); // Вывод объекта room в консоль для диагностики
+  // Дополнительные действия, такие как повторная попытка инициализации или уведомление пользователя
+} else {
+  console.log('Текущий игрок имеет ID:', myId);
+}
 
 // Получаем имя игрока из localStorage
 let playerName = localStorage.getItem('name')?.trim();
@@ -134,10 +141,14 @@ function init() {
   let getMove;
 
   ;[sendMove, getMove] = room.makeAction('mouseMove');
+  console.log('Registered mouseMove action.');
 
   room.onPeerJoin(addCursor);
   room.onPeerLeave(removeCursor);
-  getMove(moveCursor);
+  getMove(([x, y], peerId) => {
+    console.log('Received mouseMove:', x, y, 'from', peerId);
+    moveCursor([x, y], peerId);
+  });
 }
 
 function moveCursor([x, y], id) {
