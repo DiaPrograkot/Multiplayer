@@ -11,14 +11,7 @@ console.log('Комната инициализирована:', room);
 
 // Получаем ID текущего игрока
 const myId = selfId;
-
-if (!myId) {
-  console.error('selfId is not defined.');
-  console.log('Room object:', room); // Вывод объекта room в консоль для диагностики
-  // Дополнительные действия, такие как повторная попытка инициализации или уведомление пользователя
-} else {
-  console.log('Текущий игрок имеет ID:', myId);
-}
+console.log('Текущий игрок имеет ID:', myId);
 
 // Получаем имя игрока из localStorage
 let playerName = localStorage.getItem('name')?.trim();
@@ -29,24 +22,19 @@ if (!playerName) {
   const playerNameContainer = document.querySelector(".playerNameContainer");
   const playerInput = document.querySelector(".playerInput");
   const playerPlay = document.querySelector(".playerPlay");
-
-  if (playerNameContainer && playerInput && playerPlay) {
-    playerNameContainer.style.display = 'flex';
-    playerPlay.addEventListener('click', () => {
-      playerName = playerInput.value.trim();
-      // Сохраняем имя в localStorage
-      if (playerName) {
-        localStorage.setItem('name', playerName);
-        playerNameContainer.style.display = 'none'; // Скрываем контейнер после ввода имени
-        // Отправляем имя, если оно установлено
-        sendName(playerName);
-      } else {
-        console.error('Имя игрока не введено.');
-      }
-    });
-  } else {
-    console.error('Один или несколько элементов не найдены в DOM.');
-  }
+  playerNameContainer.style.display = 'flex';
+  playerPlay.addEventListener('click', () => {
+    playerName = playerInput.value.trim();
+    // Сохраняем имя в localStorage
+    if (playerName) {
+      localStorage.setItem('name', playerName);
+      playerNameContainer.style.display = 'none'; // Скрываем контейнер после ввода имени
+      // Отправляем имя, если оно установлено
+      sendName(playerName);
+    } else {
+      console.error('Имя игрока не введено.');
+    }
+  });
 }
 
 // Объект для хранения имен игроков
@@ -78,14 +66,12 @@ room.onPeerJoin((peerId) => {
   if (peerId !== myId && playerName) {
     sendName(playerName);
   }
-  showNotification(`${peerId} joined`);
 });
 
 // Получение имени других игроков
 getName((name, peerId) => {
   const trimmedName = name ? name.trim() : ''; // Значение по умолчанию
   console.log('Получено имя игрока:', trimmedName, 'ID:', peerId);
-
   // Проверяем, изменилось ли имя или оно уже сохранено
   if (peerNames[peerId] !== trimmedName) {
     peerNames[peerId] = trimmedName;
@@ -96,13 +82,10 @@ getName((name, peerId) => {
 // Обработчик для события ухода пира
 room.onPeerLeave((peerId) => {
   const name = peerNames[peerId];
-
-  // Проверяем, что это не ты сам
   if (peerId !== myId && name) {
     showNotification(`${name} left`);
     delete peerNames[peerId]; // Удаляем из списка
   }
-  showNotification(`${peerId} left`);
 });
 
 // Запрос имени у нового игрока
