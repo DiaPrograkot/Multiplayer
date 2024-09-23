@@ -29,19 +29,24 @@ if (!playerName) {
   const playerNameContainer = document.querySelector(".playerNameContainer");
   const playerInput = document.querySelector(".playerInput");
   const playerPlay = document.querySelector(".playerPlay");
-  playerNameContainer.style.display = 'flex';
-  playerPlay.addEventListener('click', () => {
-    playerName = playerInput.value.trim();
-    // Сохраняем имя в localStorage
-    if (playerName) {
-      localStorage.setItem('name', playerName);
-      playerNameContainer.style.display = 'none'; // Скрываем контейнер после ввода имени
-      // Отправляем имя, если оно установлено
-      sendName(playerName);
-    } else {
-      console.error('Имя игрока не введено.');
-    }
-  });
+
+  if (playerNameContainer && playerInput && playerPlay) {
+    playerNameContainer.style.display = 'flex';
+    playerPlay.addEventListener('click', () => {
+      playerName = playerInput.value.trim();
+      // Сохраняем имя в localStorage
+      if (playerName) {
+        localStorage.setItem('name', playerName);
+        playerNameContainer.style.display = 'none'; // Скрываем контейнер после ввода имени
+        // Отправляем имя, если оно установлено
+        sendName(playerName);
+      } else {
+        console.error('Имя игрока не введено.');
+      }
+    });
+  } else {
+    console.error('Один или несколько элементов не найдены в DOM.');
+  }
 }
 
 // Объект для хранения имен игроков
