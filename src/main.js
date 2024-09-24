@@ -5,7 +5,6 @@ const config = {
   appId: 'your-app-id', // Замените 'your-app-id' на ваш реальный appId
 };
 
-console.log('Инициализация комнаты...');
 const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
 console.log('Комната инициализирована:', room);
 
@@ -31,9 +30,7 @@ if (!playerName) {
       playerNameContainer.style.display = 'none'; // Скрываем контейнер после ввода имени
       // Отправляем имя, если оно установлено
       sendName(playerName);
-    } else {
-      console.error('Имя игрока не введено.');
-    }
+    } 
   });
 }
 
@@ -45,10 +42,6 @@ const [sendName, getName] = room.makeAction('playerName');
 const showNotification = (message) => {
   console.log('Уведомление:', message);
   const notifications = document.getElementById('notifications');
-  if (!notifications) {
-    console.error('Элемент notifications не найден.');
-    return;
-  }
   const notification = document.createElement('div');
   notification.className = 'notification';
   notification.textContent = message;
@@ -62,10 +55,6 @@ const showNotification = (message) => {
     }, 500);
   }, 3000);
 };
-
-// Добавляем отладочную информацию о пирах при инициализации
-const peers = room.getPeers();
-console.log('Список пиров при инициализации:', peers);
 
 // Подписка на событие присоединения пиров
 room.onPeerJoin((peerId) => {
@@ -83,23 +72,15 @@ room.onPeerLeave((peerId) => {
   // Получаем имя игрока, если оно сохранено
   const name = peerNames[peerId];
   
-  // Проверим, существует ли такой ID в списке имен
-  console.log('Список peerNames:', peerNames);
-  
   // Если имя найдено, показываем уведомление и удаляем игрока
   if (name) {
     showNotification(`${name} left`);
     console.log(`Уведомление: ${name} покинул комнату`);  // Проверка, сработало ли уведомление
     delete peerNames[peerId]; // Удаляем игрока из списка
-    console.log('Обновленный список peerNames:', peerNames);  // Проверка списка после удаления
-  } else {
-    console.log('Игрока с таким ID нет в списке имен:', peerId);  // Отладка: если имени нет
-  }
-  
+  } 
   // Удаляем курсор игрока
   removeCursor(peerId);
-  console.log(`Курсор игрока с ID ${peerId} удален.`);  // Отладка удаления курсора
-});
+  });
 
 // Получение имени других игроков
 getName((name, peerId) => {
@@ -110,9 +91,7 @@ getName((name, peerId) => {
   if (peerNames[peerId] !== trimmedName) {
     peerNames[peerId] = trimmedName;
     showNotification(`${trimmedName} joined`);
-  } else {
-    console.log(`Имя уже зарегистрировано: ${trimmedName} ID: ${peerId}`);
-  }
+  } 
 });
 
 // Добавляем функционал для взаимодействия с курсором и перемещениями мыши
@@ -127,11 +106,6 @@ let sendMove;
 
 document.addEventListener('DOMContentLoaded', () => {
   canvas = document.getElementById('canvas');
-  if (!canvas) {
-    console.error('Canvas element not found.');
-    return;
-  }
-
   init();
   document.documentElement.className = 'ready';
   addCursor(myId, true);
@@ -139,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
   addEventListener('mousemove', ({ clientX, clientY }) => {
     mouseX = clientX / innerWidth;
     mouseY = clientY / innerHeight;
-    console.log('Mouse moved:', mouseX, mouseY);
     moveCursor([mouseX, mouseY], myId);
     if (room) {
       sendMove([mouseX, mouseY]);
@@ -149,14 +122,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function init() {
   let getMove;
-
   ;[sendMove, getMove] = room.makeAction('mouseMove');
-  console.log('Registered mouseMove action.');
-
   room.onPeerJoin(addCursor);
   room.onPeerLeave(removeCursor);
   getMove(([x, y], peerId) => {
-    console.log('Received mouseMove:', x, y, 'from', peerId);
     moveCursor([x, y], peerId);
   });
 }
@@ -165,18 +134,12 @@ function moveCursor([x, y], id) {
   const el = cursors[id];
 
   if (el && typeof x === 'number' && typeof y === 'number') {
-    console.log('Moving cursor:', id, x, y);
     el.style.left = x * innerWidth + 'px';
     el.style.top = y * innerHeight + 'px';
   }
 }
 
 function addCursor(id, isSelf) {
-  if (!canvas) {
-    console.error('Canvas element not found.');
-    return;
-  }
-
   const el = document.createElement('div');
   const img = document.createElement('img');
   const txt = document.createElement('p');
@@ -189,12 +152,6 @@ function addCursor(id, isSelf) {
   el.appendChild(txt);
   canvas.appendChild(el);
   cursors[id] = el;
-
-  if (!isSelf) {
-    sendMove([Math.random() * 0.93, Math.random() * 0.93], id);
-    updatePeerInfo();
-  }
-
   return el;
 }
 
@@ -216,21 +173,3 @@ function updatePeerInfo() {
       : noPeersCopy;
   }
 }
-
-// Функция для проверки текущих пиров
-setInterval(() => {
-  const peers = room.getPeers();
-  console.log('Активные пиры:', peers);
-
-  Object.keys(peerNames).forEach(peerId => {
-    if (!peers[peerId]) {
-      console.log(`Пир ${peerId} больше не активен, удаляем...`);
-      const name = peerNames[peerId];
-      if (name) {
-        showNotification(`${name} left`);
-        delete peerNames[peerId];
-        removeCursor(peerId);
-      }
-    }
-  });
-}, 5000);  // Проверка каждые 5 секунд
