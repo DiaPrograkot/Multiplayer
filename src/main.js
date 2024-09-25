@@ -30,7 +30,7 @@ if (!playerName) {
       playerNameContainer.style.display = 'none'; // Скрываем контейнер после ввода имени
       // Отправляем имя, если оно установлено
       sendName(playerName);
-    } 
+    }
   });
 }
 
@@ -71,27 +71,28 @@ room.onPeerLeave((peerId) => {
 
   // Получаем имя игрока, если оно сохранено
   const name = peerNames[peerId];
-  
+
   // Если имя найдено, показываем уведомление и удаляем игрока
   if (name) {
     showNotification(`${name} left`);
     console.log(`Уведомление: ${name} покинул комнату`);  // Проверка, сработало ли уведомление
     delete peerNames[peerId]; // Удаляем игрока из списка
-  } 
+  }
   // Удаляем курсор игрока
   removeCursor(peerId);
-  });
+});
 
 // Получение имени других игроков
 getName((name, peerId) => {
   const trimmedName = name ? name.trim() : ''; // Значение по умолчанию
   console.log('Получено имя игрока:', trimmedName, 'ID:', peerId);
-  
+
   // Проверяем, изменилось ли имя или оно уже сохранено
   if (peerNames[peerId] !== trimmedName) {
     peerNames[peerId] = trimmedName;
     showNotification(`${trimmedName} joined`);
-  } 
+    updateCursorName(peerId, trimmedName); // Обновляем имя курсора
+  }
 });
 
 // Добавляем функционал для взаимодействия с курсором и перемещениями мыши
@@ -134,8 +135,12 @@ function moveCursor([x, y], id) {
   const el = cursors[id];
 
   if (el && typeof x === 'number' && typeof y === 'number') {
-    el.style.left = x * innerWidth + 'px';
-    el.style.top = y * innerHeight + 'px';
+
+    // Коррекция положения, чтобы центр изображения совпадал с реальным курсором
+    const cursorWidth = 35;  // Ширина кастомного курсора
+    const cursorHeight = 45; // Высота кастомного курсора
+    el.style.left = (x * innerWidth - cursorWidth / 2) + 'px';
+    el.style.top = (y * innerHeight - cursorHeight / 2) + 'px';
   }
 }
 
@@ -147,7 +152,7 @@ function addCursor(id, isSelf) {
   el.className = `cursor${isSelf ? ' self' : ''}`;
   el.style.left = el.style.top = '-99px';
   img.src = 'src/img/hand.png';
-  txt.innerText = isSelf ? 'you' : id.slice(0, 4);
+  txt.innerText = isSelf ? playerName : ''; // Инициализируем пустой текст
   el.appendChild(img);
   el.appendChild(txt);
   canvas.appendChild(el);
@@ -161,6 +166,16 @@ function removeCursor(id) {
     delete cursors[id]; // Удаляем курсор из объекта cursors
   }
   updatePeerInfo();
+}
+
+function updateCursorName(id, name) {
+  const el = cursors[id];
+  if (el) {
+    const txt = el.querySelector('p');
+    if (txt) {
+      txt.innerText = name;
+    }
+  }
 }
 
 function updatePeerInfo() {

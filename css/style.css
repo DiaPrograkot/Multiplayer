@@ -620,25 +620,42 @@ body {
   text-align: center; /* Центрируем текст */
 }
 
+/* Скрываем курсор на всех элементах */
+* {
+  cursor: none !important; /* Принудительно скрываем курсор на всех элементах */
+}
+
+/* Скрываем курсор для всех интерактивных элементов, включая их активные состояния */
+button, a, input, select, textarea, label {
+  cursor: none !important;
+}
+
+button:hover, a:hover, input:hover, select:hover, textarea:hover, label:hover {
+  cursor: none !important; /* Принудительно скрываем курсор при наведении */
+}
+
+button:active, a:active, input:active, select:active, textarea:active, label:active {
+  cursor: none !important; /* Принудительно скрываем курсор при клике */
+}
+
+
+/* Стили для кастомного курсора */
 .cursor {
   position: absolute;
-  width: 50px;
-  height: 50px;
-  background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 12px;
-  transition: left 0.1s, top 0.1s;
+  width: 35px;  /* Размер кастомного курсора */
+  height: 45px;
+  transition: left 0.1s ease, top 0.1s ease;
+  pointer-events: none;
 }
 
 .cursor img {
-  width: 30px;
-  height: 30px;
+  width: 100%; /* Картинка заполняет весь элемент */
+  height: 100%;
 }
 
-.cursor.self {
-  background-color: rgba(0, 123, 255, 0.5); /* Цвет для вашего курсора */
+.cursor p {
+  font-size: 20px;  /* Размер текста */
+  color: white;
+  text-align: center;
 }
+
