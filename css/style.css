@@ -625,4 +625,19 @@ body {
   font-size: 2rem;
  }
 
- 
+ #canvas {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+.cursor {
+  position: absolute;
+  pointer-events: none; /* Не блокируем клики */
+}
+
+.cursor img {
+  width: 50px;
+  height: 50px;
+}
+
