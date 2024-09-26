@@ -90,7 +90,7 @@ function addCursor(peerId) {
 
   el.className = `cursor`;
   el.style.left = el.style.top = '-99px'; // Начальное положение
-  img.src = peerId === selfId ? playerAsteroid : 'images/default-asteroid.png'; // Используем собственный астероид для себя
+  img.src = peerId === selfId ? playerAsteroid : 'shapes'; // Используем собственный астероид для себя
   txt.innerText = peerId === selfId ? 'you' : peerId.slice(0, 4); // Подпись курсора
 
   el.appendChild(img);
