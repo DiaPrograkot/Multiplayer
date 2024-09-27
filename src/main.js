@@ -11,7 +11,7 @@ const room = joinRoom(config, 'room-id'); // Замените 'room-id' на в�
 
 const byId = document.getElementById.bind(document)
 const canvas = byId('canvas')
-const peerInfo = byId('peer-info')
+const peerInfo = byId('peer-info') 
 const cursors = {}
 const fruits = [ 
   '🍏',
