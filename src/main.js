@@ -59,7 +59,6 @@ console.log(`My information (${playerName}, ${selfId})`);
 const byId = document.getElementById.bind(document)
 const canvas = byId('canvas')
 const peerInfo = byId('peer-info')
-const noPeersCopy = peerInfo.innerText
 const cursors = {}
 const fruits = [
   '🍏',
