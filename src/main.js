@@ -6,6 +6,8 @@ const config = {
 };
  
 const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId 
+;[sendMove, getMove] = room.makeAction('mouseMove')
+  ;[sendClick, getClick] = room.makeAction('click')
 
 const byId = document.getElementById.bind(document)
 const canvas = byId('canvas')
@@ -77,9 +79,8 @@ function init(n) {
   let getMove
   let getClick
 
-  room = joinRoom(config, 'room' + n)
-  ;[sendMove, getMove] = room.makeAction('mouseMove')
-  ;[sendClick, getClick] = room.makeAction('click')
+ 
+  
 
   byId('room-num').innerText = 'room #' + n
   room.onPeerJoin(addCursor)
