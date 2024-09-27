@@ -4,6 +4,8 @@ import { joinRoom, selfId } from 'trystero';
 const config = {
   appId: 'your-app-id', // Замените 'your-app-id' на ваш реальный appId
 };
+ 
+const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId 
 
 const byId = document.getElementById.bind(document)
 const canvas = byId('canvas')
@@ -160,7 +162,7 @@ if (!playerName) {
   });
 }
 
-const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
+
 
 // Отправка и получение данных игрока
 const [sendName, getName] = room.makeAction('playerName');
