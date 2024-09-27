@@ -5,13 +5,6 @@ const config = {
   appId: 'your-app-id', // Замените 'your-app-id' на ваш реальный appId
 };
 
-// Элементы интерфейса
-const canvas = document.getElementById('canvas');
-const messageBox = document.querySelector('.messages');
-const peerInfo = document.getElementById('peer-info'); 
-const playerNameContainer = document.getElementById('player-name-container');
-const playerInput = document.getElementById('player-input');
-const noPeersCopy = peerInfo ? peerInfo.innerText : 'No peers connected'
 
 
 
@@ -63,103 +56,146 @@ getName((name, peerId) => {
 // Пример использования selfId
 console.log(`My information (${playerName}, ${selfId})`);
 
-let mouseX = 0; // Позиция курсора по оси X
-let mouseY = 0; // Позиция курсора по оси Y
-let sendMove; // Функция для отправки движения курсора
+const byId = document.getElementById.bind(document)
+const canvas = byId('canvas')
+const peerInfo = byId('peer-info')
+const noPeersCopy = peerInfo.innerText
+const cursors = {}
+const fruits = [
+  '🍏',
+  '🍎',
+  '🍐',
+  '🍊',
+  '🍋',
+  '🍌',
+  '🍉',
+  '🍇',
+  '🍓',
+  '🫐',
+  '🍈',
+  '🍒',
+  '🍑',
+  '🥭',
+  '🍍',
+  '🥥',
+  '🥝'
+]
+const randomFruit = () => Math.floor(Math.random() * fruits.length)
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Находим элемент canvas после загрузки DOM
-  canvas = document.getElementById('canvas');
-  
-  if (canvas) {
-    init(); // Инициализируем функционал
-    document.documentElement.className = 'ready'; // Обозначаем, что всё готово
-    addCursor(selfId, true); // Добавляем собственный курсор
+let mouseX = 0
+let mouseY = 0
+let sendMove
+let sendClick
 
-    // Обработчик движения мыши
-    document.addEventListener('mousemove', ({ clientX, clientY }) => {
-      // Нормализуем координаты курсора
-      mouseX = clientX / innerWidth;
-      mouseY = clientY / innerHeight;
-      moveCursor([mouseX, mouseY], myId); // Перемещаем собственный курсор
+init(49)
+document.documentElement.className = 'ready'
+addCursor(selfId, true)
 
-      if (room) {
-        sendMove([mouseX, mouseY]); // Отправляем координаты другим пользователям
-      }
-    });
+addEventListener('mousemove', ({clientX, clientY}) => {
+  mouseX = clientX / innerWidth
+  mouseY = clientY / innerHeight
+  moveCursor([mouseX, mouseY], selfId)
+  if (room) {
+    sendMove([mouseX, mouseY])
   }
-});
+})
 
-// Функция инициализации
-function init() {
-  // Получаем функции для отправки и получения движений курсора
-  [sendMove] = room.makeAction('mouseMove');
-  
-  // Обработчики событий для присоединения и отключения пиров
-  room.onPeerJoin(addCursor);
-  room.onPeerLeave(removeCursor);
-  
-  // Получаем движения курсора от других пользователей
-  room.getMove(([x, y], peerId) => {
-    moveCursor([x, y], peerId); // Перемещаем курсор другого пользователя
-  });
+addEventListener('click', () => {
+  const payload = [randomFruit(), mouseX, mouseY]
+
+  dropFruit(payload)
+  if (room) {
+    sendClick(payload)
+  }
+})
+
+addEventListener('touchstart', e => {
+  const x = e.touches[0].clientX / innerWidth
+  const y = e.touches[0].clientY / innerHeight
+  const payload = [randomFruit(), x, y]
+
+  dropFruit(payload)
+  moveCursor([x, y], selfId)
+
+  if (room) {
+    sendMove([x, y])
+    sendClick(payload)
+  }
+})
+
+function init(n) {
+  let getMove
+  let getClick
+
+  room = joinRoom(config, 'room' + n)
+  ;[sendMove, getMove] = room.makeAction('mouseMove')
+  ;[sendClick, getClick] = room.makeAction('click')
+
+  byId('room-num').innerText = 'room #' + n
+  room.onPeerJoin(addCursor)
+  room.onPeerLeave(removeCursor)
+  getMove(moveCursor)
+  getClick(dropFruit)
 }
 
-// Функция перемещения курсора
 function moveCursor([x, y], id) {
-  const el = cursors[id]; // Получаем элемент курсора по id
+  const el = cursors[id]
 
-  if (el) {
-    // Корректируем положение курсора
-    const cursorWidth = 35;
-    const cursorHeight = 45;
-    el.style.left = (x * innerWidth - cursorWidth / 2) + 'px';
-    el.style.top = (y * innerHeight - cursorHeight / 2) + 'px';
+  if (el && typeof x === 'number' && typeof y === 'number') {
+    el.style.left = x * innerWidth + 'px'
+    el.style.top = y * innerHeight + 'px'
   }
 }
 
-// Функция добавления нового курсора
 function addCursor(id, isSelf) {
-  const el = document.createElement('div'); // Создаём элемент для курсора
-  const img = document.createElement('img'); // Создаём элемент изображения
-  const txt = document.createElement('p'); // Создаём элемент для текста
+  const el = document.createElement('div')
+  const img = document.createElement('img')
+  const txt = document.createElement('p')
 
-  el.className = `cursor${isSelf ? ' self' : ''}`; // Назначаем класс
-  el.style.left = el.style.top = '-99px'; // Скрываем курсор вне экрана
-  img.src = 'src/img/hand.png'; // Устанавливаем изображение курсора
-  txt.innerText = isSelf ? playerName : ''; // Устанавливаем имя игрока
-  el.appendChild(img); // Добавляем изображение в элемент курсора
-  el.appendChild(txt); // Добавляем текст в элемент курсора
-  canvas.appendChild(el); // Добавляем курсор на канвас
-  cursors[id] = el; // Сохраняем курсор в объекте cursors
+  el.className = `cursor${isSelf ? ' self' : ''}`
+  el.style.left = el.style.top = '-99px'
+  img.src = 'images/hand.png'
+  txt.innerText = isSelf ? 'you' : id.slice(0, 4)
+  el.appendChild(img)
+  el.appendChild(txt)
+  canvas.appendChild(el)
+  cursors[id] = el
+
+  if (!isSelf) {
+    sendMove([Math.random() * 0.93, Math.random() * 0.93], id)
+    updatePeerInfo()
+  }
+
+  return el
 }
 
-// Функция удаления курсора
 function removeCursor(id) {
   if (cursors[id]) {
-    canvas.removeChild(cursors[id]); // Удаляем курсор с канваса
-    delete cursors[id]; // Удаляем курсор из объекта cursors
+    canvas.removeChild(cursors[id])
   }
-  updatePeerInfo(); // Обновляем информацию о пирах
+  updatePeerInfo()
 }
 
-// Функция обновления имени курсора
-function updateCursorName(id, name) {
-  const el = cursors[id];
-  if (el) {
-    const txt = el.querySelector('p'); // Находим элемент текста
-    if (txt) {
-      txt.innerText = name; // Обновляем текст
-    }
-  }
-}
-
-// Функция обновления информации о пирах
 function updatePeerInfo() {
-  const count = Object.keys(room.getPeers()).length; // Получаем количество пиров
-  if (peerInfo) {
-    peerInfo.innerHTML = count
-      ? `Right now <em>${count}</em> other peer${count === 1 ? ' is' : 's are'} connected with you.`
-      : noPeersCopy; // Обновляем текст информации
+  const count = Object.keys(room.getPeers()).length
+  peerInfo.innerHTML = count
+    ? `Right now <em>${count}</em> other peer${
+        count === 1 ? ' is' : 's are'
+      } connected with you. Click to send them some fruit.`
+    : noPeersCopy
+}
+
+function dropFruit([fruitIndex, x, y]) {
+  const fruit = fruits[fruitIndex]
+  if (!fruit || typeof x !== 'number' || typeof y !== 'number') {
+    return
   }
+
+  const el = document.createElement('div')
+  el.className = 'fruit'
+  el.innerText = fruit
+  el.style.left = x * innerWidth + 'px'
+  el.style.top = y * innerHeight + 'px'
+  canvas.appendChild(el)
+  setTimeout(() => canvas.removeChild(el), 3000)
 }
