@@ -5,57 +5,6 @@ const config = {
   appId: 'your-app-id', // Замените 'your-app-id' на ваш реальный appId
 };
 
-
-
-
-
-let playerName = localStorage.getItem('name');
-if (!playerName) {
-  playerNameContainer.style.display = 'flex';
-  playerInput.addEventListener('change', (event) => {
-    playerName = event.target.value;
-    localStorage.setItem('name', playerName); // Сохраняем имя в localStorage
-  });
-}
-
-const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
-
-// Отправка и получение данных игрока
-const [sendName, getName] = room.makeAction('playerName');
-const [sendMousePos, getMousePos] = room.makeAction('mousePos');
-const [sendAsteroid, getAsteroid] = room.makeAction('asteroid');
-
-// Создание и отображение сообщений
-function addMessage(message) {
-  const newMessage = document.createElement('div');
-  newMessage.textContent = message;
-  messageBox.appendChild(newMessage); 
-  setTimeout(() => {
-    messageBox.removeChild(newMessage);
-  }, 5000);
-}
-
-// Логика подключения и отключения игроков
-room.onPeerJoin(peerId => {
-  console.log(`${peerId} joined`);
-  sendName(playerName); // Отправляем свое имя другим игрокам
-  addCursor(peerId); // Добавляем курсор для нового игрока
-});
-
-room.onPeerLeave(peerId => {
-  console.log(`${peerId} left`);
-  addMessage(`${playerName} left the game`);
-  removeCursor(peerId); // Удаляем курсор, когда игрок выходит
-});
-
-getName((name, peerId) => {
-  console.log(`${name} joined the game (ID: ${peerId})`);
-  addMessage(`${name} joined the game`);
-});
-
-// Пример использования selfId
-console.log(`My information (${playerName}, ${selfId})`);
-
 const byId = document.getElementById.bind(document)
 const canvas = byId('canvas')
 const peerInfo = byId('peer-info')
@@ -198,3 +147,54 @@ function dropFruit([fruitIndex, x, y]) {
   canvas.appendChild(el)
   setTimeout(() => canvas.removeChild(el), 3000)
 }
+
+
+
+
+let playerName = localStorage.getItem('name');
+if (!playerName) {
+  playerNameContainer.style.display = 'flex';
+  playerInput.addEventListener('change', (event) => {
+    playerName = event.target.value;
+    localStorage.setItem('name', playerName); // Сохраняем имя в localStorage
+  });
+}
+
+const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
+
+// Отправка и получение данных игрока
+const [sendName, getName] = room.makeAction('playerName');
+const [sendMousePos, getMousePos] = room.makeAction('mousePos');
+const [sendAsteroid, getAsteroid] = room.makeAction('asteroid');
+
+// Создание и отображение сообщений
+function addMessage(message) {
+  const newMessage = document.createElement('div');
+  newMessage.textContent = message;
+  messageBox.appendChild(newMessage); 
+  setTimeout(() => {
+    messageBox.removeChild(newMessage);
+  }, 5000);
+}
+
+// Логика подключения и отключения игроков
+room.onPeerJoin(peerId => {
+  console.log(`${peerId} joined`);
+  sendName(playerName); // Отправляем свое имя другим игрокам
+  addCursor(peerId); // Добавляем курсор для нового игрока
+});
+
+room.onPeerLeave(peerId => {
+  console.log(`${peerId} left`);
+  addMessage(`${playerName} left the game`);
+  removeCursor(peerId); // Удаляем курсор, когда игрок выходит
+});
+
+getName((name, peerId) => {
+  console.log(`${name} joined the game (ID: ${peerId})`);
+  addMessage(`${name} joined the game`);
+});
+
+// Пример использования selfId
+console.log(`My information (${playerName}, ${selfId})`);
+
