@@ -4,52 +4,55 @@ import { joinRoom, selfId } from 'trystero';
 const config = {
   appId: 'your-app-id', // Замените 'your-app-id' на ваш реальный appId
 };
- 
-const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId 
+
+// Функция для отображения сообщений на экране и их удаления через 5 секунд
+function addMessage(message) {
+  const messageBox = document.querySelector('.messages'); // Элемент с классом "messages"
+  const newMessage = document.createElement('div');
+  newMessage.textContent = message;
+  messageBox.appendChild(newMessage);
+
+   // Удаляем сообщение через 5 секунд
+ setTimeout(() => {
+  messageBox.removeChild(newMessage);
+}, 5000);
+} 
 
 
-
+// Проверяем наличие имени в localStorage и запрашиваем, если его нет
 let playerName = localStorage.getItem('name');
 if (!playerName) {
   playerNameContainer.style.display = 'flex';
+// Обрабатываем ввод имени
   playerInput.addEventListener('change', (event) => {
     playerName = event.target.value;
-    localStorage.setItem('name', playerName); // Сохраняем имя в localStorage
-  });
+  localStorage.setItem('name', playerName); // Сохраняем имя в localStorage
+  })
 }
+// Инициализация и присоединение к комнате
+const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
 
-
-
-// Отправка и получение данных игрока
+// Отправка имени другим игрокам
 const [sendName, getName] = room.makeAction('playerName');
 
-
-// Создание и отображение сообщений
-function addMessage(message) {
-  const newMessage = document.createElement('div');
-  newMessage.textContent = message;
-  messageBox.appendChild(newMessage); 
-  setTimeout(() => {
-    messageBox.removeChild(newMessage);
-  }, 5000);
-}
-
-// Логика подключения и отключения игроков
+// Отправляем имя при подключении
 room.onPeerJoin(peerId => {
   console.log(`${peerId} joined`);
-  sendName(playerName); // Отправляем свое имя другим игрокам 
-});
-
-room.onPeerLeave(peerId => {
-  console.log(`${peerId} left`);
-  addMessage(`${playerName} left the game`);
+  sendName(playerName); // Отправляем свое имя
   });
 
-getName((name, peerId) => {
-  console.log(`${name} joined the game (ID: ${peerId})`);
-  addMessage(`${name} joined the game`);
+// Обработка выхода других игроков
+room.onPeerLeave(peerId => {
+  console.log(`${peerId} left`);
+  addMessage(`${playerName} left the game`)
 });
 
+// Получение имени других игроков
+getName((name, peerId) => {
+  console.log(`${name} joined the game (ID: ${peerId})`);
+  addMessage(`${name} joined the game)`);
+})
+
 // Пример использования selfId
-console.log(`My information (${playerName}, ${selfId})`);
+console.log(`My information (${playerName},${selfId})`); 
 
