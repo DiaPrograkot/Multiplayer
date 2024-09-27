@@ -37,7 +37,7 @@ function addMessage(message) {
 // Логика подключения и отключения игроков
 room.onPeerJoin(peerId => {
   console.log(`${peerId} joined`);
-  sendName(playerName); // Отправляем свое имя другим игрокам
+  sendName(playerName); // Отправляем свое имя другим игрокам 
 });
 
 room.onPeerLeave(peerId => {
