@@ -11,25 +11,10 @@ const messageBox = document.querySelector('.messages');
 const peerInfo = document.getElementById('peer-info'); 
 const playerNameContainer = document.getElementById('player-name-container');
 const playerInput = document.getElementById('player-input');
+const noPeersCopy = peerInfo ? peerInfo.innerText : 'No peers connected'
 
-// Массив с изображениями астероидов
-const shapes = [
-  'img/asteroid-purple.svg',
-  'img/green-asteroid.svg',
-  'img/orange-meteorite.svg',
-  'img/asteroid-black.svg',
-  'img/rock.svg',
-  'img/meteorite-white.svg',
-  'img/lightorange-asteroid.svg',
-  'img/rocky-asteroid.svg',
-  'img/purple-asteroid.svg',
-];
 
-// Выбираем случайный астероид для игрока
-function getRandomAsteroid() {
-  const randomIndex = Math.floor(Math.random() * shapes.length);
-  return shapes[randomIndex];
-}
+
 
 let playerName = localStorage.getItem('name');
 if (!playerName) {
@@ -78,71 +63,103 @@ getName((name, peerId) => {
 // Пример использования selfId
 console.log(`My information (${playerName}, ${selfId})`);
 
-// Курсоры игроков
-const cursors = {};
-let playerAsteroid = getRandomAsteroid(); // Случайный астероид для текущего игрока
+let mouseX = 0; // Позиция курсора по оси X
+let mouseY = 0; // Позиция курсора по оси Y
+let sendMove; // Функция для отправки движения курсора
 
-// Добавляем курсор (астероид) на экран
-function addCursor(peerId) {
-  const el = document.createElement('div');
-  const img = document.createElement('img');
-  const txt = document.createElement('p');
+document.addEventListener('DOMContentLoaded', () => {
+  // Находим элемент canvas после загрузки DOM
+  canvas = document.getElementById('canvas');
+  
+  if (canvas) {
+    init(); // Инициализируем функционал
+    document.documentElement.className = 'ready'; // Обозначаем, что всё готово
+    addCursor(selfId, true); // Добавляем собственный курсор
 
-  el.className = `cursor`;
-  el.style.left = el.style.top = '-99px'; // Начальное положение
-  img.src = peerId === selfId ? playerAsteroid : 'shapes'; // Используем собственный астероид для себя
-  txt.innerText = peerId === selfId ? 'you' : peerId.slice(0, 4); // Подпись курсора
+    // Обработчик движения мыши
+    document.addEventListener('mousemove', ({ clientX, clientY }) => {
+      // Нормализуем координаты курсора
+      mouseX = clientX / innerWidth;
+      mouseY = clientY / innerHeight;
+      moveCursor([mouseX, mouseY], myId); // Перемещаем собственный курсор
 
-  el.appendChild(img);
-  el.appendChild(txt);
+      if (room) {
+        sendMove([mouseX, mouseY]); // Отправляем координаты другим пользователям
+      }
+    });
+  }
+});
+
+// Функция инициализации
+function init() {
+  // Получаем функции для отправки и получения движений курсора
+  [sendMove] = room.makeAction('mouseMove');
+  
+  // Обработчики событий для присоединения и отключения пиров
+  room.onPeerJoin(addCursor);
+  room.onPeerLeave(removeCursor);
+  
+  // Получаем движения курсора от других пользователей
+  room.getMove(([x, y], peerId) => {
+    moveCursor([x, y], peerId); // Перемещаем курсор другого пользователя
+  });
+}
+
+// Функция перемещения курсора
+function moveCursor([x, y], id) {
+  const el = cursors[id]; // Получаем элемент курсора по id
+
+  if (el) {
+    // Корректируем положение курсора
+    const cursorWidth = 35;
+    const cursorHeight = 45;
+    el.style.left = (x * innerWidth - cursorWidth / 2) + 'px';
+    el.style.top = (y * innerHeight - cursorHeight / 2) + 'px';
+  }
+}
+
+// Функция добавления нового курсора
+function addCursor(id, isSelf) {
+  const el = document.createElement('div'); // Создаём элемент для курсора
+  const img = document.createElement('img'); // Создаём элемент изображения
+  const txt = document.createElement('p'); // Создаём элемент для текста
+
+  el.className = `cursor${isSelf ? ' self' : ''}`; // Назначаем класс
+  el.style.left = el.style.top = '-99px'; // Скрываем курсор вне экрана
+  img.src = 'src/img/hand.png'; // Устанавливаем изображение курсора
+  txt.innerText = isSelf ? playerName : ''; // Устанавливаем имя игрока
+  el.appendChild(img); // Добавляем изображение в элемент курсора
+  el.appendChild(txt); // Добавляем текст в элемент курсора
   canvas.appendChild(el); // Добавляем курсор на канвас
-  cursors[peerId] = el;
+  cursors[id] = el; // Сохраняем курсор в объекте cursors
+}
 
-  // Отправляем информацию о своем астероиде другим игрокам
-  if (peerId === selfId) {
-    sendAsteroid(playerAsteroid);
+// Функция удаления курсора
+function removeCursor(id) {
+  if (cursors[id]) {
+    canvas.removeChild(cursors[id]); // Удаляем курсор с канваса
+    delete cursors[id]; // Удаляем курсор из объекта cursors
+  }
+  updatePeerInfo(); // Обновляем информацию о пирах
+}
+
+// Функция обновления имени курсора
+function updateCursorName(id, name) {
+  const el = cursors[id];
+  if (el) {
+    const txt = el.querySelector('p'); // Находим элемент текста
+    if (txt) {
+      txt.innerText = name; // Обновляем текст
+    }
   }
 }
 
-// Удаляем курсор игрока
-function removeCursor(peerId) {
-  if (cursors[peerId]) {
-    canvas.removeChild(cursors[peerId]);
-    delete cursors[peerId];
-  }
-}
-
-// Движение курсора
-document.addEventListener('mousemove', (event) => {
-  const mousePos = { x: event.clientX / innerWidth, y: event.clientY / innerHeight };
-  if (cursors[selfId]) {
-    cursors[selfId].style.left = `${mousePos.x * innerWidth}px`;
-    cursors[selfId].style.top = `${mousePos.y * innerHeight}px`;
-  }
-  sendMousePos(mousePos); // Отправляем позицию мыши другим игрокам
-});
-
-// Получение движения мыши от других игроков
-getMousePos((mousePos, peerId) => {
-  const cursor = cursors[peerId];
-  if (cursor) {
-    cursor.style.left = `${mousePos.x * innerWidth}px`;
-    cursor.style.top = `${mousePos.y * innerHeight}px`;
-  }
-});
-
-// Получение астероидов от других игроков
-getAsteroid((asteroid, peerId) => {
-  const cursor = cursors[peerId];
-  if (cursor) {
-    cursor.querySelector('img').src = asteroid; // Меняем изображение астероида
-  }
-});
-
-// Обновление информации о пирах
+// Функция обновления информации о пирах
 function updatePeerInfo() {
-  const count = Object.keys(room.getPeers()).length;
-  peerInfo.innerHTML = count
-    ? `Right now <em>${count}</em> other peer${count === 1 ? ' is' : 's are'} connected with you.`
-    : 'No peers connected.';
+  const count = Object.keys(room.getPeers()).length; // Получаем количество пиров
+  if (peerInfo) {
+    peerInfo.innerHTML = count
+      ? `Right now <em>${count}</em> other peer${count === 1 ? ' is' : 's are'} connected with you.`
+      : noPeersCopy; // Обновляем текст информации
+  }
 }
