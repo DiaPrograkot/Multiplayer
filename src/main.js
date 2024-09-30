@@ -45,8 +45,20 @@ function initRoom() {
   getMove(([x, y], peerId) => moveCursor([x, y], peerId));
 
   // Получение и отправка имен игроков
-  getName((name, peerId) => handlePlayerName(name, peerId));
+// Получение имени других игроков
+getName((name, peerId) => {
+  const trimmedName = name ? name.trim() : 'Unknown Player';
+  
+  // Проверяем, изменилось ли имя или оно уже сохранено
+  if (!peerNames[peerId]) {  // Убедимся, что имя для этого peerId ещё не сохранено
+    peerNames[peerId] = trimmedName; // Сохраняем имя в объекте
+    console.log(`Сохраняем имя для игрока ${peerId}: ${trimmedName}`);
+    showNotification(`${trimmedName} joined`);  // Уведомление появляется только при новом подключении
 
+    // Если курсор уже существует, обновляем текст
+    updateCursorName(peerId); // Обновляем имя курсора
+  }
+});
   // Периодическая проверка пиров
   setInterval(checkPeers, 5000);
 }
