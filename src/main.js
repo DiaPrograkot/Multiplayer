@@ -29,16 +29,17 @@ let sendMove;
 // Инициализация комнаты и событий
 document.addEventListener('DOMContentLoaded', () => {
   canvas = document.getElementById('canvas');
-  if (canvas) {
-    initRoom();
-    addCursor(myId, true);  // Создаём курсор для себя
-    document.documentElement.className = 'ready';
-
-    // Отслеживание движения мыши для текущего игрока
-    document.addEventListener('mousemove', handleMouseMove);
-  } else {
+  if (!canvas) {
     console.error('Canvas element not found!');
+    return; // Если canvas не найден, завершить выполнение
   }
+
+  initRoom();
+  addCursor(myId, true); // Создаём курсор для себя
+  document.documentElement.className = 'ready';
+
+  // Отслеживание движения мыши для текущего игрока
+  document.addEventListener('mousemove', handleMouseMove);
 });
 
 // Инициализация комнаты
@@ -78,12 +79,17 @@ function moveCursor([x, y], id) {
     el.style.left = `${x * innerWidth}px`;
     el.style.top = `${y * innerHeight}px`;
     console.log(`Курсор ${id} перемещён: x=${x}, y=${y}`);  // Для отладки
+  } else {
+    console.error(`Курсор для игрока ${id} не найден или некорректные координаты`);
   }
 }
 
 // Добавление курсора
 function addCursor(id, isSelf) {
-  if (cursors[id]) return;  // Если курсор уже существует, ничего не делаем
+  if (cursors[id]) {
+    console.log(`Курсор для игрока ${id} уже существует.`);
+    return;  // Если курсор уже существует, ничего не делаем
+  }
 
   const el = document.createElement('div');
   const img = document.createElement('img');
@@ -109,6 +115,8 @@ function removeCursor(id) {
     canvas.removeChild(el);
     delete cursors[id];
     console.log(`Курсор удалён для игрока ${id}`);  // Для отладки
+  } else {
+    console.error(`Курсор для игрока ${id} не найден при попытке удаления.`);
   }
   updatePeerInfo();
 }
