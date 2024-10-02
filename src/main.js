@@ -44,13 +44,14 @@ const [sendCursor, getCursor] = room.makeAction('playerCursor');
 room.onPeerJoin(peerId => {
   console.log(`${peerId} joined`);
   sendName(playerName); // Отправляем свое имя
-  addMessage(`${peerId} joined the game`);
+  addMessage(`${playerName} joined the game`);
+  
 });
 
 // Обработка выхода игроков
 room.onPeerLeave(peerId => {
   console.log(`${peerId} left`);
-  addMessage(`${peerId} left the game`);
+  addMessage(`${playerName} left the game`);
   removeCursor(peerId); // Удаляем курсор игрока
 });
 
@@ -75,7 +76,6 @@ function createCursor(peerId, name) {
   const nameTag = document.createElement('div');
   nameTag.classList.add('cursor-name');
   nameTag.textContent = name;
- img.src="img/cursor-removebg-preview.png"
 
   cursor.appendChild(nameTag);
   document.body.appendChild(cursor);
@@ -103,17 +103,35 @@ function updateCursor(peerId, x, y) {
 document.addEventListener('mousemove', (event) => {
   const { clientX: x, clientY: y } = event;
   sendCursor({ x, y });
-  updateCursor(selfId, x, y); // Обновляем свой собственный курсор
+  updateCursor(selfId, x, y); // Обновляем только позицию курсора, не создаем новый
 });
+
 
 // Получаем координаты курсоров других игроков
 getCursor(({ x, y }, peerId) => {
   updateCursor(peerId, x, y); // Обновляем курсоры других игроков
 });
-// Обработчики событий
+// Создаем курсор для себя после получения playerName
+if (playerName) {
+  createCursor(selfId, playerName); // создаем курсор для текущего игрока один раз
+}
+// Удалить этот блок, так как он не нужен
 addEventListener('mousemove', ({ clientX, clientY }) => {
   const mouseX = clientX / innerWidth;
   const mouseY = clientY / innerHeight;
-  createCursor([mouseX, mouseY], selfId);
-  
+  createCursor([mouseX, mouseY], playerName); // Лишнее создание
 });
+
+function addCursor(playerName) {
+  const el = document.createElement('div');
+  const img = document.createElement('img');
+  const txt = document.createElement('p');
+  el.className = `cursor${isSelf ? ' self' : ''}`;
+  el.style.left = el.style.top = '-99px'; 
+
+  img.src = 'img/cursor-removebg-preview.png';
+  el.appendChild(img);
+  el.appendChild(txt);
+  canvas.appendChild(el);
+  cursors[id] = el;
+}

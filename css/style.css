@@ -625,17 +625,6 @@ body {
   font-size: 2rem;
  }
 
-
-
- /* Стили для курсоров игроков */
- .cursor {
-  position: absolute;
-  width: 15px;
-  height: 15px;
-  background-size: cover;
- 
-}
-
 /* Стили для имени под курсором */
 .cursor-name {
   position: absolute;
@@ -644,6 +633,8 @@ body {
   width: 100px;
   text-align: center;
   font-size: 12px;
-  color: white;
+  color: black;
 }
- 
+ * {
+   cursor: url('goodcursor.png');
+ }
