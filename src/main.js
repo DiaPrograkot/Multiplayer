@@ -44,26 +44,31 @@ const [sendCursor, getCursor] = room.makeAction('playerCursor');
 room.onPeerJoin(peerId => {
   console.log(`${peerId} joined`);
   sendName(playerName); // Отправляем свое имя
-  addMessage(`${playerName} joined the game`);
   
 });
 
 // Обработка выхода игроков
 room.onPeerLeave(peerId => {
-  console.log(`${peerId} left`);
-  addMessage(`${playerName} left the game`);
-  removeCursor(peerId); // Удаляем курсор игрока
-});
+  const player = players[peerId]; // Находим игрока по peerId
+  if (player) {
+    console.log(`${player.name} left`); // Показываем имя игрока, который вышел
+    addMessage(`${player.name} left the game`); // Показываем сообщение с именем игрока
+    removeCursor(peerId); // Удаляем курсор игрока
+    delete players[peerId]; // Удаляем игрока из списка
+  }
+}); 
 
 // Получение имени других игроков
 const players = {};
 
 getName((name, peerId) => {
-  console.log(`${name} joined the game (ID: ${peerId})`);
-  players[peerId] = { name }; // Сохраняем имя игрока
-  createCursor(peerId, name); // Создаем курсор для нового игрока
+  if (!players[peerId]) {
+    players[peerId] = { name }; // Сохраняем имя игрока
+    console.log(`${name} joined`); // Показываем имя игрока в консоли
+    addMessage(`${name} joined the game`); // Выводим сообщение о входе игрока
+    createCursor(peerId, name); // Создаем курсор для нового игрока
+  }
 });
-
 // Пример использования selfId
 console.log(`My information (${playerName}, ${selfId})`);
 
@@ -135,3 +140,11 @@ function addCursor(playerName) {
   canvas.appendChild(el);
   cursors[id] = el;
 }
+
+window.addEventListener('mousemove', e => sendCursor([e.clientX, e.clientY]))
+
+getCursor(([x, y], peerId) => {
+  const peerCursor = cursorMap[peerId]
+  peerCursor.style.left = x + 'px'
+  peerCursor.style.top = y + 'px'
+})
