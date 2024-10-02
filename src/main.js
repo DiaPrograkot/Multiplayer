@@ -8,7 +8,6 @@ const config = {
 const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
 console.log('Комната инициализирована:', room);
 
-// Основные переменные
 const cursors = {};
 const peerNames = {};
 let sendMove, getMove, sendName, getName;
@@ -28,8 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Отслеживание движения мыши
     document.addEventListener('mousemove', handleMouseMove);
-  } else {
-    console.error('Canvas element not found!');
   }
 });
 
@@ -38,25 +35,17 @@ function initRoom() {
   [sendMove, getMove] = room.makeAction('mouseMove');
   [sendName, getName] = room.makeAction('playerName');
 
-  room.onPeerJoin(peerId => handlePeerJoin(peerId));
-  room.onPeerLeave(peerId => handlePeerLeave(peerId));
+  room.onPeerJoin(handlePeerJoin);
+  room.onPeerLeave(handlePeerLeave);
 
-// Обработка движения курсора
-  getMove(([x, y], peerId) => moveCursor([x, y], peerId));
+  // Обработка движения курсора
+  getMove(([x, y], peerId) => {
+  moveCursor([x, y], peerId);
+  });
 
-// Получение имени других игроков
-getName((name, peerId) => {
-  const trimmedName = name ? name.trim() : 'Unknown Player';
-  
-  // Проверяем, изменилось ли имя или оно уже сохранено
-  if (!peerNames[peerId]) {  // Убедимся, что имя для этого peerId ещё не сохранено
-    peerNames[peerId] = trimmedName; // Сохраняем имя в объекте
-    console.log(`Сохраняем имя для игрока ${peerId}: ${trimmedName}`);
-    showNotification(`${trimmedName} joined`);  // Уведомление появляется только при новом подключении
-    // Если курсор уже существует, обновляем текст
-    updateCursorName(peerId); // Обновляем имя курсора
-  }
-});
+  // Получение имени других игроков
+  getName((name, peerId) => handlePlayerName(name, peerId));
+
   // Периодическая проверка пиров
   setInterval(checkPeers, 5000);
 }
@@ -75,6 +64,7 @@ function handleMouseMove({ clientX, clientY }) {
 function handlePeerJoin(peerId) {
   console.log('Игрок присоединился:', peerId);
   if (peerId !== selfId && playerName) {
+    console.log(`Отправка имени игрока: ${playerName} для ${peerId}`);
     sendName(playerName);
   }
 }
@@ -82,17 +72,23 @@ function handlePeerJoin(peerId) {
 function handlePeerLeave(peerId) {
   console.log(`Игрок с ID ${peerId} вышел.`);
   if (peerNames[peerId]) {
-    showNotification(`${peerNames[peerId]} left`);
+    showNotification(`${peerNames[peerId]} покинул игру`);
     delete peerNames[peerId];
   }
   removeCursor(peerId);
 }
 
 function handlePlayerName(name, peerId) {
-  const trimmedName = name ? name.trim() : 'Unknown Player';
-  peerNames[peerId] = trimmedName;
-  showNotification(`${trimmedName} joined`);
-  updateCursorName(peerId);
+  const trimmedName = name ? name.trim() : 'Неизвестный игрок';
+  console.log(`Получено имя для ${peerId}: ${trimmedName}`);
+
+  if (!peerNames[peerId]) {  // Проверка на существование имени
+    peerNames[peerId] = trimmedName;
+    showNotification(`${trimmedName} присоединился`);
+    addCursor(peerId, false); // Создаем курсор для нового игрока
+  } else {
+    console.log(`Имя для ${peerId} уже сохранено: ${peerNames[peerId]}`);
+  }
 }
 
 // Функции работы с курсорами
@@ -108,17 +104,18 @@ function addCursor(id, isSelf) {
   const el = document.createElement('div');
   const img = document.createElement('img');
   const txt = document.createElement('p');
+
   el.className = `cursor${isSelf ? ' self' : ''}`;
   el.style.left = el.style.top = '-99px'; // скрываем по умолчанию
 
   img.src = 'src/img/hand.png';
-  txt.innerText = isSelf ? playerName : 'Unknown Player';
+  txt.innerText = isSelf ? playerName : peerNames[id] || 'Неизвестный игрок';
   el.appendChild(img);
   el.appendChild(txt);
   canvas.appendChild(el);
   cursors[id] = el;
 
-  if (!isSelf) updateCursorName(id);
+  console.log(`Курсор добавлен для ${id}:`, el);
 }
 
 function removeCursor(id) {
@@ -126,6 +123,9 @@ function removeCursor(id) {
   if (el) {
     canvas.removeChild(el);
     delete cursors[id];
+    console.log(`Курсор ${id} удалён.`);
+  } else {
+    console.warn(`Не удалось удалить курсор, так как он не найден для ID: ${id}`);
   }
   updatePeerInfo();
 }
@@ -135,8 +135,11 @@ function updateCursorName(peerId) {
   if (cursor) {
     const txt = cursor.querySelector('p');
     if (txt) {
-      txt.innerText = peerNames[peerId] || 'Unknown Player';
+      txt.innerText = peerNames[peerId] || 'Неизвестный игрок';
+      console.log(`Обновлено имя курсора для ${peerId}: ${txt.innerText}`);
     }
+  } else {
+    console.warn(`Не удалось обновить имя курсора, так как курсор не найден для ${peerId}`);
   }
 }
 
@@ -147,7 +150,7 @@ function checkPeers() {
     if (!peers[peerId]) {
       const name = peerNames[peerId];
       if (name) {
-        showNotification(`${name} left`);
+        showNotification(`${name} покинул игру`);
         delete peerNames[peerId];
         removeCursor(peerId);
       }
@@ -160,8 +163,9 @@ function updatePeerInfo() {
   const count = Object.keys(room.getPeers()).length;
   if (peerInfo) {
     peerInfo.innerHTML = count
-      ? `Right now <em>${count}</em> other peer${count === 1 ? ' is' : 's are'} connected with you.`
+      ? `Сейчас с вами <em>${count}</em> другой игрок${count === 1 ? ' подключён' : 'и подключены'}.`
       : noPeersCopy;
+    console.log(`Количество подключённых пиров: ${count}`);
   }
 }
 
@@ -197,6 +201,9 @@ if (!playerName) {
       playerNameContainer.style.display = 'none';
       sendName(playerName);
       addCursor(selfId, true);
+      console.log(`Имя игрока установлено: ${playerName}`);
+    } else {
+      console.warn('Имя игрока не может быть пустым.');
     }
   });
 }
