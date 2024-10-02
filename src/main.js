@@ -39,6 +39,7 @@ const room = joinRoom(config, 'room-id'); // Замените 'room-id' на в�
 // Отправка имени другим игрокам
 const [sendName, getName] = room.makeAction('playerName');
 const [sendCursor, getCursor] = room.makeAction('playerCursor');
+const cursors = {};
 
 // Обработка новых игроков
 room.onPeerJoin(peerId => {
@@ -84,20 +85,16 @@ function createCursor(peerId, name) {
 
   cursor.appendChild(nameTag);
   document.body.appendChild(cursor);
-  console.log(`Creating cursor for ${name} (ID: ${peerId})`); // Отладочный вывод
+  cursors[peerId] = cursor; // Сохраняем курсор в объект cursors
+  console.log(`Creating cursor for ${name} (ID: ${peerId})`);
 }
 
-// Удаляем курсор игрока
-function removeCursor(peerId) {
-  const cursor = document.getElementById(`cursor-${peerId}`);
-  if (cursor) {
-    cursor.remove();
-  }
-}
+
+
 
 // Обновляем позицию курсора
 function updateCursor(peerId, x, y) {
-  const cursor = document.getElementById(`cursor-${peerId}`);
+  const cursor = cursors[peerId];
   if (cursor) {
     cursor.style.left = `${x}px`;
     cursor.style.top = `${y}px`;
@@ -108,18 +105,18 @@ function updateCursor(peerId, x, y) {
 document.addEventListener('mousemove', (event) => {
   const { clientX: x, clientY: y } = event;
   sendCursor({ x, y });
-  updateCursor(selfId, x, y); // Обновляем только позицию курсора, не создаем новый
+  updateCursor(selfId, x, y); // Обновляем только свой курсор
 });
-
 
 // Получаем координаты курсоров других игроков
 getCursor(({ x, y }, peerId) => {
   updateCursor(peerId, x, y); // Обновляем курсоры других игроков
-});
-// Создаем курсор для себя после получения playerName
+}); 
+
+// Создаем свой курсор при наличии имени
 if (playerName) {
-  createCursor(selfId, playerName); // создаем курсор для текущего игрока один раз
-}
+  createCursor(selfId, playerName); // Создаем курсор для текущего игрока
+} 
 // Удалить этот блок, так как он не нужен
 addEventListener('mousemove', ({ clientX, clientY }) => {
   const mouseX = clientX / innerWidth;
@@ -127,24 +124,31 @@ addEventListener('mousemove', ({ clientX, clientY }) => {
   createCursor([mouseX, mouseY], playerName); // Лишнее создание
 });
 
-function addCursor(playerName) {
-  const el = document.createElement('div');
-  const img = document.createElement('img');
-  const txt = document.createElement('p');
-  el.className = `cursor${isSelf ? ' self' : ''}`;
-  el.style.left = el.style.top = '-99px'; 
 
-  img.src = 'img/cursor-removebg-preview.png';
-  el.appendChild(img);
-  el.appendChild(txt);
-  canvas.appendChild(el);
-  cursors[id] = el;
+
+function addCursor(id, isSelf) {
+  const el = document.createElement('div')
+  const img = document.createElement('img')
+  const txt = document.createElement('p')
+
+  el.className = `cursor${isSelf ? ' self' : ''}`
+  el.style.left = el.style.top = '-99px'
+  img.src = 'img/hand.png'
+  txt.innerText = isSelf ? 'you' : id.slice(0, 4)
+  el.appendChild(img)
+  el.appendChild(txt)
+
+  cursors[id] = el
+
+  if (!isSelf) {
+    sendMove([Math.random() * 0.93, Math.random() * 0.93], id)
+    updatePeerInfo()
+  }
+
+
+  return el
+  
 }
 
-window.addEventListener('mousemove', e => sendCursor([e.clientX, e.clientY]))
 
-getCursor(([x, y], peerId) => {
-  const peerCursor = cursorMap[peerId]
-  peerCursor.style.left = x + 'px'
-  peerCursor.style.top = y + 'px'
-})
+
