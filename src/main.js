@@ -84,7 +84,7 @@ function handlePlayerName(name, peerId) {
 
   if (!peerNames[peerId]) {  // Проверка на существование имени
     peerNames[peerId] = trimmedName;
-    showNotification(`${trimmedName} присоединился`);
+    showNotification(`${trimmedName} joined`);
     addCursor(peerId, false); // Создаем курсор для нового игрока
   } else {
     console.log(`Имя для ${peerId} уже сохранено: ${peerNames[peerId]}`);
@@ -150,7 +150,7 @@ function checkPeers() {
     if (!peers[peerId]) {
       const name = peerNames[peerId];
       if (name) {
-        showNotification(`${name} покинул игру`);
+        showNotification(`${name} left`);
         delete peerNames[peerId];
         removeCursor(peerId);
       }
