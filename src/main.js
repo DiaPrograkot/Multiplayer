@@ -14,8 +14,6 @@ let sendMove, getMove, sendName, getName;
 let playerName = localStorage.getItem('name')?.trim();
 let mouseX = 0, mouseY = 0;
 let canvas = null;
-const peerInfo = document.getElementById('peer-info');
-const noPeersCopy = peerInfo ? peerInfo.innerText : 'No peers connected';
 
 // Инициализация комнаты и событий
 document.addEventListener('DOMContentLoaded', () => {
@@ -40,14 +38,11 @@ function initRoom() {
 
   // Обработка движения курсора
   getMove(([x, y], peerId) => {
-  moveCursor([x, y], peerId);
+    moveCursor([x, y], peerId);
   });
 
   // Получение имени других игроков
   getName((name, peerId) => handlePlayerName(name, peerId));
-
-  // Периодическая проверка пиров
-  setInterval(checkPeers, 5000);
 }
 
 // Обработчики событий
@@ -72,7 +67,7 @@ function handlePeerJoin(peerId) {
 function handlePeerLeave(peerId) {
   console.log(`Игрок с ID ${peerId} вышел.`);
   if (peerNames[peerId]) {
-    showNotification(`${peerNames[peerId]} покинул игру`);
+    showNotification(`${peerNames[peerId]} left`);
     delete peerNames[peerId];
   }
   removeCursor(peerId);
@@ -126,46 +121,6 @@ function removeCursor(id) {
     console.log(`Курсор ${id} удалён.`);
   } else {
     console.warn(`Не удалось удалить курсор, так как он не найден для ID: ${id}`);
-  }
-  updatePeerInfo();
-}
-
-function updateCursorName(peerId) {
-  const cursor = cursors[peerId];
-  if (cursor) {
-    const txt = cursor.querySelector('p');
-    if (txt) {
-      txt.innerText = peerNames[peerId] || 'Неизвестный игрок';
-      console.log(`Обновлено имя курсора для ${peerId}: ${txt.innerText}`);
-    }
-  } else {
-    console.warn(`Не удалось обновить имя курсора, так как курсор не найден для ${peerId}`);
-  }
-}
-
-// Функция для проверки текущих пиров
-function checkPeers() {
-  const peers = room.getPeers();
-  Object.keys(peerNames).forEach(peerId => {
-    if (!peers[peerId]) {
-      const name = peerNames[peerId];
-      if (name) {
-        showNotification(`${name} left`);
-        delete peerNames[peerId];
-        removeCursor(peerId);
-      }
-    }
-  });
-}
-
-// Обновление информации о пирах
-function updatePeerInfo() {
-  const count = Object.keys(room.getPeers()).length;
-  if (peerInfo) {
-    peerInfo.innerHTML = count
-      ? `Сейчас с вами <em>${count}</em> другой игрок${count === 1 ? ' подключён' : 'и подключены'}.`
-      : noPeersCopy;
-    console.log(`Количество подключённых пиров: ${count}`);
   }
 }
 
