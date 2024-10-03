@@ -10,10 +10,13 @@
   <body>
     <script type="module" src="./js/script.js" defer></script>
     <script src="dist/bundle.js"></script>
+    <div id="notifications"></div>
+        <div id="peer-info">No peers connected</div>
         <video autoplay muted loop draggable="false" class="videoContainer">
       <source src="video/earth.mp4" type="video/mp4" />
     </video>
     <div class="container">
+      <div id="canvas" class="canvas"></div>
       <div class="ship">
         <img src="img/murka3.png" alt="fighter" class="fighter" draggable="false" />
         <div class="flameContainer">
@@ -68,14 +71,6 @@
         <img src="img/milky-way.svg" alt="milky-way" class="planet spaceImg" />
       </div>
       <div class="lives"></div>
-    </div>
-
-    <!-- Добавляем интерфейс для чата -->
-    <div id="chatContainer">
-      <h1>Trystero Chat</h1>
-      <input type="text" id="message" placeholder="Введите сообщение" />
-      <button id="send">Отправить</button>
-      <ul id="messages"></ul>
     </div>
 
     <audio class="audio" loop>

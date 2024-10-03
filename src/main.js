@@ -3,32 +3,162 @@ import { joinRoom, selfId } from 'trystero';
 // Конфигурация для инициализации библиотеки
 const config = {
   appId: 'your-app-id', // Замените 'your-app-id' на ваш реальный appId
-  // Другие конфигурационные параметры, если они требуются
 };
 
-// Инициализация и присоединение к комнате
 const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
+console.log('Комната инициализирована:', room);
 
-// Пример использования функции joinRoom
-room.onPeerJoin(peerId => console.log(`${peerId} joined`));
-room.onPeerLeave(peerId => console.log(`${peerId} left`));
-room.onPeerStream((stream, peerId) => {
-  const video = document.createElement('video');
-  video.srcObject = stream;
-  video.autoplay = true;
-  document.body.appendChild(video);
+const cursors = {};
+const peerNames = {};
+let sendMove, getMove, sendName, getName;
+let playerName = localStorage.getItem('name')?.trim();
+let mouseX = 0, mouseY = 0;
+let canvas = null;
+
+// Инициализация комнаты и событий
+document.addEventListener('DOMContentLoaded', () => {
+  canvas = document.getElementById('canvas');
+  if (canvas) {
+    initRoom();
+    addCursor(selfId, true);
+    document.documentElement.className = 'ready';
+
+    // Отслеживание движения мыши
+    document.addEventListener('mousemove', handleMouseMove);
+  }
 });
 
-// Пример использования пользовательских действий
-const [sendMessage, getMessage] = room.makeAction('message');
+// Функция инициализации комнаты
+function initRoom() {
+  [sendMove, getMove] = room.makeAction('mouseMove');
+  [sendName, getName] = room.makeAction('playerName');
 
-// Отправка сообщения
-sendMessage('Hello, world!');
+  room.onPeerJoin(handlePeerJoin);
+  room.onPeerLeave(handlePeerLeave);
 
-// Получение сообщения
-getMessage((message, peerId) => {
-  console.log(`Received message from ${peerId}: ${message}`);
-});
+  // Обработка движения курсора
+  getMove(([x, y], peerId) => {
+    moveCursor([x, y], peerId);
+  });
 
-// Пример использования selfId
-console.log(`My peer ID is ${selfId}`);
+  // Получение имени других игроков
+  getName((name, peerId) => handlePlayerName(name, peerId));
+}
+
+// Обработчики событий
+function handleMouseMove({ clientX, clientY }) {
+  mouseX = clientX / innerWidth;
+  mouseY = clientY / innerHeight;
+  moveCursor([mouseX, mouseY], selfId);
+
+  if (room) {
+    sendMove([mouseX, mouseY]);
+  }
+}
+
+function handlePeerJoin(peerId) {
+  console.log('Игрок присоединился:', peerId);
+  if (peerId !== selfId && playerName) {
+    console.log(`Отправка имени игрока: ${playerName} для ${peerId}`);
+    sendName(playerName);
+  }
+}
+
+function handlePeerLeave(peerId) {
+  console.log(`Игрок с ID ${peerId} вышел.`);
+  if (peerNames[peerId]) {
+    showNotification(`${peerNames[peerId]} left`);
+    delete peerNames[peerId];
+  }
+  removeCursor(peerId);
+}
+
+function handlePlayerName(name, peerId) {
+  const trimmedName = name ? name.trim() : 'Неизвестный игрок';
+  console.log(`Получено имя для ${peerId}: ${trimmedName}`);
+
+  if (!peerNames[peerId]) {  // Проверка на существование имени
+    peerNames[peerId] = trimmedName;
+    showNotification(`${trimmedName} joined`);
+    addCursor(peerId, false); // Создаем курсор для нового игрока
+  } else {
+    console.log(`Имя для ${peerId} уже сохранено: ${peerNames[peerId]}`);
+  }
+}
+
+// Функции работы с курсорами
+function moveCursor([x, y], id) {
+  const el = cursors[id];
+  if (el) {
+    el.style.left = `${x * innerWidth}px`;
+    el.style.top = `${y * innerHeight}px`;
+  }
+}
+
+function addCursor(id, isSelf) {
+  const el = document.createElement('div');
+  const img = document.createElement('img');
+  const txt = document.createElement('p');
+
+  el.className = `cursor${isSelf ? ' self' : ''}`;
+  el.style.left = el.style.top = '-99px'; // скрываем по умолчанию
+
+  img.src = 'src/img/hand.png';
+  txt.innerText = isSelf ? playerName : peerNames[id] || 'Неизвестный игрок';
+  el.appendChild(img);
+  el.appendChild(txt);
+  canvas.appendChild(el);
+  cursors[id] = el;
+
+  console.log(`Курсор добавлен для ${id}:`, el);
+}
+
+function removeCursor(id) {
+  const el = cursors[id];
+  if (el) {
+    canvas.removeChild(el);
+    delete cursors[id];
+    console.log(`Курсор ${id} удалён.`);
+  } else {
+    console.warn(`Не удалось удалить курсор, так как он не найден для ID: ${id}`);
+  }
+}
+
+// Уведомления
+function showNotification(message) {
+  console.log('Уведомление:', message);
+  const notifications = document.getElementById('notifications');
+  const notification = document.createElement('div');
+  notification.className = 'notification';
+  notification.textContent = message;
+  notifications.appendChild(notification);
+
+  // Удаление уведомления через 3 секунды
+  setTimeout(() => {
+    notification.style.opacity = 0;
+    setTimeout(() => {
+      notifications.removeChild(notification);
+    }, 500);
+  }, 3000);
+}
+
+// Проверка имени игрока
+if (!playerName) {
+  const playerNameContainer = document.querySelector('.playerNameContainer');
+  const playerInput = document.querySelector('.playerInput');
+  const playerPlay = document.querySelector('.playerPlay');
+
+  playerNameContainer.style.display = 'flex';
+  playerPlay.addEventListener('click', () => {
+    playerName = playerInput.value.trim();
+    if (playerName) {
+      localStorage.setItem('name', playerName);
+      playerNameContainer.style.display = 'none';
+      sendName(playerName);
+      addCursor(selfId, true);
+      console.log(`Имя игрока установлено: ${playerName}`);
+    } else {
+      console.warn('Имя игрока не может быть пустым.');
+    }
+  });
+}
