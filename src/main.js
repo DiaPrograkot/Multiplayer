@@ -25,8 +25,7 @@ const playerInput = document.getElementById('playerInput');
 
 if (!playerName) {
   playerNameContainer.style.display = 'flex';
-
-  // Обрабатываем ввод имени
+// Обрабатываем ввод имени
   playerInput.addEventListener('change', (event) => {
     playerName = event.target.value;
     localStorage.setItem('name', playerName);
@@ -40,12 +39,13 @@ const room = joinRoom(config, 'room-id'); // Замените 'room-id' на в�
 const [sendName, getName] = room.makeAction('playerName');
 const [sendCursor, getCursor] = room.makeAction('playerCursor');
 const cursors = {};
+const players = {};
+console.log(`My information (${playerName}, ${selfId})`);
 
 // Обработка новых игроков
 room.onPeerJoin(peerId => {
   console.log(`${peerId} joined`);
   sendName(playerName); // Отправляем свое имя
-  
 });
 
 // Обработка выхода игроков
@@ -59,96 +59,64 @@ room.onPeerLeave(peerId => {
   }
 }); 
 
-// Получение имени других игроков
-const players = {};
-
 getName((name, peerId) => {
   if (!players[peerId]) {
     players[peerId] = { name }; // Сохраняем имя игрока
     console.log(`${name} joined`); // Показываем имя игрока в консоли
     addMessage(`${name} joined the game`); // Выводим сообщение о входе игрока
-    createCursor(peerId, name); // Создаем курсор для нового игрока
+    
+    // Если это ваш идентификатор, используем ваше имя
+    if (peerId === selfId) {
+      createCursor(peerId, playerName); // Создаем курсор с текстом "you" для себя
+    } else {
+      createCursor(peerId, name); // Создаем курсор для других игроков с их именем
+    }
   }
 });
-// Пример использования selfId
-console.log(`My information (${playerName}, ${selfId})`);
 
-// Создаем курсор для каждого игрока
-function createCursor(peerId, name) {
+function createCursor(peerId, playerName) {
   const cursor = document.createElement('div');
   cursor.classList.add('cursor');
-  cursor.id = `cursor-${peerId}`;
+  cursor.id = `cursor`;
 
   const nameTag = document.createElement('div');
   nameTag.classList.add('cursor-name');
-  nameTag.textContent = name;
+  nameTag.textContent = (peerId === selfId) ? 'Ты' : playerName; // Если это вы, показываем "Ты", иначе - имя игрока
 
+  // Убедитесь, что имя добавляется в курсор
   cursor.appendChild(nameTag);
   document.body.appendChild(cursor);
   cursors[peerId] = cursor; // Сохраняем курсор в объект cursors
-  console.log(`Creating cursor for ${name} (ID: ${peerId})`);
 }
 
-
-
-
-// Обновляем позицию курсора
-function updateCursor(peerId, x, y) {
-  const cursor = cursors[peerId];
-  if (cursor) {
-    cursor.style.left = `${x}px`;
-    cursor.style.top = `${y}px`;
+// Функция работы с курсорами
+function moveCursor([x, y], id) {
+  const el = cursors[id];
+  if (el) {
+    el.style.left = `${x * innerWidth}px`;
+    el.style.top = `${y * innerHeight}px`;
   }
 }
 
 // Отправляем текущие координаты курсора
 document.addEventListener('mousemove', (event) => {
-  const { clientX: x, clientY: y } = event;
+  const { clientX, clientY } = event;
+  const x = clientX / innerWidth; // Нормализуем координату X
+  const y = clientY / innerHeight; // Нормализуем координату Y
   sendCursor({ x, y });
-  updateCursor(selfId, x, y); // Обновляем только свой курсор
+  moveCursor([x, y], selfId); // Обновляем только свой курсор
 });
 
 // Получаем координаты курсоров других игроков
 getCursor(({ x, y }, peerId) => {
-  updateCursor(peerId, x, y); // Обновляем курсоры других игроков
+  moveCursor([x, y], peerId); // Обновляем курсоры других игроков
 }); 
 
-// Создаем свой курсор при наличии имени
-if (playerName) {
-  createCursor(selfId, playerName); // Создаем курсор для текущего игрока
-} 
-// Удалить этот блок, так как он не нужен
-addEventListener('mousemove', ({ clientX, clientY }) => {
-  const mouseX = clientX / innerWidth;
-  const mouseY = clientY / innerHeight;
-  createCursor([mouseX, mouseY], playerName); // Лишнее создание
-});
-
-
-
-function addCursor(id, isSelf) {
-  const el = document.createElement('div')
-  const img = document.createElement('img')
-  const txt = document.createElement('p')
-
-  el.className = `cursor${isSelf ? ' self' : ''}`
-  el.style.left = el.style.top = '-99px'
-  img.src = 'img/hand.png'
-  txt.innerText = isSelf ? 'you' : id.slice(0, 4)
-  el.appendChild(img)
-  el.appendChild(txt)
-
-  cursors[id] = el
-
-  if (!isSelf) {
-    sendMove([Math.random() * 0.93, Math.random() * 0.93], id)
-    updatePeerInfo()
+// Функция для удаления курсора
+function removeCursor(peerId) {
+  const cursor = cursors[peerId]; // Находим курсор по peerId
+  if (cursor) {
+    document.body.removeChild(cursor); // Удаляем курсор из DOM
+    delete cursors[peerId]; // Удаляем курсор из объекта cursors
   }
-
-
-  return el
-  
 }
-
-
-

@@ -618,37 +618,22 @@ body {
  }
  .changeName {
   position: fixed;
-  bottom: 20px;
+  bottom: 30px;
   left: 300px;
   cursor: pointer;
   color: red;
-  font-size: 2rem;
+  font-size: 1.7rem;
+  font-weight: bold; /* Жирный шрифт для лучшей читаемости */
  }
 
- .cursor {
-  width: 32px; /* Ширина курсора */
-  height: 32px; /* Высота курсора */
-  background: url('img/hand.png') no-repeat center center; /* Используй своё изображение */
-  background-size: contain; /* Чтобы изображение не искажалось */
-  position: absolute;
-  pointer-events: none; /* Игнорировать события мыши для курсора */
-}
-
- .cursor.self p {
-  color: #000;
-  background-color: #fff;
-  font-size: 2rem;
-  padding: 0 0.5rem;
-}
-
-.cursor img {
-  width: 34px;
-  height: 46px;
-  image-rendering: pixelated;
-}
-
-.cursor p {
-  text-align: center;
-  font-size: 1.2rem;
-}
  
+.cursor-name {
+  font-size: 20px;  /* Размер текста */
+  color: yellow;
+  text-align: center;
+}
+
+.cursor {
+  position: absolute;
+  pointer-events: none; /* Чтобы курсор не мешал взаимодействию с другими элементами */
+}
