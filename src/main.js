@@ -2,81 +2,68 @@ import { joinRoom, selfId } from 'trystero';
 
 // Конфигурация для инициализации библиотеки
 const config = {
-  appId: 'your-app-id', // Замените 'your-app-id' на ваш реальный appId
+  appId: 'your-app-id', // Замените на ваш реальный appId
 };
 
 // Инициализация и присоединение к комнате
-const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
+const room = joinRoom(config, 'room-id');
 
-let nameStorage = localStorage.getItem('name'); // Получаем никнейм игрока или null, если нет
-let peers = {}; // Для хранения никнеймов других участников
+// Храним никнеймы других пользователей
+let peers = {};
 
-// Создаем действия для передачи никнеймов и сообщений
-const [sendName, receiveName] = room.makeAction('setName');
-const [sendMessage, getMessage] = room.makeAction('message');
+// Создаем действия для обмена никнеймами
+const [sendPlayerName, receivePlayerName] = room.makeAction('playerName');
 
-// Функция отправки никнейма после его ввода
-const submitNickname = () => {
-  const playerName = localStorage.getItem('name'); // После сохранения имени в localStorage
-  if (playerName) {
-    nameStorage = playerName; // Обновляем переменную
-    sendName(nameStorage); // Отправляем свое имя всем остальным
-    console.log(`Your name is ${nameStorage} and was sent to others`); // Логируем факт отправки имени
+// Функция для отображения никнейма
+const showPeerName = (peerId) => {
+  // Проверяем, что окошко startgame уже появилось
+  if (document.querySelector('.startgame').style.display === 'flex') {
+    console.log(`${peers[peerId] || peerId} joined`);
   }
 };
 
-// Обработка присоединения нового участника
-room.onPeerJoin(peerId => {
+// Добавляем функцию отправки никнейма после его ввода
+const sendNameAfterInput = () => {
+  let nameStorage = localStorage.getItem('name');
   if (nameStorage) {
-    // Если текущий пользователь уже имеет имя, отправляем его
-    sendName(nameStorage); 
+    sendPlayerName(nameStorage); // Отправляем своё имя другим участникам
   }
+};
 
-  console.log(`Peer ${peerId} joined. Known name: ${peers[peerId]}`); // Логируем, был ли у участника никнейм
+// Обработка подключения других пользователей
+room.onPeerJoin(peerId => {
+  console.log(`${peerId} joined`);
 
-  if (peers[peerId]) {
-    // Если у участника уже есть имя, выводим его
-    console.log(`${peers[peerId]} joined`);
+  // Отправляем свой ник новому пользователю только после старта игры
+  let nameStorage = localStorage.getItem('name');
+  if (nameStorage && document.querySelector('.startgame').style.display === 'flex') {
+    sendPlayerName(nameStorage); // Отправляем своё имя новому пользователю
   } else {
-    // Сохраняем участника в объекте без имени и ждем его ввода
-    peers[peerId] = null;
-    console.log(`${peerId} joined. Waiting for them to provide their name...`);
+    // Подписываемся на событие, когда никнейм будет введен
+    window.addEventListener('storage', sendNameAfterInput);
   }
+
 });
 
-// Получаем никнеймы от других участников
-receiveName((playerName, peerId) => {
-  console.log(`Received name "${playerName}" from peer ${peerId}`); // Логируем получение никнейма
-
-  if (playerName) {
-    // Если имя получено, обновляем его в объекте и выводим
-    peers[peerId] = playerName;
-    console.log(`${playerName} joined`);
-  } else {
-    console.log(`Failed to receive name from peer ${peerId}`);
-  }
-});
-
-// Обработка выхода участника
+// Обработка отключения пользователей
 room.onPeerLeave(peerId => {
-  console.log(`Peer ${peerId} is leaving. Known name: ${peers[peerId]}`); // Логируем выход участника
-  // При выходе выводим никнейм, если он есть, иначе peerId
   console.log(`${peers[peerId] || peerId} left`);
-  delete peers[peerId]; // Удаляем никнейм при выходе
+  delete peers[peerId]; // Удаляем никнейм из списка
 });
 
-// Если имени нет, ждем его ввода
-if (!nameStorage) {
-  // Следим за моментом, когда игрок вводит имя (например, нажатие на кнопку "Play")
-  document.getElementById('playerPlay').addEventListener('click', submitNickname);
-} else {
-  // Если имя уже есть, сразу отправляем его при подключении
-  sendName(nameStorage);
-}
+// Получаем никнеймы других пользователей
+receivePlayerName((name, peerId) => {
+  if (!peers[peerId]) {
+    peers[peerId] = name; // Сохраняем никнейм пользователя
+    showPeerName(peerId); // Показываем никнейм в консоли
+  }
+});
 
-// Получаем сообщения от других участников
-getMessage((message, peerId) => {
-  console.log(`${peers[peerId] || peerId}: ${message}`);
+// Отправляем никнейм только после ввода и подтверждения
+window.addEventListener('storage', function(event) {
+  if (event.key === 'name' && event.newValue) {
+    sendPlayerName(event.newValue); // Отправляем своё имя другим участникам после сохранения в localStorage
+  }
 });
 
 // Пример использования selfId

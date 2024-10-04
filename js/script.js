@@ -475,7 +475,9 @@ if (nameStorage) {
       localStorage.setItem('name', playerName);
       playerLabel.textContent = playerName;
       playerNameContainer.style.display = 'none';
+
       startgameFunc();
+      window.dispatchEvent(new Event('storage')); // Генерируем событие для отправки никнейма
     }
   });
 }
