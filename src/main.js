@@ -120,3 +120,4 @@ function removeCursor(peerId) {
     delete cursors[peerId]; // Удаляем курсор из объекта cursors
   }
 }
+  
