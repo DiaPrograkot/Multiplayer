@@ -4,17 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="shortcut icon" href="img/iconmurka.png" type="image/x-icon" />
+    <title> Multiplayer </title>
     <link rel="shortcut icon" href="img/iconmurka.png" type="image/x-icon" /> 
     <title> Lera3 </title>
   </head>
   <body>
     <script type="module" src="./js/script.js" defer></script>
     <script src="dist/bundle.js"></script>
+    <div id="notifications"></div>
+        <div id="peer-info">No peers connected</div>
         <video autoplay muted loop draggable="false" class="videoContainer">
       <source src="video/earth.mp4" type="video/mp4" />
     </video>
     </div>
     <div class="container">
+      <div id="canvas" class="canvas"></div>
       <div class="ship">
         <img src="img/murka3.png" alt="fighter" class="fighter" draggable="false" />
         <div class="flameContainer">
@@ -72,8 +77,6 @@
       <div class="lives"></div>
     </div>
 
-    <div class="messages"></div>
-    <div class='changeName'>Изменить имя</div>
     <audio class="audio" loop>
       <source src="music/space.mp3" type="audio/mpeg"/>
     </audio>

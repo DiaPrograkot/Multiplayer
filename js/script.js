@@ -222,7 +222,7 @@ const handleLaserShotKey = () => {
 document.addEventListener("keydown", (event) => {
   if (event.target.matches('input')) {
     return;
-  } 
+  }
   event.preventDefault(); // Это предотвращает стандартное поведение клавиши пробела
   if (event.code === "ArrowLeft" || event.code === "KeyA") {
     moveLeft = true;
@@ -235,7 +235,7 @@ document.addEventListener("keydown", (event) => {
 document.addEventListener("keyup", (event) => {
   if (event.target.matches('input')) {
     return;
-  } 
+  }
   if (event.code === "ArrowLeft" || event.code === "KeyA") {
     moveLeft = false;
   }
@@ -458,43 +458,55 @@ let startgameFunc = () => {
 
 showStars();
 let nameStorage = localStorage.getItem('name');
-console.log(nameStorage);
 
-// Если имя в localStorage 'undefined' или его можно изменить
 if (nameStorage && nameStorage !== 'undefined') {
   playerLabel.textContent = nameStorage;
   startgameFunc();
 } else {
   playerNameContainer.style.display = 'flex';
+
+  // Добавляем обработчик нажатия на кнопку "Play"
+  playerPlay.addEventListener('click', () => {
+    let playerName = playerInput.value.trim();
+
+    if (playerName) {
+      localStorage.setItem('name', playerName);
+      playerLabel.textContent = playerName;
+      playerNameContainer.style.display = 'none';
+      startgameFunc();
+    }
+  });
 }
 
-// Добавляем обработчик нажатия на кнопку "Play"
-playerPlay.addEventListener('click', () => {
-  let playerName = playerInput.value;
-
-  if (playerName) {
-    localStorage.setItem('name', playerName);
-    playerLabel.textContent = playerName;
-    playerNameContainer.style.display = 'none';
-    startgameFunc();
-  }
-
-  
- 
-});
-
-// Добавляем возможность изменить имя
-const changeNameButton = document.querySelector('.changeName'); // кнопка для изменения имени
-changeNameButton.addEventListener('click', () => {
+// Добавляем обработчик нажатия на playerLabel для изменения имени
+playerLabel.addEventListener('click', () => {
   playerNameContainer.style.display = 'flex';
-  startgame.style.display = "none";
-  gameover.style.display = "none";
-  playerInput.value = ''; // Очищаем поле ввода для нового имени
-  localStorage.removeItem('name'); // Удаляем сохраненное имя
-});
+  playerInput.value = playerLabel.textContent;
+  playerLabel.style.display = 'none';
+  startgame.style.display = 'none'; // Скрываем стартовое меню
+  gameover.style.display = 'none'; // Скрываем меню проигрыша
 
-// Обработка нажатий клавиш
-document.addEventListener('keydown', handleKeyDown);
+  // Добавляем обработчик нажатия на кнопку "Play" для сохранения нового имени
+  playerPlay.addEventListener('click', () => {
+    let playerName = playerInput.value.trim();
+
+    if (playerName) {
+      localStorage.setItem('name', playerName);
+      playerLabel.textContent = playerName;
+      playerNameContainer.style.display = 'none';
+      playerLabel.style.display = 'block';
+
+      // Восстанавливаем стартовое меню или меню проигрыша
+      if (startgame.style.display === 'none' && gameover.style.display === 'none') {
+        if (loss) {
+          gameover.style.display = 'flex'; // Показываем меню проигрыша
+        } else {
+          startgame.style.display = 'flex'; // Показываем стартовое меню
+        }
+      }
+    }
+  });
+});
 
 
 // Управление музыкой

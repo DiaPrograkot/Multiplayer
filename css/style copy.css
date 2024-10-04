@@ -520,3 +520,62 @@ body {
   background-color: #333;
   color: white;
 }
+#notifications {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+
+.notification {
+  background-color: #333;
+  color: white;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  opacity: 0.9;
+  transition: opacity 0.5s;
+  font-size: 18px; /* Увеличиваем размер текста */
+  text-align: center; /* Центрируем текст */
+}
+
+/* Скрываем курсор на всех элементах */
+* {
+  cursor: none !important; /* Принудительно скрываем курсор на всех элементах */
+}
+
+/* Скрываем курсор для всех интерактивных элементов, включая их активные состояния */
+button, a, input, select, textarea, label {
+  cursor: none !important;
+}
+
+button:hover, a:hover, input:hover, select:hover, textarea:hover, label:hover {
+  cursor: none !important; /* Принудительно скрываем курсор при наведении */
+}
+
+button:active, a:active, input:active, select:active, textarea:active, label:active {
+  cursor: none !important; /* Принудительно скрываем курсор при клике */
+}
+
+
+/* Стили для кастомного курсора */
+.cursor {
+  position: absolute;
+  width: 35px;  /* Размер кастомного курсора */
+  height: 45px;
+  transition: left 0.1s ease, top 0.1s ease;
+  pointer-events: none;
+}
+
+.cursor img {
+  width: 100%; /* Картинка заполняет весь элемент */
+  height: 100%;
+}
+
+.cursor p {
+  font-size: 20px;  /* Размер текста */
+  color: white;
+  text-align: center;
+}
+

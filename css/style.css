@@ -600,40 +600,62 @@ body {
   background-color: #333;
   color: white;
 }
-
-
-.messages {
-  position: fixed; /* Фиксированное положение, чтобы текст оставался на экране при прокрутке */
-  top: 0; /* Разместить текст сверху */
-  left: 50%; /* Центрирование по горизонтали */
-  transform: translateX(-50%); /* Центрирование элемента по горизонтали */
-  padding-top: 1rem; /* Отступ сверху */
-  color: #f52a2a; /* Цвет текста */
-  font-size: 1.5rem; /* Размер текста (небольшой) */
-  font-weight: bold; /* Жирный шрифт для лучшей читаемости */
-  text-align: center; /* Выравнивание текста по центру */
-  width: 100%; /* Ширина контейнера, чтобы текст всегда был по центру */
-  z-index: 1000; /* Высокий z-index, чтобы сообщения были поверх других элементов */
-
- }
- .changeName {
+#notifications {
   position: fixed;
-  bottom: 30px;
-  left: 300px;
-  cursor: pointer;
-  color: red;
-  font-size: 1.7rem;
-  font-weight: bold; /* Жирный шрифт для лучшей читаемости */
- }
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
 
- 
-.cursor-name {
+.notification {
+  background-color: #333;
+  color: white;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  opacity: 0.9;
+  transition: opacity 0.5s;
+  font-size: 18px; /* Увеличиваем размер текста */
+  text-align: center; /* Центрируем текст */
+}
+
+/* Скрываем курсор на всех элементах */
+* {
+  cursor: none !important; /* Принудительно скрываем курсор на всех элементах */
+}
+
+/* Скрываем курсор для всех интерактивных элементов, включая их активные состояния */
+button, a, input, select, textarea, label {
+  cursor: none !important;
+}
+
+button:hover, a:hover, input:hover, select:hover, textarea:hover, label:hover {
+  cursor: none !important; /* Принудительно скрываем курсор при наведении */
+}
+
+button:active, a:active, input:active, select:active, textarea:active, label:active {
+  cursor: none !important; /* Принудительно скрываем курсор при клике */
+}
+
+
+/* Стили для кастомного курсора */
+.cursor {
+  position: absolute;
+  width: 35px;  /* Размер кастомного курсора */
+  height: 45px;
+  transition: left 0.1s ease, top 0.1s ease;
+  pointer-events: none;
+}
+
+.cursor img {
+  width: 100%; /* Картинка заполняет весь элемент */
+  height: 100%;
+}
+
+.cursor p {
   font-size: 20px;  /* Размер текста */
-  color: yellow;
+  color: white;
   text-align: center;
 }
 
-.cursor {
-  position: absolute;
-  pointer-events: none; /* Чтобы курсор не мешал взаимодействию с другими элементами */
-}
