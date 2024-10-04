@@ -461,6 +461,11 @@ showStars();
 let nameStorage = localStorage.getItem('name');
 console.log(nameStorage);
 
+function updatePlayerName(newName) {
+  localStorage.setItem('name', newName);
+  playerLabel.textContent = newName;  // Обновляем отображение имени
+}
+
 if (nameStorage) {
   playerLabel.textContent = nameStorage;
   startgameFunc();
@@ -482,6 +487,39 @@ if (nameStorage) {
   });
 }
 
+let prevScreen = null;   // Для хранения предыдущего экрана (startgame или gameover)
+
+// При нажатии на имя
+playerLabel.addEventListener('click', () => {
+  playerNameContainer.style.display = 'flex';  // Показываем контейнер для изменения имени
+    // Сохраняем текущее состояние экрана (startgame или gameover)
+  if (document.querySelector('.startgame').style.display !== 'none') {
+    prevScreen = 'startgame';
+    document.querySelector('.startgame').style.display = 'none';  // Скрываем startgame
+  } else if (document.querySelector('.gameover').style.display !== 'none') {
+    prevScreen = 'gameover';
+    document.querySelector('.gameover').style.display = 'none';  // Скрываем gameover
+  }
+  isPaused = true;
+})
+
+  // При подтверждении нового имени
+  playerPlay.addEventListener('click', () => {
+    let playerName = playerInput.value;
+
+    if (playerName) {
+      updatePlayerName(playerName);  // Обновляем имя
+      playerNameContainer.style.display = 'none';  // Скрываем контейнер после изменения
+      isPaused = false;
+      // Если был экран startgame или gameover, возвращаем его
+      if (prevScreen === 'startgame') {
+        document.querySelector('.startgame').style.display = 'flex';
+      } else if (prevScreen === 'gameover') {
+        document.querySelector('.gameover').style.display = 'flex';
+    } 
+    prevScreen = null;  // Сбрасываем состояние экрана
+  }
+});
 
 document.addEventListener('keydown', handleKeyDown);
 

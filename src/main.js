@@ -14,12 +14,19 @@ let peers = {};
 // Создаем действия для обмена никнеймами
 const [sendPlayerName, receivePlayerName] = room.makeAction('playerName');
 
-// Функция для отображения никнейма
-const showPeerName = (peerId) => {
-  // Проверяем, что окошко startgame уже появилось
-  if (document.querySelector('.startgame').style.display === 'flex') {
-    console.log(`${peers[peerId] || peerId} joined`);
-  }
+// Функция для показа уведомления
+const showNotification = (message) => {
+  const notificationContainer = document.querySelector('.notificationContainer');
+  const notification = document.createElement('div');
+  notification.className = 'notification';
+  notification.textContent = message;
+
+  notificationContainer.appendChild(notification);
+
+  // Удаляем уведомление через 3 секунды
+  setTimeout(() => {
+    notification.remove();
+  }, 3000);
 };
 
 // Добавляем функцию отправки никнейма после его ввода
@@ -32,30 +39,33 @@ const sendNameAfterInput = () => {
 
 // Обработка подключения других пользователей
 room.onPeerJoin(peerId => {
-  console.log(`${peerId} joined`);
-
-  // Отправляем свой ник новому пользователю только после старта игры
   let nameStorage = localStorage.getItem('name');
+
+  // Если никнейм уже введен, отправляем его сразу
   if (nameStorage && document.querySelector('.startgame').style.display === 'flex') {
     sendPlayerName(nameStorage); // Отправляем своё имя новому пользователю
   } else {
     // Подписываемся на событие, когда никнейм будет введен
     window.addEventListener('storage', sendNameAfterInput);
   }
-
 });
 
 // Обработка отключения пользователей
 room.onPeerLeave(peerId => {
-  console.log(`${peers[peerId] || peerId} left`);
-  delete peers[peerId]; // Удаляем никнейм из списка
+  let name = peers[peerId];
+  if (name) {
+    showNotification(`${name} вышел из игры`);
+    delete peers[peerId]; // Удаляем никнейм из списка
+  }
 });
 
-// Получаем никнеймы других пользователей
+// Обработка получения никнейма от других пользователей
 receivePlayerName((name, peerId) => {
   if (!peers[peerId]) {
     peers[peerId] = name; // Сохраняем никнейм пользователя
-    showPeerName(peerId); // Показываем никнейм в консоли
+
+    // Показываем уведомление только после получения никнейма
+    showNotification(`${name} вошел в игру`);
   }
 });
 
