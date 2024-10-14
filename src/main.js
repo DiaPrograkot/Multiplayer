@@ -2,7 +2,7 @@ import { joinRoom, selfId } from 'trystero';
 
 // Конфигурация для инициализации библиотеки
 const config = {
-  appId: 'your-app-id', // Замените на ваш реальный appId
+  appId: 'my-multiplayer-game-12345',
 };
 
 // Инициализация и присоединение к комнате
@@ -13,40 +13,37 @@ let peers = {};
 
 // Создаем действия для обмена никнеймами
 const [sendPlayerName, receivePlayerName] = room.makeAction('playerName');
+// Создаем действия для уведомления об изменении имени
+const [sendNameUpdate, receiveNameUpdate] = room.makeAction('nameUpdate');
 
 // Функция для показа уведомления
 const showNotification = (message) => {
   const notificationContainer = document.querySelector('.notificationContainer');
-  const notification = document.createElement('div');
-  notification.className = 'notification';
-  notification.textContent = message;
+  if (notificationContainer) {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
 
-  notificationContainer.appendChild(notification);
+    notificationContainer.appendChild(notification);
 
-  // Удаляем уведомление через 3 секунды
-  setTimeout(() => {
-    notification.remove();
-  }, 3000);
-};
-
-// Добавляем функцию отправки никнейма после его ввода
-const sendNameAfterInput = () => {
-  let nameStorage = localStorage.getItem('name');
-  if (nameStorage) {
-    sendPlayerName(nameStorage); // Отправляем своё имя другим участникам
+    // Удаляем уведомление через 3 секунды
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
   }
 };
 
 // Обработка подключения других пользователей
 room.onPeerJoin(peerId => {
+  console.log(`Peer joined: ${peerId}`);
   let nameStorage = localStorage.getItem('name');
 
-  // Если никнейм уже введен, отправляем его сразу
-  if (nameStorage && document.querySelector('.startgame').style.display === 'flex') {
-    sendPlayerName(nameStorage); // Отправляем своё имя новому пользователю
+  // Отправляем имя, если оно уже введено
+  if (nameStorage) {
+    console.log(`Отправляем имя: ${nameStorage} новому пользователю`);
+    sendPlayerName(nameStorage);
   } else {
-    // Подписываемся на событие, когда никнейм будет введен
-    window.addEventListener('storage', sendNameAfterInput);
+    console.warn('Имя пользователя отсутствует в localStorage');
   }
 });
 
@@ -56,6 +53,7 @@ room.onPeerLeave(peerId => {
   if (name) {
     showNotification(`${name} вышел из игры`);
     delete peers[peerId]; // Удаляем никнейм из списка
+    console.log(`Пользователь ${peerId} (${name}) вышел`);
   }
 });
 
@@ -63,17 +61,49 @@ room.onPeerLeave(peerId => {
 receivePlayerName((name, peerId) => {
   if (!peers[peerId]) {
     peers[peerId] = name; // Сохраняем никнейм пользователя
-
-    // Показываем уведомление только после получения никнейма
+    console.log(`Новый пользователь: ${name}, ID: ${peerId}`);
     showNotification(`${name} вошел в игру`);
+  } else {
+    console.log(`Обновление имени для пользователя с ID: ${peerId}`);
+    showNotification(`Пользователь ${peers[peerId]} изменил имя на ${name}`);
+    peers[peerId] = name; // Обновляем имя
   }
 });
 
-// Отправляем никнейм только после ввода и подтверждения
-window.addEventListener('storage', function(event) {
-  if (event.key === 'name' && event.newValue) {
-    sendPlayerName(event.newValue); // Отправляем своё имя другим участникам после сохранения в localStorage
+// Обработка получения обновленного имени
+receiveNameUpdate((newName, peerId) => {
+  if (peers[peerId]) {
+    const oldName = peers[peerId];
+    peers[peerId] = newName;
+    console.log(`Пользователь с ID ${peerId} изменил имя с "${oldName}" на "${newName}"`);
+    showNotification(`${oldName} изменил имя на ${newName}`);
   }
+});
+
+// Отправка никнейма после подтверждения
+document.addEventListener('DOMContentLoaded', () => {
+  const confirmButton = document.querySelector('.confirm-button');
+  if (!confirmButton) {
+    console.warn("Кнопка подтверждения имени не найдена в DOM");
+    return; // Остановка выполнения кода, так как элемента нет
+  }
+
+  confirmButton.addEventListener('click', () => {
+    let name = document.querySelector('.playerInput').value; // Получаем введённое имя из поля ввода
+    if (name) {
+      const previousName = localStorage.getItem('name');
+      localStorage.setItem('name', name);
+      console.log(`Отправляем своё имя: ${name}`);
+      sendPlayerName(name);
+
+      // Если имя изменилось, отправляем уведомление об обновлении имени
+      if (previousName && previousName !== name) {
+        sendNameUpdate(name);
+      }
+    } else {
+      console.warn('Имя пользователя не введено');
+    }
+  });
 });
 
 // Пример использования selfId
