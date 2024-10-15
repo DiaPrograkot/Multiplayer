@@ -634,6 +634,15 @@ body {
   pointer-events: none; /* Чтобы курсоры не мешали взаимодействовать с другими элементами */
   transition: transform 0.1s linear;
 }
+.self-cursor {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: blue; /* Синий цвет, чтобы выделить ваш курсор */
+  border-radius: 50%;
+  pointer-events: none; /* Курсор не должен мешать взаимодействовать с другими элементами */
+  transition: transform 0.1s linear;
+}
 
 .cursor-name {
   background-color: #000;

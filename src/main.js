@@ -57,6 +57,19 @@ room.onPeerJoin(peerId => {
   document.body.appendChild(cursorElement);
   cursors[peerId] = cursorElement;
 });
+// Создаем элемент для отображения собственного курсора
+document.addEventListener('DOMContentLoaded', () => {
+  const selfCursorElement = document.createElement('div');
+  selfCursorElement.className = 'self-cursor';
+  selfCursorElement.innerHTML = `<div class="cursor-name">${localStorage.getItem('name') || 'You'}</div>`;
+  document.body.appendChild(selfCursorElement);
+
+  // Отслеживание движения мыши и обновление позиции собственного курсора
+  document.addEventListener('mousemove', (e) => {
+    selfCursorElement.style.left = `${e.clientX}px`;
+    selfCursorElement.style.top = `${e.clientY}px`;
+  });
+});
 
 // Обработка отключения пользователей
 room.onPeerLeave(peerId => {
