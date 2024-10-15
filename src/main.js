@@ -2,19 +2,22 @@ import { joinRoom, selfId } from 'trystero';
 
 // Конфигурация для инициализации библиотеки
 const config = {
-  appId: 'my-multiplayer-game-12345',
+  appId: 'your-app-id',
 };
 
 // Инициализация и присоединение к комнате
 const room = joinRoom(config, 'room-id');
 
-// Храним никнеймы других пользователей
+// Храним никнеймы и курсоры других пользователей
 let peers = {};
+let cursors = {};
 
 // Создаем действия для обмена никнеймами
 const [sendPlayerName, receivePlayerName] = room.makeAction('playerName');
 // Создаем действия для уведомления об изменении имени
 const [sendNameUpdate, receiveNameUpdate] = room.makeAction('nameUpdate');
+// Создаем действия для обмена координатами курсора (имя сокращено)
+const [sendCursorPosition, receiveCursorPosition] = room.makeAction('move');
 
 // Функция для показа уведомления
 const showNotification = (message) => {
@@ -45,6 +48,14 @@ room.onPeerJoin(peerId => {
   } else {
     console.warn('Имя пользователя отсутствует в localStorage');
   }
+
+  // Создаем HTML элемент для отображения курсора нового участника
+  const cursorElement = document.createElement('div');
+  cursorElement.className = 'peer-cursor';
+  cursorElement.id = `cursor-${peerId}`;
+  cursorElement.innerHTML = `<div class="cursor-name">${peers[peerId] || 'Unknown'}</div>`;
+  document.body.appendChild(cursorElement);
+  cursors[peerId] = cursorElement;
 });
 
 // Обработка отключения пользователей
@@ -54,6 +65,12 @@ room.onPeerLeave(peerId => {
     showNotification(`${name} вышел из игры`);
     delete peers[peerId]; // Удаляем никнейм из списка
     console.log(`Пользователь ${peerId} (${name}) вышел`);
+  }
+  
+  // Удаляем HTML элемент для курсора отключившегося участника
+  if (cursors[peerId]) {
+    cursors[peerId].remove();
+    delete cursors[peerId];
   }
 });
 
@@ -68,6 +85,11 @@ receivePlayerName((name, peerId) => {
     showNotification(`Пользователь ${peers[peerId]} изменил имя на ${name}`);
     peers[peerId] = name; // Обновляем имя
   }
+
+  // Обновляем имя на отображаемом курсоре
+  if (cursors[peerId]) {
+    cursors[peerId].querySelector('.cursor-name').textContent = name;
+  }
 });
 
 // Обработка получения обновленного имени
@@ -77,6 +99,11 @@ receiveNameUpdate((newName, peerId) => {
     peers[peerId] = newName;
     console.log(`Пользователь с ID ${peerId} изменил имя с "${oldName}" на "${newName}"`);
     showNotification(`${oldName} изменил имя на ${newName}`);
+
+    // Обновляем имя на отображаемом курсоре
+    if (cursors[peerId]) {
+      cursors[peerId].querySelector('.cursor-name').textContent = newName;
+    }
   }
 });
 
@@ -104,6 +131,21 @@ document.addEventListener('DOMContentLoaded', () => {
       console.warn('Имя пользователя не введено');
     }
   });
+
+  // Отслеживание движения мыши
+  document.addEventListener('mousemove', (e) => {
+    console.log(`Отправка координат курсора: (${e.clientX}, ${e.clientY})`);
+    sendCursorPosition({ x: e.clientX, y: e.clientY });
+  });
+});
+
+// Обработка получения координат курсора от других пользователей
+receiveCursorPosition((position, peerId) => {
+  console.log(`Получены координаты курсора от ${peerId}: (${position.x}, ${position.y})`);
+  if (cursors[peerId]) {
+    cursors[peerId].style.left = `${position.x}px`;
+    cursors[peerId].style.top = `${position.y}px`;
+  }
 });
 
 // Пример использования selfId
