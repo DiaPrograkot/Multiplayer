@@ -34,6 +34,21 @@ function showNotification(message) {
     }, 3000);
   }
 }
+// Функция для показа уведомлений о ролях
+function showRoleNotification(message) {
+  const roleNotificationContainer = document.querySelector('.roleNotificationContainer');
+  if (roleNotificationContainer) {
+    const notification = document.createElement('div');
+    notification.className = 'role-notification';
+    notification.textContent = message;
+    roleNotificationContainer.appendChild(notification);
+
+    // Удаляем уведомление через 3 секунды
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+  }
+}
 
 // Функция для создания курсора
 function createCursor(peerId, name, isSelf = false) {
@@ -109,11 +124,11 @@ function handleRoleSelection() {
         gameState.roles.cat = selfId;
         sendRoleChoice({ role: 'cat', peerId: selfId });
         console.log(`Игрок ${selfId} выбрал роль кота`);
-        showNotification('Вы выбрали роль кота');
+        showRoleNotification('Вы выбрали роль кота');
       } else {
         // Роль кота уже занята
         console.warn('Роль кота уже занята');
-        showNotification('Роль кота уже занята, выберите другую роль');
+        showRoleNotification('Роль кота уже занята, выберите другую роль');
       }
     }
   });
@@ -123,7 +138,7 @@ function handleRoleSelection() {
     if (gameState.roles.cat === selfId) {
       // Если игрок был котом, но хочет стать астероидом
       console.log('Игрок отказался быть котом и стал астероидом');
-      showNotification('Вы отказались от роли кота и стали астероидом');
+      showRoleNotification('Вы отказались от роли кота и стали астероидом');
       gameState.roles.cat = null; // Освобождаем роль кота
       sendRoleChoice({ role: 'leaveCat', peerId: selfId });
     }  else if (gameState.roles[selfId] !== 'asteroid') {
@@ -131,7 +146,7 @@ function handleRoleSelection() {
       gameState.roles[selfId] = 'asteroid';
       sendRoleChoice({ role: 'asteroid', peerId: selfId });
       console.log(`Игрок ${selfId} выбрал роль астероида`);
-      showNotification('Вы выбрали роль астероида');
+      showRoleNotification('Вы выбрали роль астероида');
     }
   });
 }
@@ -143,15 +158,15 @@ function handleReceiveRoleChoice(data) {
   if (role === 'cat') {
     gameState.roles.cat = peerId;
     console.log(`Игрок ${peerId} выбрал роль кота`);
-    showNotification(`Игрок ${peerId} выбрал роль кота`);
+    showRoleNotification(`Игрок ${peerId} выбрал роль кота`);
   } else if (role === 'leaveCat') {
     gameState.roles.cat = null;
     console.log(`Игрок ${peerId} отказался от роли кота`);
-    showNotification(`Игрок ${peerId} отказался от роли кота. Роль кота теперь свободна`);
+    showRoleNotification(`Игрок ${peerId} отказался от роли кота. Роль кота теперь свободна`);
   } else if (role === 'asteroid') {
     gameState.roles[peerId] = 'asteroid';
     console.log(`Игрок ${peerId} выбрал роль астероида`);
-    showNotification(`Игрок ${peerId} выбрал роль астероида`);
+    showRoleNotification(`Игрок ${peerId} выбрал роль астероида`);
   }
 }
 
