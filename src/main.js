@@ -8,23 +8,24 @@ const config = {
 // Инициализация и присоединение к комнате
 const room = joinRoom(config, 'room-id');
 
-// Храним никнеймы и курсоры других пользователей
+// Храним информацию об игроках и их курсорах
 let peers = {};
 let cursors = {};
+const gameState = { roles: { cat: null } };
 
 // Создаем действия
 const [sendPlayerName, receivePlayerName] = room.makeAction('playerName');
 const [sendNameUpdate, receiveNameUpdate] = room.makeAction('nameUpdate');
 const [sendCursorPosition, receiveCursorPosition] = room.makeAction('move');
+const [sendRoleChoice, receiveRoleChoice] = room.makeAction('roleChoice');
 
 // Функция для показа уведомления
-const showNotification = (message) => {
+function showNotification(message) {
   const notificationContainer = document.querySelector('.notificationContainer');
   if (notificationContainer) {
     const notification = document.createElement('div');
     notification.className = 'notification';
     notification.textContent = message;
-
     notificationContainer.appendChild(notification);
 
     // Удаляем уведомление через 3 секунды
@@ -32,20 +33,20 @@ const showNotification = (message) => {
       notification.remove();
     }, 3000);
   }
-};
+}
 
 // Функция для создания курсора
-const createCursor = (peerId, name, isSelf = false) => {
+function createCursor(peerId, name, isSelf = false) {
   const cursorElement = document.createElement('div');
   cursorElement.className = isSelf ? 'self-cursor' : 'peer-cursor';
   cursorElement.id = isSelf ? 'self-cursor' : `cursor-${peerId}`;
   cursorElement.innerHTML = `<div class="cursor-name">${name}</div>`;
   document.body.appendChild(cursorElement);
   return cursorElement;
-};
+}
 
 // Обработка подключения других пользователей
-room.onPeerJoin(peerId => {
+function handlePeerJoin(peerId) {
   console.log(`Peer joined: ${peerId}`);
   let nameStorage = localStorage.getItem('name');
 
@@ -59,22 +60,10 @@ room.onPeerJoin(peerId => {
 
   // Создаем курсор для нового участника
   cursors[peerId] = createCursor(peerId, peers[peerId] || 'Unknown');
-});
-
-// Создаем элемент для отображения собственного курсора
-document.addEventListener('DOMContentLoaded', () => {
-  const selfCursorElement = createCursor(selfId, localStorage.getItem('name') || 'You', true);
-
-  // Отслеживание движения мыши и обновление позиции собственного курсора
-  document.addEventListener('mousemove', (e) => {
-    selfCursorElement.style.left = `${e.clientX}px`;
-    selfCursorElement.style.top = `${e.clientY}px`;
-    sendCursorPosition({ x: e.clientX, y: e.clientY });
-  });
-});
+}
 
 // Обработка отключения пользователей
-room.onPeerLeave(peerId => {
+function handlePeerLeave(peerId) {
   let name = peers[peerId];
   if (name) {
     showNotification(`${name} вышел из игры`);
@@ -87,10 +76,10 @@ room.onPeerLeave(peerId => {
     delete cursors[peerId];
   }
   delete peers[peerId];
-});
+}
 
 // Обработка получения никнейма от других пользователей
-receivePlayerName((name, peerId) => {
+function handleReceivePlayerName(name, peerId) {
   if (!peers[peerId]) {
     peers[peerId] = name;
     console.log(`Новый пользователь: ${name}, ID: ${peerId}`);
@@ -105,51 +94,112 @@ receivePlayerName((name, peerId) => {
   if (cursors[peerId]) {
     cursors[peerId].querySelector('.cursor-name').textContent = name;
   }
-});
+}
 
-// Обработка получения обновленного имени
-receiveNameUpdate((newName, peerId) => {
-  if (peers[peerId]) {
-    const oldName = peers[peerId];
-    peers[peerId] = newName;
-    console.log(`Пользователь с ID ${peerId} изменил имя с "${oldName}" на "${newName}"`);
-    showNotification(`${oldName} изменил имя на ${newName}`);
+// Обработка выбора ролей
+function handleRoleSelection() {
+  const catImage = document.querySelector('.role-cat');
+  const asteroidImage = document.querySelector('.role-asteroid');
 
-    if (cursors[peerId]) {
-      cursors[peerId].querySelector('.cursor-name').textContent = newName;
-    }
-  }
-});
-
-// Отправка никнейма после подтверждения
-document.addEventListener('DOMContentLoaded', () => {
-  const confirmButton = document.querySelector('.confirm-button');
-  if (!confirmButton) {
-    console.warn("Кнопка подтверждения имени не найдена в DOM");
-    return;
-  }
-
-  confirmButton.addEventListener('click', () => {
-    let name = document.querySelector('.playerInput').value;
-    if (name) {
-      const previousName = localStorage.getItem('name');
-      localStorage.setItem('name', name);
-      console.log(`Отправляем своё имя: ${name}`);
-      sendPlayerName(name);
-
-      if (previousName && previousName !== name) {
-        sendNameUpdate(name);
+  // Обработка выбора роли "Кот"
+  catImage.addEventListener('click', () => {
+    if (gameState.roles.cat !== selfId) {
+      if (!gameState.roles.cat) {
+        // Игрок выбирает роль кота
+        gameState.roles.cat = selfId;
+        sendRoleChoice({ role: 'cat', peerId: selfId });
+        console.log(`Игрок ${selfId} выбрал роль кота`);
+        showNotification('Вы выбрали роль кота');
+      } else {
+        // Роль кота уже занята
+        console.warn('Роль кота уже занята');
+        showNotification('Роль кота уже занята, выберите другую роль');
       }
-    } else {
-      console.warn('Имя пользователя не введено');
     }
   });
-});
 
-// Обработка получения координат курсора от других пользователей
-receiveCursorPosition((position, peerId) => {
-  if (cursors[peerId]) {
-    cursors[peerId].style.left = `${position.x}px`;
-    cursors[peerId].style.top = `${position.y}px`;
+  // Обработка выбора роли "Астероид"
+  asteroidImage.addEventListener('click', () => {
+    if (gameState.roles.cat === selfId) {
+      // Если игрок был котом, но хочет стать астероидом
+      console.log('Игрок отказался быть котом и стал астероидом');
+      showNotification('Вы отказались от роли кота и стали астероидом');
+      gameState.roles.cat = null; // Освобождаем роль кота
+      sendRoleChoice({ role: 'leaveCat', peerId: selfId });
+    }  else if (gameState.roles[selfId] !== 'asteroid') {
+      // Игрок становится астероидом (если еще не был астероидом)
+      gameState.roles[selfId] = 'asteroid';
+      sendRoleChoice({ role: 'asteroid', peerId: selfId });
+      console.log(`Игрок ${selfId} выбрал роль астероида`);
+      showNotification('Вы выбрали роль астероида');
+    }
+  });
+}
+
+// Обработка получения выбора ролей от других участников
+function handleReceiveRoleChoice(data) {
+  const { role, peerId } = data;
+
+  if (role === 'cat') {
+    gameState.roles.cat = peerId;
+    console.log(`Игрок ${peerId} выбрал роль кота`);
+    showNotification(`Игрок ${peerId} выбрал роль кота`);
+  } else if (role === 'leaveCat') {
+    gameState.roles.cat = null;
+    console.log(`Игрок ${peerId} отказался от роли кота`);
+    showNotification(`Игрок ${peerId} отказался от роли кота. Роль кота теперь свободна`);
+  } else if (role === 'asteroid') {
+    gameState.roles[peerId] = 'asteroid';
+    console.log(`Игрок ${peerId} выбрал роль астероида`);
+    showNotification(`Игрок ${peerId} выбрал роль астероида`);
+  }
+}
+
+
+// Основной код
+room.onPeerJoin(handlePeerJoin);
+room.onPeerLeave(handlePeerLeave);
+receivePlayerName(handleReceivePlayerName);
+receiveRoleChoice(handleReceiveRoleChoice);
+
+// Создаем элемент для отображения собственного курсора
+document.addEventListener('DOMContentLoaded', () => {
+  const selfCursorElement = createCursor(selfId, localStorage.getItem('name') || 'You', true);
+
+  // Отслеживание движения мыши и обновление позиции собственного курсора
+  document.addEventListener('mousemove', (e) => {
+    selfCursorElement.style.left = `${e.clientX}px`;
+    selfCursorElement.style.top = `${e.clientY}px`;
+    sendCursorPosition({ x: e.clientX, y: e.clientY });
+  });
+
+  handleRoleSelection();
+
+  // Обработка получения координат курсора от других пользователей
+  receiveCursorPosition((position, peerId) => {
+    if (cursors[peerId]) {
+      cursors[peerId].style.left = `${position.x}px`;
+      cursors[peerId].style.top = `${position.y}px`;
+    }
+  });
+
+  // Отправка никнейма после подтверждения
+  const confirmButton = document.querySelector('.confirm-button');
+  if (confirmButton) {
+    confirmButton.addEventListener('click', () => {
+      let name = document.querySelector('.playerInput').value;
+      if (name) {
+        const previousName = localStorage.getItem('name');
+        localStorage.setItem('name', name);
+        console.log(`Отправляем своё имя: ${name}`);
+        sendPlayerName(name);
+
+        if (previousName && previousName !== name) {
+          sendNameUpdate(name);
+        }
+      } else {
+        console.warn('Имя пользователя не введено');
+      }
+    });
   }
 });

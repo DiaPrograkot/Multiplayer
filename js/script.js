@@ -157,7 +157,6 @@ let laserShot = () => {
   }
 };
 
-
 let moveAsteroid = (asteroid) => {
   const animate = () => {
     if (!isPaused) {
@@ -220,9 +219,9 @@ const handleLaserShotKey = () => {
 };
 
 document.addEventListener("keydown", (event) => {
-  if (event.target.matches('input')) {
+  if (event.target.matches("input")) {
     return;
-  } 
+  }
   event.preventDefault(); // Это предотвращает стандартное поведение клавиши пробела
   if (event.code === "ArrowLeft" || event.code === "KeyA") {
     moveLeft = true;
@@ -233,9 +232,9 @@ document.addEventListener("keydown", (event) => {
 });
 
 document.addEventListener("keyup", (event) => {
-  if (event.target.matches('input')) {
+  if (event.target.matches("input")) {
     return;
-  } 
+  }
   if (event.code === "ArrowLeft" || event.code === "KeyA") {
     moveLeft = false;
   }
@@ -245,10 +244,10 @@ document.addEventListener("keyup", (event) => {
 });
 
 const handleKeyDown = (event) => {
-  if (event.target.matches('input')) {
+  if (event.target.matches("input")) {
     return;
   }
-}
+};
 
 // Анимация
 function animate() {
@@ -388,8 +387,6 @@ const handleHardClick = () => {
   setDifficulty("hard");
 };
 
-let highscore = localStorage.getItem("highscore") || 0;
-document.getElementById("highscore").textContent = highscore;
 // Экран проигрыша
 let gameoverFunc = () => {
   loss = true;
@@ -458,70 +455,70 @@ let startgameFunc = () => {
 
 // Проверка имени игрока и запуск игры
 showStars();
-let nameStorage = localStorage.getItem('name');
+let nameStorage = localStorage.getItem("name");
 console.log(nameStorage);
 
 function updatePlayerName(newName) {
-  localStorage.setItem('name', newName);
-  playerLabel.textContent = newName;  // Обновляем отображение имени
+  localStorage.setItem("name", newName);
+  playerLabel.textContent = newName; // Обновляем отображение имени
 }
 
 if (nameStorage) {
   playerLabel.textContent = nameStorage;
   startgameFunc();
 } else {
-  playerNameContainer.style.display = 'flex';
+  playerNameContainer.style.display = "flex";
 
   // Добавляем обработчик нажатия на кнопку "Play"
-  playerPlay.addEventListener('click', () => {
+  playerPlay.addEventListener("click", () => {
     let playerName = playerInput.value;
 
     if (playerName) {
-      localStorage.setItem('name', playerName);
+      localStorage.setItem("name", playerName);
       playerLabel.textContent = playerName;
-      playerNameContainer.style.display = 'none';
+      playerNameContainer.style.display = "none";
 
       startgameFunc();
-      window.dispatchEvent(new Event('storage')); // Генерируем событие для отправки никнейма
+      window.dispatchEvent(new Event("storage")); // Генерируем событие для отправки никнейма
     }
   });
 }
 
-let prevScreen = null;   // Для хранения предыдущего экрана (startgame или gameover)
+let prevScreen = null; // Для хранения предыдущего экрана (startgame или gameover)
 
 // При нажатии на имя
-playerLabel.addEventListener('click', () => {
-  playerNameContainer.style.display = 'flex';  // Показываем контейнер для изменения имени
-    // Сохраняем текущее состояние экрана (startgame или gameover)
-  if (document.querySelector('.startgame').style.display !== 'none') {
-    prevScreen = 'startgame';
-    document.querySelector('.startgame').style.display = 'none';  // Скрываем startgame
-  } else if (document.querySelector('.gameover').style.display !== 'none') {
-    prevScreen = 'gameover';
-    document.querySelector('.gameover').style.display = 'none';  // Скрываем gameover
+playerLabel.addEventListener("click", () => {
+  playerNameContainer.style.display = "flex"; // Показываем контейнер для изменения имени
+  // Сохраняем текущее состояние экрана (startgame или gameover)
+  if (document.querySelector(".startgame").style.display !== "none") {
+    prevScreen = "startgame";
+    document.querySelector(".startgame").style.display = "none"; // Скрываем startgame
+  } else if (document.querySelector(".gameover").style.display !== "none") {
+    prevScreen = "gameover";
+    document.querySelector(".gameover").style.display = "none"; // Скрываем gameover
   }
   isPaused = true;
-})
+});
 
-  // При подтверждении нового имени
-  playerPlay.addEventListener('click', () => {
-    let playerName = playerInput.value;
+// При подтверждении нового имени
+playerPlay.addEventListener("click", () => {
+  let playerName = playerInput.value;
 
-    if (playerName) {
-      updatePlayerName(playerName);  // Обновляем имя
-      playerNameContainer.style.display = 'none';  // Скрываем контейнер после изменения
-      isPaused = false;
-      // Если был экран startgame или gameover, возвращаем его
-      if (prevScreen === 'startgame') {
-        document.querySelector('.startgame').style.display = 'flex';
-      } else if (prevScreen === 'gameover') {
-        document.querySelector('.gameover').style.display = 'flex';
-    } 
-    prevScreen = null;  // Сбрасываем состояние экрана
+  if (playerName) {
+    updatePlayerName(playerName); // Обновляем имя
+    playerNameContainer.style.display = "none"; // Скрываем контейнер после изменения
+    isPaused = false;
+    // Если был экран startgame или gameover, возвращаем его
+    if (prevScreen === "startgame") {
+      document.querySelector(".startgame").style.display = "flex";
+    } else if (prevScreen === "gameover") {
+      document.querySelector(".gameover").style.display = "flex";
+    }
+    prevScreen = null; // Сбрасываем состояние экрана
   }
 });
 
-document.addEventListener('keydown', handleKeyDown);
+document.addEventListener("keydown", handleKeyDown);
 
 // Управление музыкой
 let musicPlay = () => {
