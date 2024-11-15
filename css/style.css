@@ -47,6 +47,10 @@ body {
 }
 
 .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
@@ -411,13 +415,16 @@ body {
 .startplay, .play {
   cursor: pointer;
   position: absolute;
-  top: 60%;
-  -webkit-transition: all 0.5s ease;
+  bottom: 20%; /* Измените top на bottom и установите значение, чтобы кнопка отображалась ниже */
+  left: 50%;
+  transform: translateX(-50%); /* Центрируем кнопку по горизонтали */
+  z-index: 1; /* Убедитесь, что z-index меньше, чем у кнопок выбора игроков */
   transition: all 0.5s ease;
   color: rgba(190, 60, 60, 0.822);
   font-size: 10rem;
   cursor: pointer;
 }
+
 .playerPlay {
   cursor: pointer;
   margin-top: 2rem;
@@ -659,3 +666,37 @@ button:active, a:active, input:active, select:active, textarea:active, label:act
   text-align: center;
 }
 
+.choice-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 6rem;
+  margin-top: 4rem;
+  position: relative; /* Добавьте position: relative для контейнера кнопок выбора игроков */
+  z-index: 2; /* Убедитесь, что z-index больше, чем у кнопки "Играть" */
+}
+
+.choice-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 200px; /* Ширина кнопки */
+  height: 200px; /* Высота кнопки */
+  font-size: 1.5rem; /* Увеличенный размер шрифта */
+  cursor: pointer;
+  border: none;
+  border-radius: 10px; /* Более округлённые углы */
+  background-color: #ffdd1a;
+  transition: background-color 0.3s;
+  text-align: center;
+}
+
+.choice-button:hover {
+  background-color: #e6c200;
+}
+
+.choice-image {
+  width: 120px; /* Увеличенный размер изображения */
+  height: 120px;
+  margin-bottom: 1rem;
+}

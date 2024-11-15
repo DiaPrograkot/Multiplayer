@@ -1,86 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/style.css" />
-    <link rel="shortcut icon" href="img/iconmurka.png" type="image/x-icon" />
-    <title> Diana </title>
-  </head>
-  <body>
-    <script type="module" src="./js/script.js" defer></script>
-    <script src="dist/bundle.js"></script>
-    <div id="notifications"></div>
-        <div id="peer-info">No peers connected</div>
-        <video autoplay muted loop draggable="false" class="videoContainer">
-      <source src="video/earth.mp4" type="video/mp4" />
-    </video>
-    <div class="container">
-      <div id="canvas" class="canvas"></div>
-      <div class="ship">
-        <img src="img/murka3.png" alt="fighter" class="fighter" draggable="false" />
-        <div class="flameContainer">
-          <div class="fighterFlame">
-            <div class="red flame"></div>
-            <div class="orange flame"></div>
-            <div class="yellow flame"></div>
-            <div class="white flame"></div>
-          </div>
-        </div>
-      </div>
-      <div class="playerNameContainer">
-        <div class="playerTitle">Enter your name</div>
-        <input type="text" class="playerInput" autocomplete="off" />
-        <div class="playerPlay">Confirm</div>
-      </div>
-      <div class="startgame">
-        <div class="title">MURKA SENSEI Commander</div>
-        <div class="highscoreContainer">
-          <div class="highscore">High score: <span id="highscore">0</span></div>
-        </div>
-        <div class="difficulty">
-          <button class="easy">Easy</button>
-          <button class="medium">Medium</button>
-          <button class="hard">Hard</button>
-        </div>
-        <div class="startplay">▶</div>
-      </div>
-      <button id="pauseButton" class="pauseButton">▶</button>
-      <div class="gameover">
-        <div class="title">Gameover</div>
-        <div id="gameover">
-          <div>Your Score: <span id="yourscore"></span></div>
-          <div>High Score: <span id="highscore-display"></span></div>
-      </div>
-      <div class="difficulty-buttons">
-        <button class="easy">Easy</button>
-        <button class="medium">Medium</button>
-        <button class="hard">Hard</button>
-      </div>
-        <div class="play">▶</div>
-      </div>
-      <div class="counter">0</div>
-      <div class="playerLabel"></div>
-      <div class="toggleMusic">
-        <img src="img/speaker.svg" alt="toggle music" class="musicButton" />
-        <span class="muteSpeaker"></span>
-      </div>
-      <div class="backgroundContainer">
-        <img src="img/planet-earth.svg" alt="planet-earth" class="planet earthImg" />
-        <img src="img/planet-mars.svg" alt="planet-mars" class="planet marsImg" />
-        <img src="img/milky-way.svg" alt="milky-way" class="planet spaceImg" />
-      </div>
-      <div class="lives"></div>
-    </div>
 
-    <audio class="audio" loop>
-      <source src="music/space.mp3" type="audio/mpeg"/>
-    </audio>
-    <audio class="lasersound">
-      <source src="music/laser.mp3" type="audio/mpeg" />
-    </audio>
-    <audio class="crash">
-      <source src="music/crash.wav" type="audio/mpeg" />
-    </audio>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="shortcut icon" href="img/iconmurka.png" type="image/x-icon" />
+  <title> Diana </title>
+</head>
+<body>
+  <script type="module" src="./js/script.js" defer></script>
+  <script src="dist/bundle.js"></script>
+  <div id="notifications"></div>
+  <div id="peer-info">No peers connected</div>
+  <video autoplay muted loop draggable="false" class="videoContainer">
+    <source src="video/earth.mp4" type="video/mp4" />
+  </video>
+  <div class="container">
+    <div id="canvas" class="canvas"></div>
+    <div class="ship">
+      <img src="img/murka3.png" alt="fighter" class="fighter" draggable="false" />
+      <div class="flameContainer">
+        <div class="fighterFlame">
+          <div class="red flame"></div>
+          <div class="orange flame"></div>
+          <div class="yellow flame"></div>
+          <div class="white flame"></div>
+        </div>
+      </div>
+    </div>
+    <div class="playerNameContainer">
+      <div class="playerTitle">Enter your name</div>
+      <input type="text" class="playerInput" autocomplete="off" />
+      <div class="playerPlay">Confirm</div>
+    </div>
+    <div class="startgame">
+      <div class="title">MURKA SENSEI Commander</div>
+      <div class="choice-buttons">
+        <button class="choice-button ship-button">
+          <img src="img/murka3.png" alt="Ship" class="choice-image" />
+          Play as Cat
+        </button>
+        <button class="choice-button asteroid-button">
+          <img src="img/meteorite-white.svg" alt="Asteroid" class="choice-image" />
+          Play as Asteroid
+        </button>
+      </div>
+    </div>
+    <div class="playerLabel"></div>
+    <div class="toggleMusic">
+      <img src="img/speaker.svg" alt="toggle music" class="musicButton" />
+      <span class="muteSpeaker"></span>
+    </div>
+    <div class="backgroundContainer">
+      <img src="img/planet-earth.svg" alt="planet-earth" class="planet earthImg" />
+      <img src="img/planet-mars.svg" alt="planet-mars" class="planet marsImg" />
+      <img src="img/milky-way.svg" alt="milky-way" class="planet spaceImg" />
+    </div>
+    <div class="lives"></div>
+  </div>
+
+  <audio class="audio" loop>
+    <source src="music/space.mp3" type="audio/mpeg" />
+  </audio>
+  <audio class="lasersound">
+    <source src="music/laser.mp3" type="audio/mpeg" />
+  </audio>
+  <audio class="crash">
+    <source src="music/crash.wav" type="audio/mpeg" />
+  </audio>
+</body>
+
 </html>

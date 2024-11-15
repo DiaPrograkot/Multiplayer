@@ -45,9 +45,14 @@ body {
 }
 
 .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+  position: fixed;
 }
 
 .ship {
@@ -579,3 +584,37 @@ button:active, a:active, input:active, select:active, textarea:active, label:act
   text-align: center;
 }
 
+.choice-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 6rem;
+  margin-top: 4rem;
+  position: relative; /* Добавьте position: relative для контейнера кнопок выбора игроков */
+  z-index: 2; /* Убедитесь, что z-index больше, чем у кнопки "Играть" */
+}
+
+.choice-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 200px; /* Ширина кнопки */
+  height: 200px; /* Высота кнопки */
+  font-size: 1.5rem; /* Увеличенный размер шрифта */
+  cursor: pointer;
+  border: none;
+  border-radius: 10px; /* Более округлённые углы */
+  background-color: #ffdd1a;
+  transition: background-color 0.3s;
+  text-align: center;
+}
+
+.choice-button:hover {
+  background-color: #e6c200;
+}
+
+.choice-image {
+  width: 102px; /* Увеличенный размер изображения */
+  height: 120px;
+  margin-bottom: 1rem;
+}
