@@ -10,7 +10,7 @@ console.log("Комната инициализирована:", room);
 const cursors = {};
 const peerNames = {};
 const peerRoles = {};
-let sendMove, getMove, sendName, getName, sendRole, getRole, sendGameState, getGameState;
+let sendMove, getMove, sendName, getName, sendRole, getRole;
 let playerName = localStorage.getItem("name")?.trim();
 let playerRole = localStorage.getItem("role")?.trim();
 let mouseX = 0, mouseY = 0;
@@ -24,6 +24,8 @@ document.addEventListener("DOMContentLoaded", () => {
     addCursor(selfId, true);
     document.documentElement.className = "ready";
     document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
 
     const shipButton = document.querySelector(".ship-button");
     const asteroidButton = document.querySelector(".asteroid-button");
@@ -42,16 +44,45 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+const keysPressed = {};
+
+function handleKeyDown(event) {
+  keysPressed[event.key] = true;
+  updateAsteroidPosition();
+}
+
+function handleKeyUp(event) {
+  keysPressed[event.key] = false;
+}
+
+function updateAsteroidPosition() {
+  if (playerRole === 'asteroid' && roleSelected) {
+    let newX = mouseX;
+    let newY = mouseY;
+
+    if (keysPressed['ArrowUp']) newY -= 0.01;
+    if (keysPressed['ArrowDown']) newY += 0.01;
+    if (keysPressed['ArrowLeft']) newX -= 0.01;
+    if (keysPressed['ArrowRight']) newX += 0.01;
+
+    mouseX = newX;
+    mouseY = newY;
+
+    moveCursor([mouseX, mouseY], selfId);
+    if (room && roleSelected) {
+      sendMove([mouseX, mouseY]);
+    }
+  }
+}
+
 function initRoom() {
   [sendMove, getMove] = room.makeAction("mouseMove");
   [sendName, getName] = room.makeAction("playerName");
   [sendRole, getRole] = room.makeAction("playerRole");
-  [sendGameState, getGameState] = room.makeAction("gameState");
   room.onPeerJoin(handlePeerJoin);
   room.onPeerLeave(handlePeerLeave);
 
   getMove(([x, y], peerId) => {
-    console.log(`Получено движение курсора от ${peerId}: [${x}, ${y}]`);
     if (roleSelected && peerRoles[peerId]) {
       moveCursor([x, y], peerId);
     } else {
@@ -60,7 +91,6 @@ function initRoom() {
   });
   getName((name, peerId) => handlePlayerName(name, peerId));
   getRole((role, peerId) => handlePlayerRole(role, peerId));
-  getGameState((gameState) => updateGameState(gameState));
 
   if (playerName) {
     sendName(playerName);
@@ -75,8 +105,7 @@ function handleMouseMove({ clientX, clientY }) {
   mouseY = clientY / innerHeight;
   moveCursor([mouseX, mouseY], selfId);
   if (room && roleSelected) {
-    console.log(`Отправка движения курсора: [${mouseX}, ${mouseY}]`);
-    sendMove([mouseX, mouseY]);
+  sendMove([mouseX, mouseY]);
   }
 }
 
@@ -139,7 +168,6 @@ function moveCursor([x, y], id) {
   if (el) {
     el.style.left = `${x * innerWidth}px`;
     el.style.top = `${y * innerHeight}px`;
-    console.log(`Курсор перемещен для ${id}: [${x * innerWidth}, ${y * innerHeight}]`);
   } else {
     console.warn(`Курсор для ${id} не найден при попытке перемещения.`);
   }
@@ -208,8 +236,6 @@ function updateCursorName(id, name) {
     } else {
       console.warn(`Не удалось найти элемент p для курсора ${id}`);
     }
-  } else {
-    console.warn(`Не удалось найти курсор для ID: ${id}`);
   }
 }
 
@@ -249,35 +275,6 @@ if (!playerName) {
   });
 }
 
-function updateGameState(gameState) {
-  gameState.players.forEach((player) => {
-    const playerElement = document.getElementById(`player-${player.id}`);
-    if (playerElement) {
-      playerElement.style.left = `${player.x}px`;
-      playerElement.style.top = `${player.y}px`;
-    }
-  });
-
-  gameState.asteroids.forEach((asteroid) => {
-    const asteroidElement = document.getElementById(`asteroid-${asteroid.id}`);
-    if (asteroidElement) {
-      asteroidElement.style.left = `${asteroid.x}px`;
-      asteroidElement.style.top = `${asteroid.y}px`;
-    }
-  });
-}
-
-function getCurrentGameState() {
-  return {
-    players: [
-      { id: selfId, x: mouseX * innerWidth, y: mouseY * innerHeight },
-    ],
-    asteroids: [
-      { id: "asteroid1", x: 100, y: 100 },
-    ],
-  };
-}
-
 function handleRoleSelection(role) {
   console.log(`Playing as ${role.charAt(0).toUpperCase() + role.slice(1)}`);
   localStorage.setItem('role', role);
@@ -286,7 +283,6 @@ function handleRoleSelection(role) {
   updateCursor(selfId, role);
   console.log(`Отправка роли: ${playerRole}`);
   sendRole(playerRole);
-  startNewGame();
 
   const startgame = document.querySelector(".startgame");
   if (startgame) {
@@ -303,10 +299,4 @@ function handleRoleSelection(role) {
       updateCursorName(peerId, peerNames[peerId]); // Обновляем имя под курсором
     }
   });
-}
-
-function startNewGame() {
-  // Функция для начала новой игры
-  console.log("Новая игра началась");
-  // Дополнительные действия для начала новой игры
 }
