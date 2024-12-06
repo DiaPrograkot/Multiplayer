@@ -1,4 +1,16 @@
 import { joinRoom, selfId } from 'trystero';
+import {
+  createCursor, 
+  createOrRemoveCursor,
+  handlePeerJoin,
+  handlePeerLeave
+} from "./player.js"
+import {
+  selectRole,
+  handleRoleSelection,
+  handleReceiveRoleChoice
+} from "./roles.js"
+import { showNotification } from "./ui.js"
 
 // Конфигурация для инициализации библиотеки
 const config = {
@@ -19,80 +31,6 @@ const [sendNameUpdate, receiveNameUpdate] = room.makeAction('nameUpdate');
 const [sendCursorPosition, receiveCursorPosition] = room.makeAction('move');
 const [sendRoleChoice, receiveRoleChoice] = room.makeAction('roleChoice');
 
-// Функция для показа уведомления
-function showNotification(message) {
-  const notificationContainer = document.querySelector('.notificationContainer');
-  if (notificationContainer) {
-    const notification = document.createElement('div');
-    notification.className = 'notification';
-    notification.textContent = message;
-    notificationContainer.appendChild(notification);
-
-    // Удаляем уведомление через 3 секунды
-    setTimeout(() => {
-      notification.remove();
-    }, 3000);
-  }
-}
-// Функция для показа уведомлений о ролях
-function showRoleNotification(message) {
-  const roleNotificationContainer = document.querySelector('.roleNotificationContainer');
-  if (roleNotificationContainer) {
-    const notification = document.createElement('div');
-    notification.className = 'role-notification';
-    notification.textContent = message;
-    roleNotificationContainer.appendChild(notification);
-
-    // Удаляем уведомление через 3 секунды
-    setTimeout(() => {
-      notification.remove();
-    }, 3000);
-  }
-}
-
-// Функция для создания курсора
-function createCursor(peerId, name, isSelf = false) {
-  const cursorElement = document.createElement('div');
-  cursorElement.className = isSelf ? 'self-cursor' : 'peer-cursor';
-  cursorElement.id = isSelf ? 'self-cursor' : `cursor-${peerId}`;
-  cursorElement.innerHTML = `<div class="cursor-name">${name}</div>`;
-  document.body.appendChild(cursorElement);
-  return cursorElement;
-}
-
-// Обработка подключения других пользователей
-function handlePeerJoin(peerId) {
-  console.log(`Peer joined: ${peerId}`);
-  let nameStorage = localStorage.getItem('name');
-
-  // Отправляем имя, если оно уже введено
-  if (nameStorage) {
-    console.log(`Отправляем имя: ${nameStorage} новому пользователю`);
-    sendPlayerName(nameStorage);
-  } else {
-    console.warn('Имя пользователя отсутствует в localStorage');
-  }
-
-  // Создаем курсор для нового участника
-  cursors[peerId] = createCursor(peerId, peers[peerId] || 'Unknown');
-}
-
-// Обработка отключения пользователей
-function handlePeerLeave(peerId) {
-  let name = peers[peerId];
-  if (name) {
-    showNotification(`${name} вышел из игры`);
-    console.log(`Пользователь ${peerId} (${name}) вышел`);
-  }
-
-  // Удаляем HTML элемент для курсора отключившегося участника
-  if (cursors[peerId]) {
-    cursors[peerId].remove();
-    delete cursors[peerId];
-  }
-  delete peers[peerId];
-}
-
 // Обработка получения никнейма от других пользователей
 function handleReceivePlayerName(name, peerId) {
   if (!peers[peerId]) {
@@ -111,71 +49,16 @@ function handleReceivePlayerName(name, peerId) {
   }
 }
 
-// Обработка выбора ролей
-function handleRoleSelection() {
-  const catImage = document.querySelector('.role-cat');
-  const asteroidImage = document.querySelector('.role-asteroid');
-
-  // Обработка выбора роли "Кот"
-  catImage.addEventListener('click', () => {
-    if (gameState.roles.cat !== selfId) {
-      if (!gameState.roles.cat) {
-        // Игрок выбирает роль кота
-        gameState.roles.cat = selfId;
-        sendRoleChoice({ role: 'cat', peerId: selfId });
-        console.log(`Игрок ${selfId} выбрал роль кота`);
-        showRoleNotification('Вы выбрали роль кота');
-      } else {
-        // Роль кота уже занята
-        console.warn('Роль кота уже занята');
-        showRoleNotification('Роль кота уже занята, выберите другую роль');
-      }
-    }
-  });
-
-  // Обработка выбора роли "Астероид"
-  asteroidImage.addEventListener('click', () => {
-    if (gameState.roles.cat === selfId) {
-      // Если игрок был котом, но хочет стать астероидом
-      console.log('Игрок отказался быть котом и стал астероидом');
-      showRoleNotification('Вы отказались от роли кота и стали астероидом');
-      gameState.roles.cat = null; // Освобождаем роль кота
-      sendRoleChoice({ role: 'leaveCat', peerId: selfId });
-    }  else if (gameState.roles[selfId] !== 'asteroid') {
-      // Игрок становится астероидом (если еще не был астероидом)
-      gameState.roles[selfId] = 'asteroid';
-      sendRoleChoice({ role: 'asteroid', peerId: selfId });
-      console.log(`Игрок ${selfId} выбрал роль астероида`);
-      showRoleNotification('Вы выбрали роль астероида');
-    }
-  });
-}
-
-// Обработка получения выбора ролей от других участников
-function handleReceiveRoleChoice(data) {
-  const { role, peerId } = data;
-
-  if (role === 'cat') {
-    gameState.roles.cat = peerId;
-    console.log(`Игрок ${peerId} выбрал роль кота`);
-    showRoleNotification(`Игрок ${peerId} выбрал роль кота`);
-  } else if (role === 'leaveCat') {
-    gameState.roles.cat = null;
-    console.log(`Игрок ${peerId} отказался от роли кота`);
-    showRoleNotification(`Игрок ${peerId} отказался от роли кота. Роль кота теперь свободна`);
-  } else if (role === 'asteroid') {
-    gameState.roles[peerId] = 'asteroid';
-    console.log(`Игрок ${peerId} выбрал роль астероида`);
-    showRoleNotification(`Игрок ${peerId} выбрал роль астероида`);
-  }
-}
-
-
 // Основной код
-room.onPeerJoin(handlePeerJoin);
-room.onPeerLeave(handlePeerLeave);
+room.onPeerJoin((peerId) => handlePeerJoin(peerId, cursors, peers, sendPlayerName));
+room.onPeerLeave((peerId) => handlePeerLeave(peerId, cursors, peers, showNotification));
 receivePlayerName(handleReceivePlayerName);
-receiveRoleChoice(handleReceiveRoleChoice);
+receiveRoleChoice((data) => handleReceiveRoleChoice(data, gameState, showNotification, peers));
+
+function updateCursorPosition(cursorElement, position){
+  cursorElement.style.left = `${position.x}px`;
+  cursorElement.style.top = `${position.y}px`;
+}
 
 // Создаем элемент для отображения собственного курсора
 document.addEventListener('DOMContentLoaded', () => {
@@ -183,18 +66,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Отслеживание движения мыши и обновление позиции собственного курсора
   document.addEventListener('mousemove', (e) => {
-    selfCursorElement.style.left = `${e.clientX}px`;
-    selfCursorElement.style.top = `${e.clientY}px`;
+    updateCursorPosition(selfCursorElement, { x: e.clientX, y: e.clientY})
     sendCursorPosition({ x: e.clientX, y: e.clientY });
   });
 
-  handleRoleSelection();
+  handleRoleSelection(selfId, gameState, showNotification, sendRoleChoice);
 
   // Обработка получения координат курсора от других пользователей
   receiveCursorPosition((position, peerId) => {
     if (cursors[peerId]) {
-      cursors[peerId].style.left = `${position.x}px`;
-      cursors[peerId].style.top = `${position.y}px`;
+      updateCursorPosition(cursors[peerId], position)
     }
   });
 

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="/assets/iconmurka-BcJlP_EB.png" type="image/x-icon" />
+    <title> ZHANIYA </title>
+    <script type="module" crossorigin src="/assets/index-D9iIbsaU.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-FOMrKGhT.css">
+  </head>
+  <body>
+    <script src="dist/bundle.js"></script>
+        <video autoplay muted loop draggable="false" class="videoContainer">
+      <source src="/assets/earth-BqZrrSsu.mp4" type="video/mp4" />
+    </video>
+    <div class="container">
+      <div class="ship">
+        <img src="/assets/murka3-DGLYR7q_.png" alt="fighter" class="fighter" draggable="false" />
+        <div class="flameContainer">
+          <div class="fighterFlame">
+            <div class="red flame"></div>
+            <div class="orange flame"></div>
+            <div class="yellow flame"></div>
+            <div class="white flame"></div>
+          </div>
+        </div>
+      </div>
+      <div class="playerNameContainer">
+        <div class="playerTitle">Enter your name</div>
+        <input type="text" class="playerInput" autocomplete="off" />
+        <div class="playerPlay confirm-button">Confirm</div>
+      </div>
+      <div class="startgame">
+        <div class="title">MURKA SENSEI Commander</div>
+
+      
+        <!-- блок для выбора ролей -->
+        <div class="role-selection">
+          <div class="choose-cat">
+            <img src="/assets/murka3-DGLYR7q_.png" alt="Выбрать Кота" class="role-icon role-cat">
+          </div>
+          <div class="choose-asteroid">
+            <img src="/assets/rocky-asteroid-IRx2M3Ur.svg" alt="Выбрать Астероид" class="role-icon role-asteroid">
+          </div>
+        </div>
+        <div class="startplay">▶</div>
+      </div>
+      
+      <button id="pauseButton" class="pauseButton">▶</button>
+      <div class="gameover">
+        <div class="title">Gameover</div>
+        <div id="gameover">
+          <div>Your Score: <span id="yourscore"></span></div>
+          <div>High Score: <span id="highscore-display"></span></div>
+      </div>
+
+        <div class="play">▶</div>
+      </div>
+      <div class="counter">0</div>
+      <div class="playerLabel"></div>
+      <div class="toggleMusic">
+        <img src="data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='iso-8859-1'?%3e%3c!--%20Generator:%20Adobe%20Illustrator%2019.0.0,%20SVG%20Export%20Plug-In%20.%20SVG%20Version:%206.00%20Build%200)%20--%3e%3csvg%20version='1.1'%20id='Capa_1'%20xmlns='http://www.w3.org/2000/svg'%20xmlns:xlink='http://www.w3.org/1999/xlink'%20x='0px'%20y='0px'%20viewBox='0%200%20512%20512'%20style='enable-background:new%200%200%20512%20512;'%20xml:space='preserve'%3e%3cg%3e%3cg%3e%3cpath%20style='fill:%23E6E6E6'%20d='M358.414,21.311c-7.591-3.318-16.434,0.149-19.751,7.739c-3.317,7.59,0.148,16.434,7.739,19.751%20C428.771,84.795,481.996,166.123,482,255.996c0,89.878-53.228,171.209-135.605,207.202c-7.591,3.316-11.056,12.159-7.739,19.751%20c2.462,5.637,7.972,8.998,13.753,8.998c2.005,0,4.043-0.404,5.998-1.259C451.71,449.921,512,357.799,512,255.995%20C511.996,154.198,451.71,62.079,358.414,21.311z'/%3e%3c/g%3e%3c/g%3e%3cg%3e%3cg%3e%3cpath%20style='fill:%23E6E6E6'%20d='M362.413,137.053c-6.172-5.525-15.655-5.001-21.181,1.171c-5.525,6.173-5.001,15.655,1.171,21.181%20c27.452,24.575,43.196,59.782,43.196,96.594c0,36.811-15.745,72.019-43.196,96.594c-6.172,5.525-6.697,15.008-1.171,21.181%20c2.963,3.309,7.063,4.995,11.181,4.995c3.562,0,7.137-1.261,10-3.824c33.801-30.258,53.186-73.613,53.186-118.947%20C415.599,210.665,396.213,167.31,362.413,137.053z'/%3e%3c/g%3e%3c/g%3e%3cg%3e%3cg%3e%3cpath%20style='fill:%23E6E6E6'%20d='M262.78,57.852c-5.042-2.555-11.092-2.058-15.65,1.284l-116.54,85.461H15c-8.284,0-15,6.716-15,15v192.801%20c0,8.284,6.716,15,15,15h115.589l116.54,85.463c2.623,1.924,5.738,2.904,8.872,2.904c2.313,0,4.638-0.535,6.779-1.62%20c5.042-2.555,8.22-7.728,8.22-13.38V71.23C271,65.578,267.822,60.405,262.78,57.852z%20M240.999,411.162l-96.629-70.861%20c-2.573-1.887-5.68-2.904-8.871-2.904H30V174.597h105.499c3.19,0,6.298-1.018,8.87-2.903l96.63-70.861V411.162z'/%3e%3c/g%3e%3c/g%3e%3cg%3e%3c/g%3e%3cg%3e%3c/g%3e%3cg%3e%3c/g%3e%3cg%3e%3c/g%3e%3cg%3e%3c/g%3e%3cg%3e%3c/g%3e%3cg%3e%3c/g%3e%3cg%3e%3c/g%3e%3cg%3e%3c/g%3e%3cg%3e%3c/g%3e%3cg%3e%3c/g%3e%3cg%3e%3c/g%3e%3cg%3e%3c/g%3e%3cg%3e%3c/g%3e%3cg%3e%3c/g%3e%3c/svg%3e" alt="toggle music" class="musicButton" />
+        <span class="muteSpeaker"></span>
+      </div>
+      <div class="backgroundContainer">
+        <img src="/assets/planet-earth-BRatAWhy.svg" alt="planet-earth" class="planet earthImg" />
+        <img src="/assets/planet-mars-CKIiADOv.svg" alt="planet-mars" class="planet marsImg" />
+        <img src="/assets/milky-way-D99_NblK.svg" alt="milky-way" class="planet spaceImg" />
+      </div>
+      <div class="lives"></div>
+    </div>
+
+    <!-- Уведомления-->
+    <div class="notificationContainer"></div>
+    <div class="roleNotificationContainer"></div>
+
+
+    <audio class="audio" loop>
+      <source src="/assets/space-CJqCg6U7.mp3" type="audio/mpeg"/>
+    </audio>
+    <audio class="lasersound">
+      <source src="/assets/laser-B_zQoU10.mp3" type="audio/mpeg" />
+    </audio>
+    <audio class="crash">
+      <source src="/assets/crash-Bs80yyv6.wav" type="audio/mpeg" />
+    </audio>
+  </body>
+</html>
