@@ -626,24 +626,27 @@ body {
   font-size: 18px; /* Увеличиваем размер текста */
   text-align: center; /* Центрируем текст */
 }
-
 /* Скрываем курсор на всех элементах */
+/*
 * {
-  cursor: none !important; /* Принудительно скрываем курсор на всех элементах */
+  cursor: none !important;
 }
+*/
 
 /* Скрываем курсор для всех интерактивных элементов, включая их активные состояния */
+/*
 button, a, input, select, textarea, label {
   cursor: none !important;
 }
 
 button:hover, a:hover, input:hover, select:hover, textarea:hover, label:hover {
-  cursor: none !important; /* Принудительно скрываем курсор при наведении */
+  cursor: none !important;
 }
 
 button:active, a:active, input:active, select:active, textarea:active, label:active {
-  cursor: none !important; /* Принудительно скрываем курсор при клике */
+  cursor: none !important;
 }
+*/
 
 
 /* Стили для кастомного курсора */

@@ -13,8 +13,6 @@ let crash = document.querySelector(".crash");
 let toggleMusic = document.querySelector(".toggleMusic");
 let muteSpeaker = toggleMusic.querySelector(".muteSpeaker");
 let musicButton = toggleMusic.querySelector(".musicButton");
-let play = document.querySelector(".play");
-let startplay = document.querySelector(".startplay");
 let earth = document.querySelector(".earthImg");
 let mars = document.querySelector(".marsImg");
 let space = document.querySelector(".spaceImg");
@@ -219,11 +217,9 @@ space.addEventListener("click", (event) => {
 
 // Начало новой игры
 let startNewGame = () => {
-  loss = false;  
-  if(isPlayingAsShip){
-    ship.style.visibility = "visible";
-  }
+  loss = false;
   if (isPlayingAsShip) {
+    ship.style.visibility = "visible";
     document.addEventListener("click", laserShot);
     document.addEventListener("keydown", handleLaserShotKey);
     document.addEventListener("keyup", handleLaserShotKey);
@@ -310,25 +306,4 @@ toggleMusic.addEventListener("click", (event) => {
     audio.pause();
     muteSpeaker.style.opacity = "1";
   }
-});
-// Обработка выбора роли
-const shipButton = document.querySelector(".ship-button");
-const asteroidButton = document.querySelector(".asteroid-button");
-
-shipButton.addEventListener("click", () => {
-  // Логика для игры за корабль
-  console.log("Playing as Ship");
-  localStorage.setItem('role', 'ship'); // Сохраняем роль в localStorage
-  isPlayingAsShip = true;
-  startNewGame();
-  startgame.style.display = "none"; // Скрываем стартовое меню
-});
-
-asteroidButton.addEventListener("click", () => {
-  // Логика для игры за астероиды
-  console.log("Playing as Asteroid");
-  localStorage.setItem('role', 'asteroid'); // Сохраняем роль в localStorage
-  isPlayingAsShip = false;
-  startNewGame();
-  startgame.style.display = "none"; // Скрываем стартовое меню
 });
