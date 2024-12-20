@@ -1,24 +1,23 @@
-//логика движения астероида с инерцией
+// логика движения астероида с инерцией
 
 import { playerRole, roleSelected, keyboardInput } from './player.js';
 import { moveCursor } from './cursors.js';
 import { selfId, room, sendMove } from './init.js';
 
-let objectPos = { x: innerWidth / 2, y: innerHeight / 2 }; //Текущая позиция астероида
+let objectPos = { x: innerWidth / 2, y: innerHeight / 2 }; // Текущая позиция астероида
 let targetPos = { x: innerWidth / 2, y: innerHeight / 2 }; // Целевая позицию, к которой должен двигаться астероид (позиция курсора мыши).
-let objectVel = { x: 0, y: 0 }; //Текущую скорость
+let objectVel = { x: 0, y: 0 }; // Текущую скорость
 const objectMass = 0.5; // Масса объекта, мной подобранная для использования в коде (нужна в формуле ускорения)
 let isMoving = { value: false }; // Флаг, указывающий, движется ли астероид в данный момент.
 let isBraking = { value: false }; // Флаг, указывающий, тормозит ли астероид в данный момент.
 const inertiaCoefficient = Math.random() * 0.19 + 0.8; // Случайный коэффициент инерции от 0.8 до 0.99
 let lastTime = 0; // Хранит время последнего кадра анимации.
-let mousePos = { x: 0, y: 0 }; // координаты для масштабирования 
+let mousePos = { x: 0, y: 0 }; // координаты для масштабирования
 
 export { mousePos, targetPos, isMoving, isBraking };
 
 export function updateAsteroidPosition(dt) {
   if (playerRole === 'asteroid' && roleSelected) {
-    
     // Вычисление расстояния от астероида до курсора
     const dx = targetPos.x - objectPos.x;
     const dy = targetPos.y - objectPos.y;
@@ -41,7 +40,7 @@ export function updateAsteroidPosition(dt) {
       }
     } else {
       const forceMagnitude = 7000; // Величина силы (тоже подобранное мной значение)
-      const force = {  //Рассчет силы в конкретной ситуации
+      const force = {  // Рассчет силы в конкретной ситуации
         x: (dx / distance) * forceMagnitude,
         y: (dy / distance) * forceMagnitude
       };
@@ -97,7 +96,7 @@ function calculateAcceleration(force, mass) {
   };
 }
 
-// обновляет состояние игры 
+// обновляет состояние игры
 export function gameLoop(timestamp) {
   const dt = (timestamp - lastTime) / 1000;
   lastTime = timestamp;

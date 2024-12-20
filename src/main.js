@@ -1,6 +1,6 @@
 import { initRoom, handlePeerJoin, handlePeerLeave, handlePlayerName, handlePlayerRole } from './init.js';
 import { handleRoleSelection, handleKeyDown, handleKeyUp, updateKeyboardInput, playerName, playerRole, roleSelected, keysPressed, keyboardInput } from './player.js';
-import { moveCursor, addCursor, removeCursor, updateCursor, updateCursorName } from './cursors.js';
+import { moveCursor, addCursor, removeCursor, updateCursor, updateCursorName, showCursor } from './cursors.js';
 import { handleMouseMove, initEventListeners } from './events.js';
 import { updateAsteroidPosition, gameLoop } from './gameLoop.js';
 import { selfId } from './init.js'; // Импорт selfId
@@ -45,7 +45,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // Запуск основного цикла игры
     requestAnimationFrame(gameLoop);
   }
 });

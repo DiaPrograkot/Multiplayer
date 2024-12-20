@@ -7,46 +7,48 @@ const peerRoles = {};
 
 export { cursors, peerNames, peerRoles };
 
-//Обновляет позицию курсора на экране
+// Обновляет позицию курсора на экране
 export function moveCursor([x, y], id) {
   const el = cursors[id];
   if (el) {
     el.style.left = `${x * innerWidth}px`;
     el.style.top = `${y * innerHeight}px`;
+    console.log(`Moving cursor for ${id} to (${x * innerWidth}, ${y * innerHeight})`);
   }
 }
 
 export function addCursor(id, isSelf) {
+  console.log(`Adding cursor for ${id}`);
   if (!cursors[id]) {
     const el = document.createElement("div");
     const img = document.createElement("img");
     const txt = document.createElement("p");
 
     el.className = `cursor${isSelf ? " self" : ""}`;
-    el.style.left = `${innerWidth / 2}px`; // Устанавливаем начальную горизонтальную позицию в центре экрана
-    el.style.top = `${innerHeight / 2}px`; // Устанавливаем начальную вертикальную позицию в центре экрана
+    el.style.left = `${innerWidth / 2}px`;
+    el.style.top = `${innerHeight / 2}px`;
     el.style.display = 'none'; // Изначально скрываем курсор
     img.src = "src/img/hand.png";
 
     txt.innerText = isSelf ? playerName : peerNames[id] || "Неизвестный игрок";
     el.appendChild(img);
     el.appendChild(txt);
-    canvas.appendChild(el);
+    document.body.appendChild(el); // Убедитесь, что курсор добавляется в DOM
     cursors[id] = el;
   }
 }
 
-
-
 export function removeCursor(id) {
+  console.log(`Removing cursor for ${id}`);
   const el = cursors[id];
   if (el) {
-    canvas.removeChild(el);
+    document.body.removeChild(el); // Убедитесь, что курсор удаляется из DOM
     delete cursors[id];
   }
 }
 
 export function updateCursor(id, role) {
+  console.log(`Updating cursor for ${id} with role: ${role}`);
   const el = cursors[id];
   if (el) {
     const img = el.querySelector("img");
@@ -61,11 +63,19 @@ export function updateCursor(id, role) {
 }
 
 export function updateCursorName(id, name) {
+  console.log(`Updating cursor name for ${id} to: ${name}`);
   const el = cursors[id];
   if (el) {
     const txt = el.querySelector("p");
     if (txt) {
       txt.innerText = name;
     }
+  }
+}
+
+export function showCursor(id) {
+  const el = cursors[id];
+  if (el) {
+    el.style.display = 'block'; // Делаем курсор видимым
   }
 }
