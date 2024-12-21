@@ -5,7 +5,7 @@ import { showNotification } from './main.js';
 
 // Конфигурация и инициализация комнаты
 const config = { appId: "your-app-id" };
-const room = joinRoom(config, "room-id");
+const room = joinRoom(config, "room");
 console.log("Комната инициализирована:", room);
 // Переменные для отправки и получения данных (передвижения, имя, роль игрока)
 let sendMove, getMove, sendName, getName, sendRole, getRole;
@@ -69,7 +69,7 @@ export function handlePlayerRole(role, peerId) {
     showNotification(`${trimmedRole} joined`);
     if (roleSelected && roleMenuHidden) {
       addCursor(peerId, false);
-      updateCursor(peerId, trimmedRole);
+      updateCursor(peerId, trimmedRole); // Обновляем курсор с учетом роли или картинки
       showCursor(peerId); // Делаем курсор видимым
     }
   } else {

@@ -29,7 +29,8 @@ export function addCursor(id, isSelf) {
     el.style.top = `${innerHeight / 2}px`;
     el.style.display = 'none'; // Изначально скрываем курсор
     img.src = "src/img/hand.png";
-
+    img.style.width = "100px"; // Увеличиваем размер астероида
+    img.style.height = "100px"; // Увеличиваем размер астероида
     txt.innerText = isSelf ? playerName : peerNames[id] || "Неизвестный игрок";
     el.appendChild(img);
     el.appendChild(txt);
@@ -53,10 +54,16 @@ export function updateCursor(id, role) {
   if (el) {
     const img = el.querySelector("img");
     if (img) {
-      img.src = role === 'ship' ? "img/murka3.png" : "img/lightorange-asteroid.svg";
+      if (role === 'ship') {
+        img.src = "img/murka3.png"; // Картинка для корабля
+      } else if (role === 'asteroid') {
+        img.src = "img/lightorange-asteroid.svg"; // Дефолтная картинка для астероида
+      } else if (shapes.includes(role)) {
+        img.src = role; // Если роль — это одна из картинок, используем её
+      }
       if (role === 'asteroid') {
-        img.style.width = "100px";
-        img.style.height = "100px";
+        img.style.width = "300px";
+        img.style.height = "300px";
       }
     }
   }
@@ -79,3 +86,15 @@ export function showCursor(id) {
     el.style.display = 'block'; // Делаем курсор видимым
   }
 }
+
+export const shapes = [
+  "img/asteroid-purple.svg",
+  "img/green-asteroid.svg",
+  "img/orange-meteorite.svg",
+  "img/asteroid-black.svg",
+  "img/rock.svg",
+  "img/meteorite-white.svg",
+  "img/lightorange-asteroid.svg",
+  "img/rocky-asteroid.svg",
+  "img/purple-asteroid.svg",
+];

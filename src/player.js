@@ -5,7 +5,7 @@
 */
 
 import { selfId, sendRole, peerNames } from './init.js'; // Импорт selfId, sendRole и peerNames
-import { updateCursor, cursors, peerRoles, addCursor, updateCursorName, showCursor } from './cursors.js'; // Импорт функции updateCursor, peerRoles, addCursor, updateCursorName и showCursor
+import { updateCursor, cursors, peerRoles, addCursor, updateCursorName, showCursor, shapes } from './cursors.js'; // Импорт функции updateCursor, peerRoles, addCursor, updateCursorName и showCursor
 
 let playerName = localStorage.getItem("name")?.trim();
 let playerRole = null; // Изначально роль не выбрана
@@ -18,9 +18,15 @@ export { playerName, playerRole, roleSelected, roleMenuHidden, keysPressed, keyb
 
 export function handleRoleSelection(role) {
   console.log(`Role selected: ${role}`);
-  playerRole = role;
+  if (role === 'asteroid') {
+    const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
+    playerRole = randomShape; // Сохраняем выбранную картинку как роль
+  } else {
+    playerRole = role; // Для других ролей просто сохраняем роль
+  }
+
   roleSelected = true; // Устанавливаем флаг выбора роли
-  updateCursor(selfId, role);
+  updateCursor(selfId, playerRole);
 
   const startgame = document.querySelector(".startgame");
   if (startgame) {
@@ -46,7 +52,7 @@ export function handleRoleSelection(role) {
 
 export function notifyRoleSelected() {
   if (roleSelected && roleMenuHidden) {
-    sendRole(playerRole);
+    sendRole(playerRole); // Отправляем выбранную роль (или картинку для астероида)
   }
 }
 

@@ -17,7 +17,7 @@ let mousePos = { x: 0, y: 0 }; // координаты для масштабир
 export { mousePos, targetPos, isMoving, isBraking };
 
 export function updateAsteroidPosition(dt) {
-  if (playerRole === 'asteroid' && roleSelected) {
+  if (playerRole && roleSelected) { // Проверяем, что роль выбрана
     // Вычисление расстояния от астероида до курсора
     const dx = targetPos.x - objectPos.x;
     const dy = targetPos.y - objectPos.y;
@@ -84,7 +84,7 @@ export function updateAsteroidPosition(dt) {
     }
 
     moveCursor([objectPos.x / innerWidth, objectPos.y / innerHeight], selfId);
-    if (room && roleSelected) sendMove([objectPos.x / innerWidth, objectPos.y / innerHeight]);
+if (room && roleSelected) sendMove([objectPos.x / innerWidth, objectPos.y / innerHeight]);
   }
 }
 
@@ -100,6 +100,6 @@ function calculateAcceleration(force, mass) {
 export function gameLoop(timestamp) {
   const dt = (timestamp - lastTime) / 1000;
   lastTime = timestamp;
-  updateAsteroidPosition(dt);
-  requestAnimationFrame(gameLoop);
+  updateAsteroidPosition(dt); // Обновляем позицию астероида
+  requestAnimationFrame(gameLoop); // Запускаем следующий кадр
 }
