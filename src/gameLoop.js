@@ -16,8 +16,13 @@ let mousePos = { x: 0, y: 0 }; // координаты для масштабир
 
 export { mousePos, targetPos, isMoving, isBraking };
 
-export function updateAsteroidPosition(dt) {
+export function updateAsteroidPosition(dt, containerLeft, containerTop, containerRight, containerBottom) {
   if (playerRole && roleSelected) { // Проверяем, что роль выбрана
+    if (playerRole === 'ship') {
+      // Для корабля обновляем позицию мгновенно
+      objectPos.x = targetPos.x;
+      objectPos.y = 10;
+    } else {
     // Вычисление расстояния от астероида до курсора
     const dx = targetPos.x - objectPos.x;
     const dy = targetPos.y - objectPos.y;
@@ -54,6 +59,7 @@ export function updateAsteroidPosition(dt) {
       objectPos.x += objectVel.x * dt;
       objectPos.y += objectVel.y * dt;
     }
+  }
     // Учитываем ввод с клавиатуры
     if (keyboardInput.x !== 0 || keyboardInput.y !== 0) {
       objectVel.x += keyboardInput.x * dt * 1000; // Увеличение скорости

@@ -56,14 +56,12 @@ export function updateCursor(id, role) {
     if (img) {
       if (role === 'ship') {
         img.src = "img/murka3.png"; // Картинка для корабля
+        img.style.width = "150px"; // Увеличиваем размер корабля
+        img.style.height = "150px"; // Увеличиваем размер корабля
       } else if (role === 'asteroid') {
         img.src = "img/lightorange-asteroid.svg"; // Дефолтная картинка для астероида
       } else if (shapes.includes(role)) {
         img.src = role; // Если роль — это одна из картинок, используем её
-      }
-      if (role === 'asteroid') {
-        img.style.width = "300px";
-        img.style.height = "300px";
       }
     }
   }
