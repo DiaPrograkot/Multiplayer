@@ -210,6 +210,7 @@ body {
 }
 
 .laser {
+  background-image: url('/img/bullet.svg');
   position: absolute;
   display: inline-block;
   width: 30px;
@@ -218,6 +219,7 @@ body {
   top: 130px;
   transition: top 1.4s linear;
   transform: rotate(180deg);
+  z-index: 1000;
   /* transform: rotate(90deg); */
 }
 

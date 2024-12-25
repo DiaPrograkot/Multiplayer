@@ -13,7 +13,9 @@ export function moveCursor([x, y], id) {
   if (el) {
     el.style.left = `${x * innerWidth}px`;
     el.style.top = `${y * innerHeight}px`;
-    console.log(`Moving cursor for ${id} to (${x * innerWidth}, ${y * innerHeight})`);
+    console.log(`Cursor ${id} moved to:`, { x, y });
+  } else {
+    console.error(`Cursor element for ID ${id} not found!`);
   }
 }
 
@@ -25,6 +27,7 @@ export function addCursor(id, isSelf) {
     const txt = document.createElement("p");
 
     el.className = `cursor${isSelf ? " self" : ""}`;
+    el.style.position = 'absolute'; // Убедитесь, что позиция абсолютная
     el.style.left = `${innerWidth / 2}px`;
     el.style.top = `${innerHeight / 2}px`;
     el.style.display = 'none'; // Изначально скрываем курсор

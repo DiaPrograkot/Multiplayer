@@ -225,6 +225,7 @@ body {
 }
 
 .laser {
+  background-image: url('/img/bullet.svg');
   position: absolute;
   display: inline-block;
   width: 30px;
@@ -235,6 +236,7 @@ body {
   transform: rotate(180deg);
   /* transform: rotate(90deg); */
   visibility: hidden;
+  z-index: 1000;
 }
 
 .asteroid {

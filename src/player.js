@@ -58,14 +58,34 @@ export function notifyRoleSelected() {
 
 export function handleKeyDown(event) {
   console.log(`Key down: ${event.key}`);
-  keysPressed[event.key] = true;
-  updateKeyboardInput(event.key, true);
+  switch (event.key) {
+    case 'ArrowLeft':
+      keyboardInput.x = -1; // Движение влево
+      break;
+    case 'ArrowRight':
+      keyboardInput.x = 1; // Движение вправо
+      break;
+    case 'ArrowUp':
+      keyboardInput.y = -1; // Движение вверх
+      break;
+    case 'ArrowDown':
+      keyboardInput.y = 1; // Движение вниз
+      break;
+  }
 }
 
 export function handleKeyUp(event) {
   console.log(`Key up: ${event.key}`);
-  keysPressed[event.key] = false;
-  updateKeyboardInput(event.key, false);
+  switch (event.key) {
+    case 'ArrowLeft':
+    case 'ArrowRight':
+      keyboardInput.x = 0; // Остановка по горизонтали
+      break;
+    case 'ArrowUp':
+    case 'ArrowDown':
+      keyboardInput.y = 0; // Остановка по вертикали
+      break;
+  }
 }
 
 export function updateKeyboardInput(key, isPressed) {

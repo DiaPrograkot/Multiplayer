@@ -1,10 +1,9 @@
 // логика движения астероида с инерцией
 
-import { playerRole, roleSelected, keyboardInput } from './player.js';
+import { playerRole, roleSelected, keyboardInput, keysPressed } from './player.js';
 import { moveCursor } from './cursors.js';
 import { selfId, room, sendMove } from './init.js';
 
-let objectPos = { x: innerWidth / 2, y: innerHeight / 2 }; // Текущая позиция астероида
 let targetPos = { x: innerWidth / 2, y: innerHeight / 2 }; // Целевая позицию, к которой должен двигаться астероид (позиция курсора мыши).
 let objectVel = { x: 0, y: 0 }; // Текущую скорость
 const objectMass = 0.5; // Масса объекта, мной подобранная для использования в коде (нужна в формуле ускорения)
@@ -15,51 +14,54 @@ let lastTime = 0; // Хранит время последнего кадра а�
 let mousePos = { x: 0, y: 0 }; // координаты для масштабирования
 
 export { mousePos, targetPos, isMoving, isBraking };
+export let objectPos = { x: innerWidth / 2, y: 10 }; // Экспортируем objectPos
 
-export function updateAsteroidPosition(dt, containerLeft, containerTop, containerRight, containerBottom) {
+export function updateAsteroidPosition(dt) {
   if (playerRole && roleSelected) { // Проверяем, что роль выбрана
     if (playerRole === 'ship') {
       // Для корабля обновляем позицию мгновенно
       objectPos.x = targetPos.x;
-      objectPos.y = 10;
+      objectPos.y = 10; // Фиксируем вертикальное положение на 10px
     } else {
-    // Вычисление расстояния от астероида до курсора
-    const dx = targetPos.x - objectPos.x;
-    const dy = targetPos.y - objectPos.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+      // Для астероида используем логику с инерцией
+      // Вычисление расстояния от астероида до курсора
+      const dx = targetPos.x - objectPos.x;
+      const dy = targetPos.y - objectPos.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
 
-    // Если объект достиг курсора, начинаем торможение
-    if (distance < 10) {
-      isBraking.value = true;
-    }
-
-    if (isBraking.value) {
-      // Применяем торможение с учетом коэффициента инерции
-      objectVel.x *= inertiaCoefficient; // Замедление
-      objectVel.y *= inertiaCoefficient; // Замедление
-      if (Math.abs(objectVel.x) < 0.1 && Math.abs(objectVel.y) < 0.1) {
-        objectVel.x = 0;
-        objectVel.y = 0;
-        isMoving.value = false; // Объект останавливается
-        isBraking.value = false; // Торможение завершено
+      // Если объект достиг курсора, начинаем торможение
+      if (distance < 10) {
+        isBraking.value = true;
       }
-    } else {
-      const forceMagnitude = 7000; // Величина силы (тоже подобранное мной значение)
-      const force = {  // Рассчет силы в конкретной ситуации
-        x: (dx / distance) * forceMagnitude,
-        y: (dy / distance) * forceMagnitude
-      };
-      const acceleration = calculateAcceleration(force, objectMass); // Вычисление ускорения
-      // Обновление скорости
-      objectVel.x = acceleration.x * dt;
-      objectVel.y = acceleration.y * dt;
+
+      if (isBraking.value) {
+        // Применяем торможение с учетом коэффициента инерции
+        objectVel.x *= inertiaCoefficient; // Замедление
+        objectVel.y *= inertiaCoefficient; // Замедление
+        if (Math.abs(objectVel.x) < 0.1 && Math.abs(objectVel.y) < 0.1) {
+          objectVel.x = 0;
+          objectVel.y = 0;
+          isMoving.value = false; // Объект останавливается
+          isBraking.value = false; // Торможение завершено
+        }
+      } else {
+        const forceMagnitude = 7000; // Величина силы (тоже подобранное мной значение)
+        const force = {  // Рассчет силы в конкретной ситуации
+          x: (dx / distance) * forceMagnitude,
+          y: (dy / distance) * forceMagnitude
+        };
+        const acceleration = calculateAcceleration(force, objectMass); // Вычисление ускорения
+        // Обновление скорости
+        objectVel.x = acceleration.x * dt;
+        objectVel.y = acceleration.y * dt;
+      }
+      // Обновление позиции, только если объект движется
+      if (isMoving.value) {
+        objectPos.x += objectVel.x * dt;
+        objectPos.y += objectVel.y * dt;
+      }
     }
-    // Обновление позиции, только если объект движется
-    if (isMoving.value) {
-      objectPos.x += objectVel.x * dt;
-      objectPos.y += objectVel.y * dt;
-    }
-  }
+
     // Учитываем ввод с клавиатуры
     if (keyboardInput.x !== 0 || keyboardInput.y !== 0) {
       objectVel.x += keyboardInput.x * dt * 1000; // Увеличение скорости
@@ -90,7 +92,7 @@ export function updateAsteroidPosition(dt, containerLeft, containerTop, containe
     }
 
     moveCursor([objectPos.x / innerWidth, objectPos.y / innerHeight], selfId);
-if (room && roleSelected) sendMove([objectPos.x / innerWidth, objectPos.y / innerHeight]);
+    if (room && roleSelected) sendMove([objectPos.x / innerWidth, objectPos.y / innerHeight]);
   }
 }
 
@@ -101,11 +103,50 @@ function calculateAcceleration(force, mass) {
     y: force.y / mass
   };
 }
-
-// обновляет состояние игры
 export function gameLoop(timestamp) {
   const dt = (timestamp - lastTime) / 1000;
   lastTime = timestamp;
+
+  if (playerRole === 'ship') {
+    const speed = 200; // Скорость перемещения корабля (пикселей в секунду)
+
+    // Обновляем скорость корабля на основе keyboardInput
+    objectVel.x = keyboardInput.x * speed;
+    objectVel.y = keyboardInput.y * speed;
+
+    console.log(`Keyboard input in gameLoop:`, keyboardInput);
+    console.log(`Object velocity:`, objectVel);
+
+    // Обновляем позицию корабля с учетом скорости
+    objectPos.x += objectVel.x * dt;
+    objectPos.y += objectVel.y * dt;
+
+    // Ограничение движения в пределах экрана
+    const canvasWidth = innerWidth;
+    const canvasHeight = innerHeight;
+    const objectSize = 150; // Размер корабля
+
+    if (objectPos.x < 0) {
+      objectPos.x = 0;
+      objectVel.x = 0;
+    }
+    if (objectPos.x + objectSize > canvasWidth) {
+      objectPos.x = canvasWidth - objectSize;
+      objectVel.x = 0;
+    }
+    if (objectPos.y < 0) {
+      objectPos.y = 0;
+      objectVel.y = 0;
+    }
+    if (objectPos.y + objectSize > canvasHeight) {
+      objectPos.y = canvasHeight - objectSize;
+      objectVel.y = 0;
+    }
+
+    // Перемещаем курсор
+    moveCursor([objectPos.x / innerWidth, objectPos.y / innerHeight], selfId);
+  }
+
   updateAsteroidPosition(dt); // Обновляем позицию астероида
   requestAnimationFrame(gameLoop); // Запускаем следующий кадр
 }

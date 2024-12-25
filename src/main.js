@@ -4,6 +4,11 @@ import { moveCursor, addCursor, removeCursor, updateCursor, updateCursorName, sh
 import { handleMouseMove, initEventListeners } from './events.js';
 import { updateAsteroidPosition, gameLoop } from './gameLoop.js';
 import { selfId } from './init.js'; // Импорт selfId
+import { initShooting } from './shooting.js'; // Импорт функции initShooting
+
+document.addEventListener("DOMContentLoaded", () => {
+  initShooting();
+});
 
 export function showNotification(message) {
   const notifications = document.getElementById("notifications");

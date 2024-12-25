@@ -21,7 +21,6 @@ export function initRoom() {
   /* Получает данные о движении курсора. При чем делает она это после того, как получена роль данного игрока и другого пользователя
   (движения которого мы получаем), видим его передвижения на экране*/
   getMove(([x, y], peerId) => {
-    console.log(`Received move data from ${peerId}:`, [x, y]);
     if (roleSelected && peerRoles[peerId]) moveCursor([x, y], peerId);
   });
   // Получаем роль и имя -> обрабатываем их, обновляем данные
