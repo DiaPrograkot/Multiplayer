@@ -4,7 +4,7 @@
 - как происходит движение с помощью клавиатуры
 */
 
-import { selfId, sendRole, peerNames } from './init.js'; // Импорт selfId, sendRole и peerNames
+import { selfId, sendRole, peerNames, blockShipButton } from './init.js'; // Импорт selfId, sendRole и peerNames
 import { updateCursor, cursors, peerRoles, addCursor, updateCursorName, showCursor, shapes } from './cursors.js'; // Импорт функции updateCursor, peerRoles, addCursor, updateCursorName и showCursor
 
 let playerName = localStorage.getItem("name")?.trim();
@@ -48,6 +48,11 @@ export function handleRoleSelection(role) {
   // Отображение курсора текущего игрока после выбора роли
   const cursor = cursors[selfId];
   if (cursor) cursor.style.display = 'block'; // Делаем курсор видимым
+
+  // Блокируем кнопку выбора роли "ship", если роль "ship" выбрана
+  if (role === "ship") {
+    blockShipButton();
+  }
 }
 
 export function notifyRoleSelected() {

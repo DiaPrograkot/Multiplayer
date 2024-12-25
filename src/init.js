@@ -59,6 +59,16 @@ export function handlePlayerName(name, peerId) {
   updateCursorName(peerId, trimmedName);
 }
 
+// Функция для блокировки кнопки выбора роли корабля
+export function blockShipButton() {
+  const shipButton = document.querySelector(".ship-button");
+  if (shipButton) {
+    showNotification("The cat's role is taken.");
+    shipButton.style.pointerEvents = "none"; // Блокируем клики
+    shipButton.style.opacity = "0.5"; // Делаем кнопку неактивной (опционально)
+  }
+}
+
 // Добавляет роль в объект peerRoles, сообщает роль, добавляет курсор игрока на экран, если роль выбрана.
 export function handlePlayerRole(role, peerId) {
   const trimmedRole = role ? role.trim() : "Неизвестная роль";
@@ -71,10 +81,14 @@ export function handlePlayerRole(role, peerId) {
       updateCursor(peerId, trimmedRole); // Обновляем курсор с учетом роли или картинки
       showCursor(peerId); // Делаем курсор видимым
     }
+
+    // Проверяем, если роль "ship", блокируем кнопку
+    if (trimmedRole === "ship") {
+      blockShipButton();
+    }
   } else {
     updateCursor(peerId, trimmedRole);
     showCursor(peerId); // Делаем курсор видимым
   }
 }
-
 export { sendRole, room, selfId, sendMove, peerNames }; // Экспорт функции sendRole, переменной room, selfId, sendMove и peerNames
