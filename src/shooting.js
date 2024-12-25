@@ -2,6 +2,7 @@ import { room, sendMove, selfId } from './init.js'; // Импорт room и send
 import { moveCursor } from './cursors.js'; // Импорт moveCursor из cursors.js
 import { playerRole } from './player.js'; 
 import { roleSelected } from './player.js'; // Импортируем roleSelected
+import { shipPos } from './player.js';
 
 // Переменные для стрельбы
 let sendLaser, getLaser;
@@ -30,11 +31,13 @@ export function createLocalLaser(position) {
   laser.setAttribute("src", "img/bullet.svg");
   container.append(laser);
   laser.className = 'laser';
-  laser.style.left = `${position.x + 60}px`;
-  laser.style.top = `${position.y + 80}px`;
+
+  // Используем shipPos для позиции лазера
+  laser.style.left = `${shipPos.x + 60}px`;
+  laser.style.top = `${shipPos.y + 80}px`;
   document.body.appendChild(laser);
 
-  sendLaser([position.x / innerWidth, position.y / innerHeight]);
+  sendLaser([shipPos.x / innerWidth, shipPos.y / innerHeight]);
 
   const moveLaser = () => {
     const laserRect = laser.getBoundingClientRect(); // Получаем границы лазера

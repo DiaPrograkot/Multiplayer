@@ -13,8 +13,10 @@ let roleSelected = false; // Указывает, выбрана ли роль и
 let roleMenuHidden = false; // Указывает, скрыто ли меню выбора роли.
 let keysPressed = {}; // Объект, который отслеживает, какие клавиши нажаты.
 let keyboardInput = { x: 0, y: 0 }; // Объект, который хранит текущие значения ввода с клавиатуры по осям x и y.
+let shipPos = { x: innerWidth / 2, y: 10 }; // Начальная позиция корабля
+const shipSpeed = 60; // Скорость корабля при нажатии клавиш
 
-export { playerName, playerRole, roleSelected, roleMenuHidden, keysPressed, keyboardInput };
+export { playerName, playerRole, roleSelected, roleMenuHidden, keysPressed, keyboardInput, shipPos, shipSpeed };
 
 export function handleRoleSelection(role) {
   console.log(`Role selected: ${role}`);
@@ -65,16 +67,22 @@ export function handleKeyDown(event) {
   console.log(`Key down: ${event.key}`);
   switch (event.key) {
     case 'ArrowLeft':
-      keyboardInput.x = -1; // Движение влево
+      keyboardInput.x = -1; // Движение влево для астероидов
+      if (playerRole === 'ship') {
+        shipPos.x = Math.max(0, shipPos.x - shipSpeed); // Ограничение движения влево
+      }
       break;
     case 'ArrowRight':
-      keyboardInput.x = 1; // Движение вправо
+      keyboardInput.x = 1; // Движение вправо для астероидов
+      if (playerRole === 'ship') {
+        shipPos.x = Math.min(innerWidth - 150, shipPos.x + shipSpeed); // Ограничение движения вправо
+      }
       break;
     case 'ArrowUp':
-      keyboardInput.y = -1; // Движение вверх
+      keyboardInput.y = -1; // Движение вверх для астероидов
       break;
     case 'ArrowDown':
-      keyboardInput.y = 1; // Движение вниз
+      keyboardInput.y = 1; // Движение вниз для астероидов
       break;
   }
 }
@@ -84,15 +92,14 @@ export function handleKeyUp(event) {
   switch (event.key) {
     case 'ArrowLeft':
     case 'ArrowRight':
-      keyboardInput.x = 0; // Остановка по горизонтали
+      keyboardInput.x = 0; // Остановка по горизонтали для астероидов
       break;
     case 'ArrowUp':
     case 'ArrowDown':
-      keyboardInput.y = 0; // Остановка по вертикали
+      keyboardInput.y = 0; // Остановка по вертикали для астероидов
       break;
   }
 }
-
 export function updateKeyboardInput(key, isPressed) {
   console.log(`Updating keyboard input for key: ${key}, isPressed: ${isPressed}`);
   switch (key) {

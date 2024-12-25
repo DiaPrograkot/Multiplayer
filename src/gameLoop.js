@@ -3,6 +3,7 @@
 import { playerRole, roleSelected, keyboardInput, keysPressed } from './player.js';
 import { moveCursor } from './cursors.js';
 import { selfId, room, sendMove } from './init.js';
+import { shipPos } from './player.js';
 
 let targetPos = { x: innerWidth / 2, y: innerHeight / 2 }; // Целевая позицию, к которой должен двигаться астероид (позиция курсора мыши).
 let objectVel = { x: 0, y: 0 }; // Текущую скорость
@@ -17,13 +18,13 @@ export { mousePos, targetPos, isMoving, isBraking };
 export let objectPos = { x: innerWidth / 2, y: 10 }; // Экспортируем objectPos
 
 export function updateAsteroidPosition(dt) {
-  if (playerRole && roleSelected) { // Проверяем, что роль выбрана
+  if (playerRole && roleSelected) {
     if (playerRole === 'ship') {
       // Для корабля обновляем позицию мгновенно
-      objectPos.x = targetPos.x;
+      objectPos.x = shipPos.x;
       objectPos.y = 10; // Фиксируем вертикальное положение на 10px
     } else {
-      // Для астероида используем логику с инерцией
+      // Логика для астероидов
       // Вычисление расстояния от астероида до курсора
       const dx = targetPos.x - objectPos.x;
       const dy = targetPos.y - objectPos.y;
@@ -108,45 +109,13 @@ export function gameLoop(timestamp) {
   lastTime = timestamp;
 
   if (playerRole === 'ship') {
-    const speed = 200; // Скорость перемещения корабля (пикселей в секунду)
-
-    // Обновляем скорость корабля на основе keyboardInput
-    objectVel.x = keyboardInput.x * speed;
-    objectVel.y = keyboardInput.y * speed;
-
-    console.log(`Keyboard input in gameLoop:`, keyboardInput);
-    console.log(`Object velocity:`, objectVel);
-
-    // Обновляем позицию корабля с учетом скорости
-    objectPos.x += objectVel.x * dt;
-    objectPos.y += objectVel.y * dt;
-
-    // Ограничение движения в пределах экрана
-    const canvasWidth = innerWidth;
-    const canvasHeight = innerHeight;
-    const objectSize = 150; // Размер корабля
-
-    if (objectPos.x < 0) {
-      objectPos.x = 0;
-      objectVel.x = 0;
-    }
-    if (objectPos.x + objectSize > canvasWidth) {
-      objectPos.x = canvasWidth - objectSize;
-      objectVel.x = 0;
-    }
-    if (objectPos.y < 0) {
-      objectPos.y = 0;
-      objectVel.y = 0;
-    }
-    if (objectPos.y + objectSize > canvasHeight) {
-      objectPos.y = canvasHeight - objectSize;
-      objectVel.y = 0;
-    }
-
-    // Перемещаем курсор
-    moveCursor([objectPos.x / innerWidth, objectPos.y / innerHeight], selfId);
+    // Обновляем позицию корабля
+    moveCursor([shipPos.x / innerWidth, shipPos.y / innerHeight], selfId);
+    sendMove([shipPos.x / innerWidth, shipPos.y / innerHeight]);
+  } else {
+    // Обновляем позицию астероида
+    updateAsteroidPosition(dt);
   }
 
-  updateAsteroidPosition(dt); // Обновляем позицию астероида
   requestAnimationFrame(gameLoop); // Запускаем следующий кадр
 }
