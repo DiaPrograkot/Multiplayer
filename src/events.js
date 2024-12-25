@@ -1,11 +1,12 @@
 // выбор роли + обновление курсора
 import { handleKeyDown, handleKeyUp, playerRole } from './player.js';
-import { moveCursor } from './cursors.js';
 import { handleRoleSelection } from './player.js';
 import { mousePos, targetPos, isMoving, isBraking } from './gameLoop.js'; // Импорт переменных mousePos, targetPos, isMoving и isBraking
 import { keysPressed } from './player.js'; // Импорт переменной keysPressed
 import { createLocalLaser } from './shooting.js'; // Импорт функции createLocalLaser
 import { objectPos } from './gameLoop.js'; // Импорт objectPos из gameLoop.js
+import { shipPos } from './player.js';
+import { moveCursor } from './cursors.js';
 
 // Обработка стрельбы
 document.addEventListener("keydown", (event) => {
@@ -23,12 +24,18 @@ document.addEventListener("keydown", (event) => {
 
 //обновление позиции курсора и других связанных переменных
 export function handleMouseMove({ clientX, clientY }) {
-  mousePos.x = clientX / innerWidth;
-  mousePos.y = clientY / innerHeight;
-  targetPos.x = clientX;
-  targetPos.y = clientY;
-  isMoving.value = true; // Объект начинает двигаться
-  isBraking.value = false; // Сброс флага торможения
+  if (playerRole === 'ship') {
+    // Ограничиваем движение корабля границами экрана
+    shipPos.x = Math.max(0, Math.min(clientX - 75, innerWidth - 150)); // 150 — ширина корабля
+  } else {
+    // Логика для астероидов
+    mousePos.x = clientX / innerWidth;
+    mousePos.y = clientY / innerHeight;
+    targetPos.x = clientX;
+    targetPos.y = clientY;
+    isMoving.value = true;
+    isBraking.value = false;
+  }
 }
 
 export function initEventListeners() {

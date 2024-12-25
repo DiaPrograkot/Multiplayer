@@ -104,18 +104,19 @@ function calculateAcceleration(force, mass) {
     y: force.y / mass
   };
 }
+
 export function gameLoop(timestamp) {
   const dt = (timestamp - lastTime) / 1000;
   lastTime = timestamp;
 
   if (playerRole === 'ship') {
-    // Обновляем позицию корабля
+    // Если игрок — корабль, обновляем позицию корабля
     moveCursor([shipPos.x / innerWidth, shipPos.y / innerHeight], selfId);
     sendMove([shipPos.x / innerWidth, shipPos.y / innerHeight]);
   } else {
-    // Обновляем позицию астероида
+    // Если игрок — астероид, обновляем позицию астероида
     updateAsteroidPosition(dt);
   }
 
-  requestAnimationFrame(gameLoop); // Запускаем следующий кадр
+  requestAnimationFrame(gameLoop);
 }
