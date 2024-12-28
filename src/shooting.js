@@ -1,22 +1,22 @@
 import { room, sendMove, selfId, sendCollision } from './init.js'; // Импорт room, sendMove и sendCollision из init.js
 import { moveCursor } from './cursors.js'; // Импорт moveCursor из cursors.js
-import { playerRole, roleSelected, shipPos } from './player.js';
+import { playerRole, roleSelected, shipPos, destroyPlayer } from './player.js';
 
 // Переменные для стрельбы
 let sendLaser, getLaser;
 
 // Инициализация стрельбы
 export function initShooting() {
-    // Создаем действие для отправки данных о выстреле
-    [sendLaser, getLaser] = room.makeAction('laserShot');
+  // Создаем действие для отправки данных о выстреле
+  [sendLaser, getLaser] = room.makeAction('laserShot');
 
-    // Обработка получения данных о выстреле от других игроков
-    getLaser(([normalizedX, normalizedY], peerId) => {
-        console.log(`Получены данные о выстреле от ${peerId}:`, { normalizedX, normalizedY });
-        const x = normalizedX * innerWidth; // Преобразуем нормализованные координаты в пиксели
-        const y = normalizedY * innerHeight;
-        createRemoteLaser({ x, y }); // Создаем лазер для других игроков
-    });
+  // Обработка получения данных о выстреле от других игроков
+  getLaser(([normalizedX, normalizedY], peerId) => {
+    console.log(`Получены данные о выстреле от ${peerId}:`, { normalizedX, normalizedY });
+    const x = normalizedX * innerWidth; // Преобразуем нормализованные координаты в пиксели
+    const y = normalizedY * innerHeight;
+    createRemoteLaser({ x, y }); // Создаем лазер для других игроков
+  });
 }
 
 // Функция для создания лазера на клиенте
@@ -52,11 +52,15 @@ export function createLocalLaser(position) {
         if (checkCollision(asteroid, laser)) {
           // Удаляем астероид и лазер
           const asteroidId = asteroid.dataset.id;
-          document.body.removeChild(asteroid);
           document.body.removeChild(laser);
 
           // Отправляем событие столкновения
           sendCollision({ asteroidId, laserPosition: [laserRect.left / innerWidth, laserRect.top / innerHeight] });
+
+          // Уничтожаем игрока, если это его астероид
+          if (asteroidId === selfId) {
+            destroyPlayer();
+          }
           return;
         }
       });

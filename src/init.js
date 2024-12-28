@@ -1,6 +1,6 @@
 import { joinRoom, selfId } from "trystero";
-import { playerName, playerRole, roleSelected, roleMenuHidden, notifyRoleSelected } from './player.js';
-import { peerNames, peerRoles, addCursor, removeCursor, updateCursorName, updateCursor, showCursor, moveCursor } from './cursors.js';
+import { playerName, playerRole, roleSelected, roleMenuHidden, destroyPlayer } from './player.js';
+import { peerNames, peerRoles, addCursor, removeCursor, updateCursorName, updateCursor, showCursor, moveCursor, cursors } from './cursors.js';
 import { showNotification } from './main.js';
 
 // Конфигурация и инициализация комнаты
@@ -8,7 +8,7 @@ const config = { appId: "your-app-id" };
 const room = joinRoom(config, "room");
 console.log("Комната инициализирована:", room);
 // Переменные для отправки и получения данных (передвижения, имя, роль игрока)
-let sendMove, getMove, sendName, getName, sendRole, getRole, sendCollision, getCollision;
+let sendMove, getMove, sendName, getName, sendRole, getRole, sendCollision, getCollision, sendPlayerState, getPlayerState;
 
 export function initRoom() {
   /* Функция room.makeAction (является частью библиотеки trystero) позволяет создавать действия для отправки и получения данных определенного типа.
@@ -31,6 +31,24 @@ export function initRoom() {
   if (playerName) sendName(playerName);
   if (playerRole) sendRole(playerRole);
 
+  // Создаем действие для синхронизации состояния игрока
+  [sendPlayerState, getPlayerState] = room.makeAction("playerState");
+
+  // Обработка получения состояния игрока
+  getPlayerState(({ peerId, isDestroyed, newShape }, senderId) => {
+    console.log(`Получено состояние игрока ${peerId}: isDestroyed = ${isDestroyed}`);
+    const cursor = cursors[peerId];
+    if (cursor) {
+      if (isDestroyed) {
+        cursor.style.display = 'none'; // Скрываем курсор
+      } else {
+        // Обновляем курсор с новой картинкой
+        updateCursor(peerId, newShape); // Используем переданную картинку
+        cursor.style.display = 'block'; // Показываем курсор
+      }
+    }
+  });
+
   // Обработка событий столкновений
   getCollision(({ asteroidId, laserPosition }, peerId) => {
     handleCollision(asteroidId, laserPosition);
@@ -40,13 +58,13 @@ export function initRoom() {
 // Функция для обработки столкновений
 function handleCollision(asteroidId, laserPosition) {
   const asteroid = document.querySelector(`.cursor[data-id="${asteroidId}"]`);
-  if (asteroid) {
-    document.body.removeChild(asteroid);
-  }
-
   const laser = document.querySelector('.laser');
   if (laser) {
     document.body.removeChild(laser);
+  }
+  // Уничтожаем игрока, если это его астероид
+  if (asteroidId === selfId) {
+    destroyPlayer();
   }
 }
 
@@ -110,4 +128,5 @@ export function handlePlayerRole(role, peerId) {
     showCursor(peerId); // Делаем курсор видимым
   }
 }
-export { sendRole, room, selfId, sendMove, peerNames, sendCollision }; // Экспорт функции sendRole, переменной room, selfId, sendMove и peerNames
+
+export { sendRole, room, selfId, sendMove, peerNames, sendCollision, sendPlayerState };

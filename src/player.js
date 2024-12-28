@@ -4,7 +4,7 @@
 - как происходит движение с помощью клавиатуры
 */
 
-import { selfId, sendRole, peerNames, blockShipButton } from './init.js'; // Импорт selfId, sendRole и peerNames
+import { selfId, sendRole, peerNames, blockShipButton, sendPlayerState } from './init.js'; // Импорт selfId, sendRole и peerNames
 import { updateCursor, cursors, peerRoles, addCursor, updateCursorName, showCursor, shapes } from './cursors.js'; // Импорт функции updateCursor, peerRoles, addCursor, updateCursorName и showCursor
 
 let playerName = localStorage.getItem("name")?.trim();
@@ -15,6 +15,53 @@ let keysPressed = {}; // Объект, который отслеживает, к
 let keyboardInput = { x: 0, y: 0 }; // Объект, который хранит текущие значения ввода с клавиатуры по осям x и y.
 let shipPos = { x: innerWidth / 2, y: 10 }; // Начальная позиция корабля
 const shipSpeed = 60; // Скорость корабля при нажатии клавиш
+
+// Добавляем переменную для отслеживания состояния игрока
+let isPlayerDestroyed = false;
+
+// Функция для уничтожения игрока
+export function destroyPlayer() {
+  if (!isPlayerDestroyed) {
+      console.log("Игрок уничтожен!");
+      isPlayerDestroyed = true;
+      // Скрываем курсор игрока
+      const cursor = cursors[selfId];
+      if (cursor) {
+          cursor.style.display = 'none';
+      }
+      // Отправляем состояние игрока (уничтожен)
+      sendPlayerState({ peerId: selfId, isDestroyed: true });
+      // Запускаем таймер для восстановления игрока через 3 секунды
+      setTimeout(respawnPlayer, 5000);
+  }
+}
+
+// Функция для восстановления игрока
+export function respawnPlayer() {
+  if (isPlayerDestroyed) {
+      console.log("Игрок восстановлен!");
+      isPlayerDestroyed = false;
+
+      // Восстанавливаем игрока на стартовую позицию
+      shipPos.x = innerWidth / 2; // Центр экрана по горизонтали
+      shipPos.y = 10; // Фиксированная позиция по вертикали
+
+      // Выбираем случайную картинку для астероида
+      const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
+      playerRole = randomShape; // Обновляем роль игрока на новую картинку
+
+      // Обновляем курсор с новой картинкой
+      updateCursor(selfId, playerRole);
+
+      // Делаем курсор игрока видимым
+      const cursor = cursors[selfId];
+      if (cursor) {
+          cursor.style.display = 'block';
+      }
+      // Отправляем состояние игрока (восстановлен) и новую картинку
+      sendPlayerState({ peerId: selfId, isDestroyed: false, newShape: playerRole });
+  }
+}
 
 export { playerName, playerRole, roleSelected, roleMenuHidden, keysPressed, keyboardInput, shipPos, shipSpeed };
 
