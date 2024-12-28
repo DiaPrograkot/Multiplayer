@@ -8,7 +8,7 @@ const config = { appId: "your-app-id" };
 const room = joinRoom(config, "room");
 console.log("Комната инициализирована:", room);
 // Переменные для отправки и получения данных (передвижения, имя, роль игрока)
-let sendMove, getMove, sendName, getName, sendRole, getRole;
+let sendMove, getMove, sendName, getName, sendRole, getRole, sendCollision, getCollision;
 
 export function initRoom() {
   /* Функция room.makeAction (является частью библиотеки trystero) позволяет создавать действия для отправки и получения данных определенного типа.
@@ -16,6 +16,7 @@ export function initRoom() {
   [sendMove, getMove] = room.makeAction("mouseMove");
   [sendName, getName] = room.makeAction("playerName");
   [sendRole, getRole] = room.makeAction("playerRole");
+  [sendCollision, getCollision] = room.makeAction("collision"); // Создаем действие для столкновений
   room.onPeerJoin(handlePeerJoin);
   room.onPeerLeave(handlePeerLeave);
   /* Получает данные о движении курсора. При чем делает она это после того, как получена роль данного игрока и другого пользователя
@@ -29,6 +30,24 @@ export function initRoom() {
   // Отправляем свои
   if (playerName) sendName(playerName);
   if (playerRole) sendRole(playerRole);
+
+  // Обработка событий столкновений
+  getCollision(({ asteroidId, laserPosition }, peerId) => {
+    handleCollision(asteroidId, laserPosition);
+  });
+}
+
+// Функция для обработки столкновений
+function handleCollision(asteroidId, laserPosition) {
+  const asteroid = document.querySelector(`.cursor[data-id="${asteroidId}"]`);
+  if (asteroid) {
+    document.body.removeChild(asteroid);
+  }
+
+  const laser = document.querySelector('.laser');
+  if (laser) {
+    document.body.removeChild(laser);
+  }
 }
 
 // Отправляет имя, роль текущего игрока новому, создает для него курсор
@@ -91,4 +110,4 @@ export function handlePlayerRole(role, peerId) {
     showCursor(peerId); // Делаем курсор видимым
   }
 }
-export { sendRole, room, selfId, sendMove, peerNames }; // Экспорт функции sendRole, переменной room, selfId, sendMove и peerNames
+export { sendRole, room, selfId, sendMove, peerNames, sendCollision }; // Экспорт функции sendRole, переменной room, selfId, sendMove и peerNames

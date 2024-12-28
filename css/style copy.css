@@ -573,8 +573,8 @@ button:active, a:active, input:active, select:active, textarea:active, label:act
 /* Стили для кастомного курсора */
 .cursor {
   position: absolute;
-  width: 35px;  /* Размер кастомного курсора */
-  height: 45px;
+  width: 100px;  /* Размер кастомного курсора */
+  height: 100px;
   transition: left 0.1s ease, top 0.1s ease;
   pointer-events: none;
 }

@@ -1,8 +1,6 @@
-import { room, sendMove, selfId } from './init.js'; // Импорт room и sendMove из init.js
+import { room, sendMove, selfId, sendCollision } from './init.js'; // Импорт room, sendMove и sendCollision из init.js
 import { moveCursor } from './cursors.js'; // Импорт moveCursor из cursors.js
-import { playerRole } from './player.js'; 
-import { roleSelected } from './player.js'; // Импортируем roleSelected
-import { shipPos } from './player.js';
+import { playerRole, roleSelected, shipPos } from './player.js';
 
 // Переменные для стрельбы
 let sendLaser, getLaser;
@@ -47,6 +45,22 @@ export function createLocalLaser(position) {
     // Проверяем, вышел ли лазер за пределы экрана
     if (laserRect.bottom < screenHeight) {
       laser.style.top = `${laserRect.top + speed}px`; // Двигаем лазер вниз
+
+      // Проверяем столкновения с астероидами
+      const asteroids = document.querySelectorAll('.cursor:not(.self)');
+      asteroids.forEach(asteroid => {
+        if (checkCollision(asteroid, laser)) {
+          // Удаляем астероид и лазер
+          const asteroidId = asteroid.dataset.id;
+          document.body.removeChild(asteroid);
+          document.body.removeChild(laser);
+
+          // Отправляем событие столкновения
+          sendCollision({ asteroidId, laserPosition: [laserRect.left / innerWidth, laserRect.top / innerHeight] });
+          return;
+        }
+      });
+
       requestAnimationFrame(moveLaser); // Продолжаем движение
     } else {
       // Если лазер вышел за пределы экрана, удаляем его
@@ -60,7 +74,6 @@ export function createLocalLaser(position) {
     moveLaser(); // Запускаем движение лазера
   }
 }
-
 
 // Функция для создания лазера для других игроков
 function createRemoteLaser(laserData) {
@@ -94,4 +107,17 @@ function createRemoteLaser(laserData) {
   };
 
   moveLaser(); // Запускаем движение лазера
+}
+
+// Функция для проверки столкновения между двумя элементами
+function checkCollision(element1, element2) {
+  const rect1 = element1.getBoundingClientRect();
+  const rect2 = element2.getBoundingClientRect();
+
+  return !(
+    rect1.right < rect2.left ||
+    rect1.left > rect2.right ||
+    rect1.bottom < rect2.top ||
+    rect1.top > rect2.bottom
+  );
 }
