@@ -1,12 +1,9 @@
-// логика движения астероида с инерцией
-
-import { playerRole, roleSelected, keyboardInput, keysPressed } from './player.js';
+import { playerRole, roleSelected, keyboardInput, shipPos } from './player.js';
 import { moveCursor } from './cursors.js';
 import { selfId, room, sendMove } from './init.js';
-import { shipPos } from './player.js';
 
-let targetPos = { x: innerWidth / 2, y: innerHeight / 2 }; // Целевая позицию, к которой должен двигаться астероид (позиция курсора мыши).
-let objectVel = { x: 0, y: 0 }; // Текущую скорость
+let targetPos = { x: innerWidth / 2, y: innerHeight / 2 }; // Целевая позиция, к которой должен двигаться астероид (позиция курсора мыши).
+let objectVel = { x: 0, y: 0 }; // Текущая скорость
 const objectMass = 0.5; // Масса объекта, мной подобранная для использования в коде (нужна в формуле ускорения)
 let isMoving = { value: false }; // Флаг, указывающий, движется ли астероид в данный момент.
 let isBraking = { value: false }; // Флаг, указывающий, тормозит ли астероид в данный момент.
@@ -15,7 +12,7 @@ let lastTime = 0; // Хранит время последнего кадра а�
 let mousePos = { x: 0, y: 0 }; // координаты для масштабирования
 
 export { mousePos, targetPos, isMoving, isBraking };
-export let objectPos = { x: innerWidth / 2, y: 10 }; // Экспортируем objectPos
+export let objectPos = { x: innerWidth / 2, y: 10 };
 
 export function updateAsteroidPosition(dt) {
   if (playerRole && roleSelected) {
@@ -73,7 +70,7 @@ export function updateAsteroidPosition(dt) {
     // Проверка границ экрана
     const canvasWidth = innerWidth;
     const canvasHeight = innerHeight;
-    const objectSize = 100; // Размер астероида (можно изменить в зависимости от размера астероида)
+    const objectSize = 100; // Размер астероида
 
     if (objectPos.x < 0) {
       objectPos.x = 0;
@@ -117,6 +114,5 @@ export function gameLoop(timestamp) {
     // Если игрок — астероид, обновляем позицию астероида
     updateAsteroidPosition(dt);
   }
-
   requestAnimationFrame(gameLoop);
 }

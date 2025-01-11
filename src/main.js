@@ -1,10 +1,9 @@
-import { initRoom, handlePeerJoin, handlePeerLeave, handlePlayerName, handlePlayerRole } from './init.js';
-import { handleRoleSelection, handleKeyDown, handleKeyUp, updateKeyboardInput, playerName, playerRole, roleSelected, keysPressed, keyboardInput } from './player.js';
-import { moveCursor, addCursor, removeCursor, updateCursor, updateCursorName, showCursor } from './cursors.js';
-import { handleMouseMove, initEventListeners } from './events.js';
-import { updateAsteroidPosition, gameLoop } from './gameLoop.js';
-import { selfId } from './init.js'; // Импорт selfId
-import { initShooting } from './shooting.js'; // Импорт функции initShooting
+import { initRoom, selfId } from './init.js';
+import { playerName,  } from './player.js';
+import { addCursor,} from './cursors.js';
+import { initEventListeners } from './events.js';
+import { gameLoop } from './gameLoop.js';
+import { initShooting } from './shooting.js';
 
 document.addEventListener("DOMContentLoaded", () => {
   initShooting();

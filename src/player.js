@@ -1,64 +1,38 @@
-/*
-- сохраняет выбранную роль, меняет курсор, отправляет данные
-- отображает курсоры других игроков
-- как происходит движение с помощью клавиатуры
-*/
-
-import { selfId, sendRole, peerNames, blockShipButton, sendPlayerState } from './init.js'; // Импорт selfId, sendRole и peerNames
-import { updateCursor, cursors, peerRoles, addCursor, updateCursorName, showCursor, shapes } from './cursors.js'; // Импорт функции updateCursor, peerRoles, addCursor, updateCursorName и showCursor
+import { selfId, sendRole, peerNames, blockShipButton, sendPlayerState } from './init.js';
+import { updateCursor, cursors, peerRoles, addCursor, updateCursorName, showCursor, shapes } from './cursors.js';
 
 let playerName = localStorage.getItem("name")?.trim();
-let playerRole = null; // Изначально роль не выбрана
-let roleSelected = false; // Указывает, выбрана ли роль игрока.
-let roleMenuHidden = false; // Указывает, скрыто ли меню выбора роли.
+let playerRole = null;
+let roleSelected = false;
+let roleMenuHidden = false;
 let keysPressed = {}; // Объект, который отслеживает, какие клавиши нажаты.
 let keyboardInput = { x: 0, y: 0 }; // Объект, который хранит текущие значения ввода с клавиатуры по осям x и y.
 let shipPos = { x: innerWidth / 2, y: 10 }; // Начальная позиция корабля
 const shipSpeed = 60; // Скорость корабля при нажатии клавиш
-
-// Добавляем переменную для отслеживания состояния игрока
 let isPlayerDestroyed = false;
 
-// Функция для уничтожения игрока
 export function destroyPlayer() {
   if (!isPlayerDestroyed) {
-      console.log("Игрок уничтожен!");
       isPlayerDestroyed = true;
-      // Скрываем курсор игрока
       const cursor = cursors[selfId];
       if (cursor) {
           cursor.style.display = 'none';
       }
-      // Отправляем состояние игрока (уничтожен)
       sendPlayerState({ peerId: selfId, isDestroyed: true });
-      // Запускаем таймер для восстановления игрока через 3 секунды
       setTimeout(respawnPlayer, 5000);
   }
 }
 
-// Функция для восстановления игрока
 export function respawnPlayer() {
   if (isPlayerDestroyed) {
-      console.log("Игрок восстановлен!");
       isPlayerDestroyed = false;
-
-      // Восстанавливаем игрока на стартовую позицию
-      shipPos.x = innerWidth / 2; // Центр экрана по горизонтали
-      shipPos.y = 10; // Фиксированная позиция по вертикали
-
-      // Выбираем случайную картинку для астероида
       const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
-      playerRole = randomShape; // Обновляем роль игрока на новую картинку
-
-      // Обновляем курсор с новой картинкой
+      playerRole = randomShape;
       updateCursor(selfId, playerRole);
-
-      // Делаем курсор игрока видимым
       const cursor = cursors[selfId];
       if (cursor) {
           cursor.style.display = 'block';
       }
-      // Отправляем состояние игрока (восстановлен) и новую картинку
       sendPlayerState({ peerId: selfId, isDestroyed: false, newShape: playerRole });
   }
 }
@@ -66,37 +40,35 @@ export function respawnPlayer() {
 export { playerName, playerRole, roleSelected, roleMenuHidden, keysPressed, keyboardInput, shipPos, shipSpeed };
 
 export function handleRoleSelection(role) {
-  console.log(`Role selected: ${role}`);
   if (role === 'asteroid') {
     const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
-    playerRole = randomShape; // Сохраняем выбранную картинку как роль
+    playerRole = randomShape;
   } else {
-    playerRole = role; // Для других ролей просто сохраняем роль
+    playerRole = role;
   }
-
-  roleSelected = true; // Устанавливаем флаг выбора роли
+  roleSelected = true;
   updateCursor(selfId, playerRole);
 
   const startgame = document.querySelector(".startgame");
   if (startgame) {
     startgame.style.display = "none";
-    roleMenuHidden = true; // Устанавливаем флаг, что меню выбора роли скрыто
-    notifyRoleSelected(); // Уведомляем других игроков о выборе роли
+    roleMenuHidden = true;
+    notifyRoleSelected();
   }
 
   // Отображение курсоров других игроков после выбора роли
   Object.keys(peerNames).forEach(peerId => {
     if (peerRoles[peerId]) {
       addCursor(peerId, false);
-      updateCursor(peerId, peerRoles[peerId]); // Обновляем курсор для каждого игрока
-      updateCursorName(peerId, peerNames[peerId]); // Обновляем имя под курсором
-      showCursor(peerId); // Делаем курсор видимым
+      updateCursor(peerId, peerRoles[peerId]);
+      updateCursorName(peerId, peerNames[peerId]);
+      showCursor(peerId);
     }
   });
 
   // Отображение курсора текущего игрока после выбора роли
   const cursor = cursors[selfId];
-  if (cursor) cursor.style.display = 'block'; // Делаем курсор видимым
+  if (cursor) cursor.style.display = 'block';
 
   // Блокируем кнопку выбора роли "ship", если роль "ship" выбрана
   if (role === "ship") {
@@ -106,12 +78,11 @@ export function handleRoleSelection(role) {
 
 export function notifyRoleSelected() {
   if (roleSelected && roleMenuHidden) {
-    sendRole(playerRole); // Отправляем выбранную роль (или картинку для астероида)
+    sendRole(playerRole);
   }
 }
 
 export function handleKeyDown(event) {
-  console.log(`Key down: ${event.key}`);
   switch (event.key) {
     case 'ArrowLeft':
       keyboardInput.x = -1; // Движение влево для астероидов
@@ -135,7 +106,6 @@ export function handleKeyDown(event) {
 }
 
 export function handleKeyUp(event) {
-  console.log(`Key up: ${event.key}`);
   switch (event.key) {
     case 'ArrowLeft':
     case 'ArrowRight':
@@ -148,7 +118,6 @@ export function handleKeyUp(event) {
   }
 }
 export function updateKeyboardInput(key, isPressed) {
-  console.log(`Updating keyboard input for key: ${key}, isPressed: ${isPressed}`);
   switch (key) {
     case 'ArrowUp':
       keyboardInput.y = isPressed ? -1 : 0;

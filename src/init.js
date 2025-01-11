@@ -7,7 +7,6 @@ import { showNotification } from './main.js';
 const config = { appId: "your-app-id" };
 const room = joinRoom(config, "room");
 console.log("Комната инициализирована:", room);
-// Переменные для отправки и получения данных (передвижения, имя, роль игрока)
 let sendMove, getMove, sendName, getName, sendRole, getRole, sendCollision, getCollision, sendPlayerState, getPlayerState;
 
 export function initRoom() {
@@ -24,10 +23,8 @@ export function initRoom() {
   getMove(([x, y], peerId) => {
     if (roleSelected && peerRoles[peerId]) moveCursor([x, y], peerId);
   });
-  // Получаем роль и имя -> обрабатываем их, обновляем данные
   getName((name, peerId) => handlePlayerName(name, peerId));
   getRole((role, peerId) => handlePlayerRole(role, peerId));
-  // Отправляем свои
   if (playerName) sendName(playerName);
   if (playerRole) sendRole(playerRole);
 
@@ -40,11 +37,10 @@ export function initRoom() {
     const cursor = cursors[peerId];
     if (cursor) {
       if (isDestroyed) {
-        cursor.style.display = 'none'; // Скрываем курсор
+        cursor.style.display = 'none';
       } else {
-        // Обновляем курсор с новой картинкой
-        updateCursor(peerId, newShape); // Используем переданную картинку
-        cursor.style.display = 'block'; // Показываем курсор
+        updateCursor(peerId, newShape);
+        cursor.style.display = 'block';
       }
     }
   });
@@ -115,8 +111,8 @@ export function handlePlayerRole(role, peerId) {
     showNotification(`${trimmedRole} joined`);
     if (roleSelected && roleMenuHidden) {
       addCursor(peerId, false);
-      updateCursor(peerId, trimmedRole); // Обновляем курсор с учетом роли или картинки
-      showCursor(peerId); // Делаем курсор видимым
+      updateCursor(peerId, trimmedRole);
+      showCursor(peerId);
     }
 
     // Проверяем, если роль "ship", блокируем кнопку
@@ -125,7 +121,7 @@ export function handlePlayerRole(role, peerId) {
     }
   } else {
     updateCursor(peerId, trimmedRole);
-    showCursor(peerId); // Делаем курсор видимым
+    showCursor(peerId);
   }
 }
 
