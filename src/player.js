@@ -133,3 +133,9 @@ export function updateKeyboardInput(key, isPressed) {
       break;
   }
 }
+
+export function switchRoles(asteroidId) {
+playerRole = 'ship';
+updateCursor(asteroidId, 'ship');
+sendRole(playerRole);
+}

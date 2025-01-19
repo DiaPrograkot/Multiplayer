@@ -58,6 +58,11 @@ export function updateAsteroidPosition(dt) {
         objectPos.x += objectVel.x * dt;
         objectPos.y += objectVel.y * dt;
       }
+      // Проверяем, достиг ли астероид y = 10
+      if (objectPos.y <= 10) {
+        switchRoles(selfId); // Вызываем функцию для смены ролей
+        console.log(peerRoles)
+      }
     }
 
     // Учитываем ввод с клавиатуры
