@@ -1,5 +1,5 @@
-import { playerRole, roleSelected, keyboardInput, shipPos } from './player.js';
-import { moveCursor } from './cursors.js';
+import { playerRole, roleSelected, keyboardInput, shipPos, switchRoles } from './player.js';
+import { moveCursor, peerRoles } from './cursors.js';
 import { selfId, room, sendMove } from './init.js';
 
 let targetPos = { x: innerWidth / 2, y: innerHeight / 2 }; // Целевая позиция, к которой должен двигаться астероид (позиция курсора мыши).
