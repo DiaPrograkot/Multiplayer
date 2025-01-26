@@ -1,5 +1,5 @@
 import { joinRoom, selfId } from "trystero";
-import { playerName, playerRole, roleSelected, roleMenuHidden, destroyPlayer } from './player.js';
+import { playerName, playerRole, roleSelected, roleMenuHidden, destroyPlayer, handleRoleChange } from './player.js';
 import { peerNames, peerRoles, addCursor, removeCursor, updateCursorName, updateCursor, showCursor, moveCursor, cursors } from './cursors.js';
 import { showNotification } from './main.js';
 
@@ -7,7 +7,7 @@ import { showNotification } from './main.js';
 const config = { appId: "your-app-id" };
 const room = joinRoom(config, "room");
 console.log("Комната инициализирована:", room);
-let sendMove, getMove, sendName, getName, sendRole, getRole, sendCollision, getCollision, sendPlayerState, getPlayerState;
+let sendMove, getMove, sendName, getName, sendRole, getRole, sendCollision, getCollision, sendPlayerState, getPlayerState, sendRoleChange, getRoleChange;
 
 export function initRoom() {
   /* Функция room.makeAction (является частью библиотеки trystero) позволяет создавать действия для отправки и получения данных определенного типа.
@@ -16,6 +16,8 @@ export function initRoom() {
   [sendName, getName] = room.makeAction("playerName");
   [sendRole, getRole] = room.makeAction("playerRole");
   [sendCollision, getCollision] = room.makeAction("collision"); // Создаем действие для столкновений
+  [sendRoleChange, getRoleChange] = room.makeAction("roleChange");
+
   room.onPeerJoin(handlePeerJoin);
   room.onPeerLeave(handlePeerLeave);
   /* Получает данные о движении курсора. При чем делает она это после того, как получена роль данного игрока и другого пользователя
@@ -49,6 +51,10 @@ export function initRoom() {
   getCollision(({ asteroidId, laserPosition }, peerId) => {
     handleCollision(asteroidId, laserPosition);
   });
+
+getRoleChange(({ peerId, newRole }) => {
+  handleRoleChange(peerId, newRole);
+});
 }
 
 // Функция для обработки столкновений
@@ -125,4 +131,4 @@ export function handlePlayerRole(role, peerId) {
   }
 }
 
-export { sendRole, room, selfId, sendMove, peerNames, sendCollision, sendPlayerState };
+export { sendRole, room, selfId, sendMove, peerNames, sendCollision, sendPlayerState, sendRoleChange };
