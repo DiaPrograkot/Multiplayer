@@ -34,6 +34,7 @@ export function respawnPlayer() {
     if (cursor) {
       cursor.style.display = 'block';
     }
+    posCenter()
     sendPlayerState({ peerId: selfId, isDestroyed: false, newShape: playerRole });
   }
 }

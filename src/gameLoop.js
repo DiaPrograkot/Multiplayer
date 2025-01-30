@@ -123,5 +123,5 @@ export function gameLoop(timestamp) {
 }
 
 export function posCenter (){
-  objectPos = { x: innerWidth / 2, y: innerHeight / 2 };
+  objectPos = { x: innerWidth / 2, y: innerHeight};
 }
