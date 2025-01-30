@@ -37,7 +37,8 @@ export function initEventListeners() {
   const shipButton = document.querySelector(".ship-button");
   const asteroidButton = document.querySelector(".asteroid-button");
   if (shipButton) {
-      shipButton.addEventListener("click", () => {
+      shipButton.addEventListener("click", (event) => {
+          event.stopPropagation();
           console.log("Ship button clicked");
           handleRoleSelection('ship');
       });
