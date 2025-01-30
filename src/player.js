@@ -1,5 +1,6 @@
-import { selfId, sendRole, peerNames, blockShipButton, sendPlayerState, sendRoleChange } from './init.js';
+import { selfId, sendRole, peerNames, blockShipButton, sendPlayerState } from './init.js';
 import { updateCursor, cursors, peerRoles, addCursor, updateCursorName, showCursor, shapes } from './cursors.js';
+import {posCenter} from './gameLoop.js'
 
 let playerName = localStorage.getItem("name")?.trim();
 let playerRole = null;
@@ -135,22 +136,18 @@ export function updateKeyboardInput(key, isPressed) {
 }
 
 export function switchRoles(asteroidId) {
+  if (playerRole == 'ship'){
+    const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
+    posCenter()
+    peerRoles[selfId] = randomShape;
+    playerRole = randomShape;
+    updateCursor(selfId, randomShape);
+    sendRole(randomShape);
+  }
+  if (selfId === asteroidId) {
   playerRole = 'ship';
+  peerRoles[asteroidId] = 'ship' 
   updateCursor(asteroidId, 'ship');
   sendRole(playerRole);
-
-  const shipPlayerId = Object.keys(peerRoles).find(id => peerRoles[id] === 'ship');
-  if (shipPlayerId) {
-    const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
-    peerRoles[shipPlayerId] = randomShape; // Обновляем роль в peerRoles
-    sendRoleChange({ peerId: shipPlayerId, newRole: randomShape });
   }
-}
-
-export function handleRoleChange(peerId, newRole){
-if (peerId === selfId) {
-  playerRole = newRole;
-  updateCursor(selfId, newRole);
-  sendRole(newRole);
-}
 }

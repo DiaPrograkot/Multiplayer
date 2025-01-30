@@ -1,6 +1,6 @@
 import { playerRole, roleSelected, keyboardInput, shipPos, switchRoles } from './player.js';
 import { moveCursor, peerRoles } from './cursors.js';
-import { selfId, room, sendMove } from './init.js';
+import { selfId, room, sendMove, sendRoleChange } from './init.js';
 
 let targetPos = { x: innerWidth / 2, y: innerHeight / 2 }; // Целевая позиция, к которой должен двигаться астероид (позиция курсора мыши).
 let objectVel = { x: 0, y: 0 }; // Текущая скорость
@@ -60,8 +60,8 @@ export function updateAsteroidPosition(dt) {
       }
       // Проверяем, достиг ли астероид y = 10
       if (objectPos.y <= 10) {
-        switchRoles(selfId); // Вызываем функцию для смены ролей
-        console.log(peerRoles)
+        sendRoleChange(selfId)
+        switchRoles(selfId)
       }
     }
 
@@ -120,4 +120,8 @@ export function gameLoop(timestamp) {
     updateAsteroidPosition(dt);
   }
   requestAnimationFrame(gameLoop);
+}
+
+export function posCenter (){
+  objectPos = { x: innerWidth / 2, y: innerHeight / 2 };
 }

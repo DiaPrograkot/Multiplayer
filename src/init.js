@@ -1,5 +1,5 @@
 import { joinRoom, selfId } from "trystero";
-import { playerName, playerRole, roleSelected, roleMenuHidden, destroyPlayer, handleRoleChange } from './player.js';
+import { playerName, playerRole, roleSelected, roleMenuHidden, destroyPlayer, switchRoles } from './player.js';
 import { peerNames, peerRoles, addCursor, removeCursor, updateCursorName, updateCursor, showCursor, moveCursor, cursors } from './cursors.js';
 import { showNotification } from './main.js';
 
@@ -7,7 +7,7 @@ import { showNotification } from './main.js';
 const config = { appId: "your-app-id" };
 const room = joinRoom(config, "room");
 console.log("Комната инициализирована:", room);
-let sendMove, getMove, sendName, getName, sendRole, getRole, sendCollision, getCollision, sendPlayerState, getPlayerState, sendRoleChange, getRoleChange;
+let sendMove, getMove, sendName, getName, sendRole, getRole, sendCollision, getCollision, sendPlayerState, getPlayerState, sendRoleChange, getRoleChange, sendRoleChangeRequest, getRoleChangeRequest;
 
 export function initRoom() {
   /* Функция room.makeAction (является частью библиотеки trystero) позволяет создавать действия для отправки и получения данных определенного типа.
@@ -52,8 +52,9 @@ export function initRoom() {
     handleCollision(asteroidId, laserPosition);
   });
 
-getRoleChange(({ peerId, newRole }) => {
-  handleRoleChange(peerId, newRole);
+
+getRoleChange(({asteroidId}) => {
+  switchRoles(asteroidId); // Вызываем функцию для смены ролей
 });
 }
 
@@ -126,9 +127,10 @@ export function handlePlayerRole(role, peerId) {
       blockShipButton();
     }
   } else {
+    peerRoles[peerId] = trimmedRole;
     updateCursor(peerId, trimmedRole);
     showCursor(peerId);
   }
 }
 
-export { sendRole, room, selfId, sendMove, peerNames, sendCollision, sendPlayerState, sendRoleChange };
+export { sendRole, room, selfId, sendMove, peerNames, sendCollision, sendPlayerState, sendRoleChange, sendRoleChangeRequest };
