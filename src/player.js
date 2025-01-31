@@ -20,7 +20,12 @@ export function destroyPlayer() {
       cursor.style.display = 'none';
     }
     sendPlayerState({ peerId: selfId, isDestroyed: true });
+    const intervalAst = setInterval(posCenter, 1000);
     setTimeout(respawnPlayer, 5000);
+    setTimeout(() => {
+      clearInterval(intervalAst);
+    }, 5000);
+    
   }
 }
 
