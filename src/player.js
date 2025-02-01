@@ -1,6 +1,6 @@
 import { selfId, sendRole, peerNames, blockShipButton, sendPlayerState } from './init.js';
 import { updateCursor, cursors, peerRoles, addCursor, updateCursorName, showCursor, shapes } from './cursors.js';
-import {posCenter} from './gameLoop.js'
+import { posCenter } from './gameLoop.js'
 
 let playerName = localStorage.getItem("name")?.trim();
 let playerRole = null;
@@ -25,8 +25,14 @@ export function destroyPlayer() {
     setTimeout(() => {
       clearInterval(intervalAst);
     }, 5000);
-    
+
   }
+}
+
+export function setPlayerName(newName) {
+  playerName = newName.trim();
+  localStorage.setItem("name", playerName);
+  return playerName;
 }
 
 export function respawnPlayer() {
@@ -142,7 +148,7 @@ export function updateKeyboardInput(key, isPressed) {
 }
 
 export function switchRoles(asteroidId) {
-  if (playerRole == 'ship'){
+  if (playerRole == 'ship') {
     const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
     posCenter()
     peerRoles[selfId] = randomShape;
@@ -151,9 +157,9 @@ export function switchRoles(asteroidId) {
     sendRole(randomShape);
   }
   if (selfId === asteroidId) {
-  playerRole = 'ship';
-  peerRoles[asteroidId] = 'ship' 
-  updateCursor(asteroidId, 'ship');
-  sendRole(playerRole);
+    playerRole = 'ship';
+    peerRoles[asteroidId] = 'ship'
+    updateCursor(asteroidId, 'ship');
+    sendRole(playerRole);
   }
 }

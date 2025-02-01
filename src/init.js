@@ -1,5 +1,5 @@
 import { joinRoom, selfId } from "trystero";
-import { playerName, playerRole, roleSelected, roleMenuHidden, destroyPlayer, switchRoles } from './player.js';
+import { playerName, playerRole, roleSelected, roleMenuHidden, destroyPlayer, switchRoles, setPlayerName } from './player.js';
 import { peerNames, peerRoles, addCursor, removeCursor, updateCursorName, updateCursor, showCursor, moveCursor, cursors } from './cursors.js';
 import { showNotification } from './main.js';
 
@@ -73,7 +73,7 @@ function handleCollision(asteroidId, laserPosition) {
 
 // Отправляет имя, роль текущего игрока новому, создает для него курсор
 export function handlePeerJoin(peerId) {
-  console.log("Игрок присоединился:", peerId);
+  console.log(`Игрок ${peerId} присоединился. Имя: ${peerNames[peerId] || "неизвестно"}`);
   if (peerId !== selfId && playerName) sendName(playerName);
   if (peerId !== selfId && playerRole) sendRole(playerRole);
 }
@@ -133,4 +133,4 @@ export function handlePlayerRole(role, peerId) {
   }
 }
 
-export { sendRole, room, selfId, sendMove, peerNames, sendCollision, sendPlayerState, sendRoleChange, sendRoleChangeRequest };
+export { sendRole, room, selfId, sendMove, peerNames, sendCollision, sendPlayerState, sendRoleChange, sendRoleChangeRequest, sendName };

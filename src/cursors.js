@@ -15,7 +15,7 @@ export function moveCursor([x, y], id) { //[x, y] — нормализованн
 }
 
 export function addCursor(id, isSelf) {
-  console.log(`Adding cursor for ${id}`);
+  console.log(`Добавляем курсор для ${id}. Имя: ${isSelf ? playerName : peerNames[id] || "Неизвестный игрок"}`);
   if (!cursors[id]) {
     const el = document.createElement("div");
     const img = document.createElement("img");

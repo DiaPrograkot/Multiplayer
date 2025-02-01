@@ -1,6 +1,6 @@
-import { initRoom, selfId } from './init.js';
-import { playerName,  } from './player.js';
-import { addCursor,} from './cursors.js';
+import { initRoom, selfId, sendName } from './init.js';
+import { setPlayerName, playerName } from './player.js';
+import { addCursor, peerNames, } from './cursors.js';
 import { initEventListeners } from './events.js';
 import { gameLoop } from './gameLoop.js';
 import { initShooting } from './shooting.js';
@@ -35,15 +35,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!playerName) {
       const playerNameContainer = document.querySelector(".playerNameContainer");
       const playerInput = document.querySelector(".playerInput");
-      const playerPlay = document.querySelector(".playerPlay");
-
+      const playerPlay = document.querySelector(".playerPlay"); 
       playerNameContainer.style.display = "flex";
       playerPlay.addEventListener("click", () => {
-        playerName = playerInput.value.trim();
-        if (playerName) {
-          localStorage.setItem("name", playerName);
+        const newName = playerInput.value.trim();
+        if (newName) {
+          setPlayerName(newName);
           playerNameContainer.style.display = "none";
-          sendName(playerName);
+          sendName(newName);
           addCursor(selfId, true);
         }
       });
