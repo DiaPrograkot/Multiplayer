@@ -46,8 +46,9 @@ document.addEventListener("DOMContentLoaded", () => {
           addCursor(selfId, true);
         }
       });
+    } else {
+      addCursor(selfId, true);
     }
-
     requestAnimationFrame(gameLoop);
   }
 });

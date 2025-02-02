@@ -73,9 +73,9 @@ function handleCollision(asteroidId, laserPosition) {
 
 // Отправляет имя, роль текущего игрока новому, создает для него курсор
 export function handlePeerJoin(peerId) {
-  console.log(`Игрок ${peerId} присоединился. Имя: ${peerNames[peerId] || "неизвестно"}`);
-  if (peerId !== selfId && playerName) sendName(playerName);
-  if (peerId !== selfId && playerRole) sendRole(playerRole);
+  if (peerId !== selfId && playerName) {
+    sendName(playerName);
+  }
 }
 
 // Удаляем данные, сообщаем об уходе
@@ -96,9 +96,13 @@ export function handlePlayerName(name, peerId) {
     peerNames[peerId] = trimmedName;
     showNotification(`${trimmedName} joined`);
   }
-  updateCursorName(peerId, trimmedName);
-}
 
+  updateCursorName(peerId, trimmedName);
+
+  if (!cursors[peerId]) {
+    addCursor(peerId, false);
+  }
+}
 // Функция для блокировки кнопки выбора роли корабля
 export function blockShipButton() {
   const shipButton = document.querySelector(".ship-button");
