@@ -244,14 +244,7 @@ body {
   animation: rotation 16s linear infinite;
 }
 
-.counter {
-  position: absolute;
-  display: inline-block;
-  font-size: 7rem;
-  color: yellow;
-  top: 20px;
-  right: 58px;
-}
+
 .playerLabel {
   position: fixed;
   display: inline-block;
@@ -386,38 +379,93 @@ body {
 }
 
 .title {
-  padding-top: 3rem;
+  padding-top: 5rem;
   color: yellow;
-  font-size: 6rem;
+  font-size: 6.5rem;
   text-decoration: underline;
 }
 
-.highscoreContainer, #gameover {
-  padding-top: 1rem;
-  color: #db1818;
-  display: -webkit-box;
-  display: -ms-flexbox;
+
+
+h2 {
+  font-size: 4rem;
+  padding-top: 20px;
+  color: rgb(255, 67, 67);
+  text-shadow: 
+  -1px -1px 0 #000, 
+  1px -1px 0 #000, 
+  -1px 1px 0 #000, 
+  1px 1px 0 #000;
+} 
+.image-labels {
   display: flex;
-  flex-direction: column;
-  -ms-flex-pack: distribute;
-  justify-content: space-around;
-  font-size: 6rem;
+  align-items: center; /* Для вертикального выравнивания */
+  gap: 10rem; /* Расстояние между элементами */
+  padding-top: 20px;
 }
 
-.highscoreContainer .highscoreTitle {
-  margin-right: 1rem;
+.image-label {
+  font-size: 3rem;
+  color: yellow;
+  text-shadow: 
+  -1px -1px 0 #000, 
+  1px -1px 0 #000, 
+  -1px 1px 0 #000, 
+  1px 1px 0 #000;
+  position: relative; /* Позволяет перемещать элемент */
+  left: 50px; /* Переместите элемент вправо на 20 пикселей */
 }
 
-.startplay, .play {
-  cursor: pointer;
-  position: absolute;
-  top: 70%;
-  -webkit-transition: all 0.5s ease;
-  transition: all 0.5s ease;
-  color: rgba(190, 60, 60, 0.822);
-  font-size: 10rem;
-  cursor: pointer;
+.image-label1 {
+  font-size: 3rem;
+  color: yellow;
+  text-shadow: 
+  -1px -1px 0 #000, 
+  1px -1px 0 #000, 
+  -1px 1px 0 #000, 
+  1px 1px 0 #000;
+  padding-left: 80px; /* Вы можете оставить этот отступ */
 }
+
+
+.button-container {
+  display: flex;
+  justify-content: center; /* Располагает кнопки в одну строку по центру */
+  gap: 40px; /* Расстояние между изображениями */
+  margin-top: 15px;
+  z-index: -1;
+}
+
+.button-image {
+  width: 220px;
+  height: 220px;
+  object-fit: cover; /* Чтобы изображение заполнило всю область */
+  border: 7px solid rgb(255, 187, 0);; /* Рамка вокруг изображения */
+  cursor: pointer;
+  z-index: -1;
+ 
+  
+}
+
+.startplay, .startplay1 {
+  width: 220px;
+  height: 220px;
+  display: inline-block;
+  border: 7px solid rgb(255, 187, 0); /* Рамка вокруг кнопки */
+  cursor: pointer;
+  border-radius: 15px;
+  z-index: -1;
+}
+
+.startplay img, .startplay1 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Изображение полностью заполняет кнопку */
+  z-index: -1;
+}
+
+
+
 .playerPlay {
   cursor: pointer;
   margin-top: 2rem;
@@ -449,17 +497,8 @@ body {
   font-size: 12rem;
 }
 
-.lives {
-  position: absolute;
-  display: inline-block;
-  left: 30px;
-  top: 20px;
-}
 
-.star {
-  height: 4rem;
-  margin-left: 0.5rem;
-}
+
 
 @-webkit-keyframes rotation {
   0% {
@@ -521,12 +560,7 @@ body {
     left: 50px;
     cursor: pointer;
   }
-  .lives {
-    position: fixed;
-    display: inline-block;
-    left: 10px;
-    top: 10px;
-  }
+ 
   .startgame, .gameover {
     width: 90%;
     height: 60vh;
@@ -542,9 +576,7 @@ body {
   .title {
     font-size: 3rem;
   }
-  .highscoreContainer {
-    font-size: 2rem;
-  }
+ 
   .playerNameContainer {
     width: 90%;
   }
@@ -620,42 +652,11 @@ body {
   text-align: center; /* Центрируем текст */
 }
 
-/* Скрываем курсор на всех элементах */
-* {
-  cursor: none !important; /* Принудительно скрываем курсор на всех элементах */
-}
-
-/* Скрываем курсор для всех интерактивных элементов, включая их активные состояния */
-button, a, input, select, textarea, label {
-  cursor: none !important;
-}
-
-button:hover, a:hover, input:hover, select:hover, textarea:hover, label:hover {
-  cursor: none !important; /* Принудительно скрываем курсор при наведении */
-}
-
-button:active, a:active, input:active, select:active, textarea:active, label:active {
-  cursor: none !important; /* Принудительно скрываем курсор при клике */
-}
 
 
-/* Стили для кастомного курсора */
-.cursor {
-  position: absolute;
-  width: 35px;  /* Размер кастомного курсора */
-  height: 45px;
-  transition: left 0.1s ease, top 0.1s ease;
-  pointer-events: none;
-}
-
-.cursor img {
-  width: 100%; /* Картинка заполняет весь элемент */
-  height: 100%;
-}
-
-.cursor p {
-  font-size: 20px;  /* Размер текста */
-  color: white;
+.player-name {
   text-align: center;
+  font-size: 16px;
+  margin-top: 5px;
+  color: rgb(255, 67, 67);
 }
-

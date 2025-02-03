@@ -1,165 +1,141 @@
 import { joinRoom, selfId } from 'trystero';
 
-// Конфигурация для инициализации библиотеки
 const config = {
-  appId: 'your-app-id', // Замените 'your-app-id' на ваш реальный appId
-  // Другие конфигурационные параметры, если они требуются
+  appId: 'your-app-id',
 };
 
-const room = joinRoom(config, 'room-id'); // Замените 'room-id' на ваш реальный roomId
+const room = joinRoom(config, 'room-id');
 console.log('Комната инициализирована:', room);
 
-const cursors = {};
-const peerNames = {};
-let sendMove, getMove, sendName, getName;
-let playerName = localStorage.getItem('name')?.trim();
-let mouseX = 0, mouseY = 0;
-let canvas = null;
+let sendMove, getMove, sendName, getName, sendRole, getRole;
+// Новые действия для игры
+let sendShipPosition, getShipPosition;
+let sendLaser, getLaser;
+let sendAsteroid, getAsteroid;
 
-// Инициализация комнаты и событий
-document.addEventListener('DOMContentLoaded', () => {
-  canvas = document.getElementById('canvas');
-  if (canvas) {
-    initRoom();
-    addCursor(selfId, true);
-    document.documentElement.className = 'ready';
-
-    // Отслеживание движения мыши
-    document.addEventListener('mousemove', handleMouseMove);
-  }
-});
-
-// Функция инициализации комнаты
 function initRoom() {
   [sendMove, getMove] = room.makeAction('mouseMove');
   [sendName, getName] = room.makeAction('playerName');
+  [sendRole, getRole] = room.makeAction('roleSelected');
+}
+  // Добавила новые действия 
+  [sendShipPosition, getShipPosition] = room.makeAction('shipPosition');
+  [sendLaser, getLaser] = room.makeAction('laser');
+  [sendAsteroid, getAsteroid] = room.makeAction('asteroid');
+  [sendScore, getScore] = room.makeAction('score');
 
   room.onPeerJoin(handlePeerJoin);
   room.onPeerLeave(handlePeerLeave);
-
-  // Обработка движения курсора
-  getMove(([x, y], peerId) => {
-    moveCursor([x, y], peerId);
-  });
-
-  // Получение имени других игроков
+  getMove(([x, y], peerId) => moveCursor([x, y], peerId));
   getName((name, peerId) => handlePlayerName(name, peerId));
-}
-
-// Обработчики событий
-function handleMouseMove({ clientX, clientY }) {
-  mouseX = clientX / innerWidth;
-  mouseY = clientY / innerHeight;
-  moveCursor([mouseX, mouseY], selfId);
-
-  if (room) {
-    sendMove([mouseX, mouseY]);
-  }
-}
-
-function handlePeerJoin(peerId) {
-  console.log('Игрок присоединился:', peerId);
-  if (peerId !== selfId && playerName) {
-    console.log(`Отправка имени игрока: ${playerName} для ${peerId}`);
-    sendName(playerName);
-  }
-}
-
-function handlePeerLeave(peerId) {
-  console.log(`Игрок с ID ${peerId} вышел.`);
-  if (peerNames[peerId]) {
-    showNotification(`${peerNames[peerId]} left`);
-    delete peerNames[peerId];
-  }
-  removeCursor(peerId);
-}
-
-function handlePlayerName(name, peerId) {
-  const trimmedName = name ? name.trim() : 'Неизвестный игрок';
-  console.log(`Получено имя для ${peerId}: ${trimmedName}`);
-
-  if (!peerNames[peerId]) {  // Проверка на существование имени
-    peerNames[peerId] = trimmedName;
-    showNotification(`${trimmedName} joined`);
-    addCursor(peerId, false); // Создаем курсор для нового игрока
-  } else {
-    console.log(`Имя для ${peerId} уже сохранено: ${peerNames[peerId]}`);
-  }
-}
-
-// Функции работы с курсорами
-function moveCursor([x, y], id) {
-  const el = cursors[id];
-  if (el) {
-    el.style.left = `${x * innerWidth}px`;
-    el.style.top = `${y * innerHeight}px`;
-  }
-}
-
-function addCursor(id, isSelf) {
-  const el = document.createElement('div');
-  const img = document.createElement('img');
-  const txt = document.createElement('p');
-
-  el.className = `cursor${isSelf ? ' self' : ''}`;
-  el.style.left = el.style.top = '-99px'; // скрываем по умолчанию
-
-  img.src = 'src/img/hand.png';
-  txt.innerText = isSelf ? playerName : peerNames[id] || 'Неизвестный игрок';
-  el.appendChild(img);
-  el.appendChild(txt);
-  canvas.appendChild(el);
-  cursors[id] = el;
-
-  console.log(`Курсор добавлен для ${id}:`, el);
-}
-
-function removeCursor(id) {
-  const el = cursors[id];
-  if (el) {
-    canvas.removeChild(el);
-    delete cursors[id];
-    console.log(`Курсор ${id} удалён.`);
-  } else {
-    console.warn(`Не удалось удалить курсор, так как он не найден для ID: ${id}`);
-  }
-}
-
-// Уведомления
-function showNotification(message) {
-  console.log('Уведомление:', message);
-  const notifications = document.getElementById('notifications');
-  const notification = document.createElement('div');
-  notification.className = 'notification';
-  notification.textContent = message;
-  notifications.appendChild(notification);
-
-  // Удаление уведомления через 3 секунды
-  setTimeout(() => {
-    notification.style.opacity = 0;
-    setTimeout(() => {
-      notifications.removeChild(notification);
-    }, 500);
-  }, 3000);
-}
-
-// Проверка имени игрока
-if (!playerName) {
-  const playerNameContainer = document.querySelector('.playerNameContainer');
-  const playerInput = document.querySelector('.playerInput');
-  const playerPlay = document.querySelector('.playerPlay');
-
-  playerNameContainer.style.display = 'flex';
-  playerPlay.addEventListener('click', () => {
-    playerName = playerInput.value.trim();
-    if (playerName) {
-      localStorage.setItem('name', playerName);
-      playerNameContainer.style.display = 'none';
-      sendName(playerName);
-      addCursor(selfId, true);
-      console.log(`Имя игрока установлено: ${playerName}`);
-    } else {
-      console.warn('Имя игрока не может быть пустым.');
+  
+  getShipPosition((position, peerId) => {
+    if (peerId !== selfId && ship) {
+      ship.style.left = position + "px";
     }
   });
+
+  getLaser((laserData, peerId) => {
+    if (peerId !== selfId) {
+      const { x, y, asteroidId } = laserData;
+      const laser = document.createElement("div");
+      laser.classList.add("laser");
+      laser.style.left = x + "px";
+      laser.style.top = y + "px";
+      container.appendChild(laser);
+      laserMovement(laser);
+    }
+  });
+  getAsteroid((asteroidData, peerId) => {
+    if (peerId !== selfId) {
+      const { action, id, x, y, width, height } = asteroidData;
+      
+      if (action === 'create') {
+        const asteroid = createAsteroid();
+        asteroid.setAttribute('data-id', id);
+        asteroid.style.left = x + "px";
+        asteroid.style.top = y + "px";
+        asteroid.style.width = width + "px";
+        asteroid.style.height = height + "px";
+        container.appendChild(asteroid);
+        moveAsteroid(asteroid);
+      } else if (action === 'remove') {
+        const asteroid = document.querySelector(`[data-id="${id}"]`);
+        if (asteroid) {
+          asteroid.remove();
+        }
+      }
+    }
+  });
+function moveShip(clientX) {
+  if (!isPaused) {
+    const containerRect = container.getBoundingClientRect();
+    const shipRect = ship.getBoundingClientRect();
+    let newLeft = clientX - 60;
+    
+    if (newLeft < 0) newLeft = 0;
+    else if (newLeft + shipRect.width > containerRect.width)
+      newLeft = containerRect.width - shipRect.width;
+    
+    ship.style.left = newLeft + "px";
+    sendShipPosition(newLeft);
+  }
 }
+function laserShot() {
+  if (canShoot && !isPaused) {
+    const laser = document.createElement("div");
+    laser.classList.add("laser");
+    
+    const shipRect = ship.getBoundingClientRect();
+    const x = shipRect.left + shipRect.width / 2;
+    const y = shipRect.top;
+    
+    laser.style.left = x + "px";
+    laser.style.top = y + "px";
+    container.appendChild(laser);
+    sendLaser({ x, y });
+    
+    laserMovement(laser);
+    laserSound();
+    
+    canShoot = false;
+    setTimeout(() => {
+      canShoot = true;
+    }, 1);
+  }
+}
+function asteroidFunction() {
+  const asteroid = createAsteroid();
+  const id = Date.now().toString();
+  asteroid.setAttribute('data-id', id);
+  
+  const x = Math.random() * (window.innerWidth - asteroid.offsetWidth);
+  asteroid.style.left = x + "px";
+  
+  container.appendChild(asteroid);
+  moveAsteroid(asteroid);
+
+  sendAsteroid({
+    action: 'create',
+    id,
+    x,
+    y: window.innerHeight,
+    width: asteroid.offsetWidth,
+    height: asteroid.offsetHeight
+  });
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  initRoom();
+});
+
+export {
+  room,
+  sendMove,
+  sendName,
+  sendRole,
+  sendShipPosition,
+  sendLaser,
+  sendAsteroid,
+};

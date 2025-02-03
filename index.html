@@ -12,8 +12,9 @@
   <body>
     <script type="module" src="./js/script.js" defer></script>
     <script src="dist/bundle.js"></script>
+    <div id="sharedScreen" style="display: none;"></div>
     <div id="notifications"></div>
-        <div id="peer-info">No peers connected</div>
+
         <video autoplay muted loop draggable="false" class="videoContainer">
       <source src="video/earth.mp4" type="video/mp4" />
     </video>
@@ -39,31 +40,30 @@
       <div id="messages"></div>
      <div class="startgame">
         <div class="title">MURKA SENSEI Commander</div>
-        <div class="highscoreContainer">
-          <div class="highscore">High score: <span id="highscore">0</span></div>
+        <h2>Choose who to play</h2>
+        <div class="image-labels">
+          <p class="image-label">Cat</p> 
+          <p class="image-label1">Asteroid</p>
+           </div>
+      <div class="button-container">
+          <div class="startplay">
+            <img src="img/murka3.png" class="button-image" onclick="document.querySelector('.startplay').click()" />
+            <div class="player-name" id="cat-name"></div>
+          </div>
+          <div class="startplay1">
+            <img src="img/asteroid-purple.svg" class="button-image " onclick="document.querySelector('.startplay1').click()" />
+            <div class="player-name" id="asteroid-name"></div>
+          </div>
         </div>
-        <div class="difficulty">
-          <button class="easy">Easy</button>
-          <button class="medium">Medium</button>
-          <button class="hard">Hard</button>
-        </div>
-        <div class="startplay">▶</div>
       </div>
-      <button id="pauseButton" class="pauseButton">▶</button>
+      
       <div class="gameover">
         <div class="title">Gameover</div>
         <div id="gameover">
-          <div>Your Score: <span id="yourscore"></span></div>
-          <div>High Score: <span id="highscore-display"></span></div>
-      </div>
-      <div class="difficulty-buttons">
-        <button class="easy">Easy</button>
-        <button class="medium">Medium</button>
-        <button class="hard">Hard</button>
       </div>
         <div class="play">▶</div>
       </div>
-      <div class="counter">0</div>
+      <div class="counter"></div>
       <div class="playerLabel"></div>
       <div class="toggleMusic">
         <img src="img/speaker.svg" alt="toggle music" class="musicButton" />
@@ -74,7 +74,7 @@
         <img src="img/planet-mars.svg" alt="planet-mars" class="planet marsImg" />
         <img src="img/milky-way.svg" alt="milky-way" class="planet spaceImg" />
       </div>
-      <div class="lives"></div>
+      
     </div>
 
     <audio class="audio" loop>
