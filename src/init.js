@@ -73,9 +73,8 @@ function handleCollision(asteroidId, laserPosition) {
 
 // Отправляет имя, роль текущего игрока новому, создает для него курсор
 export function handlePeerJoin(peerId) {
-  if (peerId !== selfId && playerName) {
-    sendName(playerName);
-  }
+  if (peerId !== selfId && playerName) sendName(playerName);
+  if (peerId !== selfId && playerRole) sendRole(playerRole);
 }
 
 // Удаляем данные, сообщаем об уходе
