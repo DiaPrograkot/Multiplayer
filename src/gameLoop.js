@@ -7,10 +7,13 @@ let objectVel = { x: 0, y: 0 }; // Текущая скорость
 const objectMass = 0.5; // Масса объекта, мной подобранная для использования в коде (нужна в формуле ускорения)
 let isMoving = { value: false }; // Флаг, указывающий, движется ли астероид в данный момент.
 let isBraking = { value: false }; // Флаг, указывающий, тормозит ли астероид в данный момент.
-const inertiaCoefficient = Math.random() * 0.19 + 0.8; // Случайный коэффициент инерции от 0.8 до 0.99
+let inertiaCoefficient = Math.random() * 0.19 + 0.8; // Случайный коэффициент инерции от 0.8 до 0.99
 let lastTime = 0; // Хранит время последнего кадра анимации.
 let mousePos = { x: 0, y: 0 }; // координаты для масштабирования
 
+export function setInertiaCoefficient(newCoefficient) {
+  inertiaCoefficient = newCoefficient;
+}
 export { mousePos, targetPos, isMoving, isBraking };
 export let objectPos = { x: innerWidth / 2, y: 10 };
 

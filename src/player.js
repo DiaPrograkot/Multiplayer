@@ -1,6 +1,6 @@
 import { selfId, sendRole, peerNames, blockShipButton, sendPlayerState } from './init.js';
 import { updateCursor, cursors, peerRoles, addCursor, updateCursorName, showCursor, shapes } from './cursors.js';
-import { posCenter } from './gameLoop.js'
+import { posCenter, setInertiaCoefficient } from './gameLoop.js'
 
 let playerName = localStorage.getItem("name")?.trim();
 let playerRole = null;
@@ -46,6 +46,7 @@ export function respawnPlayer() {
       cursor.style.display = 'block';
     }
     posCenter()
+    setInertiaCoefficient(Math.random() * 0.19 + 0.8);
     sendPlayerState({ peerId: selfId, isDestroyed: false, newShape: playerRole });
   }
 }
