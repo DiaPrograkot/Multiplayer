@@ -2,16 +2,20 @@ import { handleKeyDown, handleKeyUp, playerRole, handleRoleSelection, shipPos } 
 import { mousePos, targetPos, isMoving, isBraking, objectPos } from './gameLoop.js';
 import { createLocalLaser } from './shooting.js';
 
-// Обработка стрельбы
+let canShoot = true;
 document.addEventListener("keydown", (event) => {
-  if (event.key === " ") {
-    console.log("Пробел нажат, стреляем!");
-    // Используем objectPos для получения позиции корабля
+  if (event.code === "Space" && canShoot) {
     const laserPosition = {
       x: objectPos.x,
       y: objectPos.y
     };
-    createLocalLaser(laserPosition); // Создаем лазер
+    createLocalLaser(laserPosition);
+    canShoot = false; // Блокируем повторную стрельбу
+  }
+});
+document.addEventListener("keyup", (event) => {
+  if (event.code === "Space") {
+    canShoot = true; // Разрешаем стрельбу
   }
 });
 
