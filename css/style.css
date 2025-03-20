@@ -1,8 +1,3 @@
-@font-face {
-  font-family: HalfTone;
-  src: url(https://alexejdeveloper.github.io/igs-commander/fonts/TarrgetAcademyItalic.otf);
-}
-
 *,
 *::before,
 *::after {
@@ -29,7 +24,7 @@ html {
 }
 
 body {
-  font-family: HalfTone, sans-serif;
+  font-family: Algerian, sans-serif;
   overflow: hidden;
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
@@ -659,13 +654,14 @@ body {
 }
 
 .choice-button {
+  font-family: 'comic sans ms', sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 200px; /* Ширина кнопки */
   height: 200px; /* Высота кнопки */
-  font-size: 1.5rem; /* Увеличенный размер шрифта */
+  font-size: 1.9rem; /* Увеличенный размер шрифта */
   cursor: pointer;
   border: none;
   border-radius: 10px; /* Более округлённые углы */

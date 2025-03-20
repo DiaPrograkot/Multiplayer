@@ -600,13 +600,14 @@ button:active, a:active, input:active, select:active, textarea:active, label:act
 }
 
 .choice-button {
+  font-family: 'comic sans ms', sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 200px; /* Ширина кнопки */
   height: 200px; /* Высота кнопки */
-  font-size: 1.5rem; /* Увеличенный размер шрифта */
+  font-size: 1.9rem; /* Увеличенный размер шрифта */
   cursor: pointer;
   border: none;
   border-radius: 10px; /* Более округлённые углы */
